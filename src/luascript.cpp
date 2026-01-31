@@ -2221,6 +2221,13 @@ void LuaScriptInterface::registerFunctions()
 	registerEnumIn("configKeys", ConfigManager::MAX_PACKETS_PER_SECOND);
 	registerEnumIn("configKeys", ConfigManager::STAMINA_REGEN_MINUTE);
 	registerEnumIn("configKeys", ConfigManager::STAMINA_REGEN_PREMIUM);
+	registerEnumIn("configKeys", ConfigManager::STAMINA_TRAINER);
+	registerEnumIn("configKeys", ConfigManager::STAMINA_PZ);
+	registerEnumIn("configKeys", ConfigManager::STAMINA_PZ_GAIN);
+	registerEnumIn("configKeys", ConfigManager::STAMINA_ORANGE_DELAY);
+	registerEnumIn("configKeys", ConfigManager::STAMINA_GREEN_DELAY);
+	registerEnumIn("configKeys", ConfigManager::STAMINA_TRAINER_DELAY);
+	registerEnumIn("configKeys", ConfigManager::STAMINA_TRAINER_GAIN);
 	registerEnumIn("configKeys", ConfigManager::REWARD_BASE_RATE);
 	registerEnumIn("configKeys", ConfigManager::REWARD_RATE_DAMAGE_DONE);
 	registerEnumIn("configKeys", ConfigManager::REWARD_RATE_DAMAGE_TAKEN);

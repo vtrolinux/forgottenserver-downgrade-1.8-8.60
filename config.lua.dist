@@ -264,8 +264,22 @@ deSpawnRadius = 50
 removeOnDespawn = true
 walkToSpawnRadius = 15
 
--- Stamina
+-- Stamina Configs
+-- These options are fully configurable, including regenerating by attacking the trainer or while in a protection zone.
 staminaSystem = true
+timeToRegenMinuteStamina = 3 * 60
+timeToRegenMinutePremiumStamina = 6 * 60
+
+-- Stamina in PZ (Regeneration)
+staminaPz = true
+staminaOrangeDelay = 1
+staminaGreenDelay = 5
+staminaPzGain = 1
+
+-- Stamina in Trainers
+staminaTrainer = true
+staminaTrainerDelay = 5
+staminaTrainerGain = 1
 
 -- Scripts
 warnUnsafeScripts = true

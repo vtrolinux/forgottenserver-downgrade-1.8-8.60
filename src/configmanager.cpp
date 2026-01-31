@@ -315,6 +315,8 @@ bool ConfigManager::load()
 	booleans[Boolean::DLL_CHECK_KICK] = getGlobalBoolean(L, "dllCheckKick", false);
 	booleans[Boolean::RESET_SYSTEM_ENABLED] = getGlobalBoolean(L, "resetSystemEnabled", false); // reset system
 	booleans[Boolean::NPCS_USING_BANK_MONEY] = getGlobalBoolean(L, "npcsUsingBankMoney", false);
+	booleans[Boolean::STAMINA_TRAINER] = getGlobalBoolean(L, "staminaTrainer", false);
+	booleans[Boolean::STAMINA_PZ] = getGlobalBoolean(L, "staminaPz", false);
 	
 	// Admin Config
 	booleans[Boolean::ADMIN_LOCALHOST_ONLY] = getGlobalBoolean(L, "adminLocalhostOnly", true);
@@ -372,6 +374,11 @@ bool ConfigManager::load()
 	integers[Integer::DEPOT_PREMIUM_LIMIT] = getGlobalInteger(L, "depotPremiumLimit", 15000);
 	integers[Integer::STAMINA_REGEN_MINUTE] = getGlobalInteger(L, "timeToRegenMinuteStamina", 3 * 60);
 	integers[Integer::STAMINA_REGEN_PREMIUM] = getGlobalInteger(L, "timeToRegenMinutePremiumStamina", 6 * 60);
+	integers[Integer::STAMINA_PZ_GAIN] = getGlobalInteger(L, "staminaPzGain", 1);
+	integers[Integer::STAMINA_ORANGE_DELAY] = getGlobalInteger(L, "staminaOrangeDelay", 1);
+	integers[Integer::STAMINA_GREEN_DELAY] = getGlobalInteger(L, "staminaGreenDelay", 5);
+	integers[Integer::STAMINA_TRAINER_DELAY] = getGlobalInteger(L, "staminaTrainerDelay", 5);
+	integers[Integer::STAMINA_TRAINER_GAIN] = getGlobalInteger(L, "staminaTrainerGain", 1);
 	integers[Integer::HEALTH_GAIN_COLOUR] = getGlobalInteger(L, "healthGainColour", TEXTCOLOR_MAYABLUE);
 	integers[Integer::MANA_GAIN_COLOUR] = getGlobalInteger(L, "manaGainColour", TEXTCOLOR_BLUE);
 	integers[Integer::MANA_LOSS_COLOUR] = getGlobalInteger(L, "manaLossColour", TEXTCOLOR_BLUE);
