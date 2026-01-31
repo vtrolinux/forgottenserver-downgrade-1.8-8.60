@@ -496,6 +496,10 @@ bool Spell::configureSpell(const pugi::xml_node& node)
 		aggressive = booleanString(attr.as_string());
 	}
 
+	if (group == SPELLGROUP_NONE) {
+		group = (aggressive ? SPELLGROUP_ATTACK : SPELLGROUP_HEALING);
+	}
+
 	for (auto& vocationNode : node.children()) {
 		if (!(attr = vocationNode.attribute("name"))) {
 			continue;
