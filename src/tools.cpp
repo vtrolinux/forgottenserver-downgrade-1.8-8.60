@@ -1177,6 +1177,9 @@ std::string_view getReturnMessage(ReturnValue value)
 		
 		case RETURNVALUE_NOTENOUGHRESET:
 			return "You do not have enough resets";
+
+		case RETURNVALUE_CANNOTADDMOREITEMSONTILE:
+			return "You cannot add more items on this tile.";
 		
 		default: // RETURNVALUE_NOTPOSSIBLE, etc
 			return "Sorry, not possible.";

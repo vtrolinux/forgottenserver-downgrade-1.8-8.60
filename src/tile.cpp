@@ -435,6 +435,8 @@ ReturnValue Tile::queryAdd(int32_t, const Thing& thing, uint32_t, uint32_t flags
 			return RETURNVALUE_NOERROR;
 		}
 
+
+
 		if (hasBitSet(FLAG_PATHFINDING, flags) && hasFlag(TILESTATE_FLOORCHANGE | TILESTATE_TELEPORT)) {
 			return RETURNVALUE_NOTPOSSIBLE;
 		}
@@ -586,6 +588,10 @@ ReturnValue Tile::queryAdd(int32_t, const Thing& thing, uint32_t, uint32_t flags
 		const TileItemVector* items = getItemList();
 		if (items && items->size() >= 0xFFFF) {
 			return RETURNVALUE_NOTPOSSIBLE;
+		}
+
+		if (items && items->size() >= TILE_MAX_ITEMS) {
+			return RETURNVALUE_CANNOTADDMOREITEMSONTILE;
 		}
 
 		if (hasBitSet(FLAG_NOLIMIT, flags)) {

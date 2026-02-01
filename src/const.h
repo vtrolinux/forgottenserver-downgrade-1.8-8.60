@@ -5,6 +5,7 @@
 #define FS_CONST_H
 
 inline constexpr int32_t NETWORKMESSAGE_MAXSIZE = 65500;
+inline constexpr uint8_t TILE_MAX_ITEMS = 10;
 
 enum MagicEffectClasses : uint16_t
 {
