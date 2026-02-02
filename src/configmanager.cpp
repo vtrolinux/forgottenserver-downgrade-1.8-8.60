@@ -348,6 +348,7 @@ bool ConfigManager::load()
 	integers[Integer::RATE_SPAWN] = getGlobalInteger(L, "rateSpawn", 1);
 	integers[Integer::RATE_START_EFFECT] = getGlobalInteger(L, "timeStartEffect", 4200);
 	integers[Integer::RATE_BETWEEN_EFFECT] = getGlobalInteger(L, "timeBetweenTeleportEffects", 1400);
+	integers[Integer::HOUSE_LEVEL] = getGlobalInteger(L, "houseLevel", 150);
 	integers[Integer::HOUSE_PRICE] = getGlobalInteger(L, "housePriceEachSQM", 1000);
 	integers[Integer::KILLS_TO_RED] = getGlobalInteger(L, "killsToRedSkull", 3);
 	integers[Integer::KILLS_TO_BLACK] = getGlobalInteger(L, "killsToBlackSkull", 6);

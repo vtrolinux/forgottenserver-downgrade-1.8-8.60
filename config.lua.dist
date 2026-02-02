@@ -100,9 +100,11 @@ maxPacketsPerSecond = 25
 deathLosePercent = -1
 
 -- Houses
+-- NOTE: houseLevel, when buying a house, ask for the necessary level.
 -- NOTE: set housePriceEachSQM to -1 to disable the ingame buy house functionality
 -- NOTE: valid values for houseRentPeriod are: "daily", "weekly", "monthly", "yearly"
 -- use any other value to disable the rent system
+houseLevel = 150
 housePriceEachSQM = 1000
 houseRentPeriod = "never"
 houseOwnedByAccount = false

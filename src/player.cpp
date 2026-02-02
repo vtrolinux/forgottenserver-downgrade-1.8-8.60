@@ -4361,7 +4361,10 @@ void Player::setCurrentMount(uint16_t mountId) { currentMount = mountId; }
 bool Player::toggleMount(bool mount)
 {
 	if ((OTSYS_TIME() - lastToggleMount) < 3000 && !wasMounted) {
-		sendCancelMessage(RETURNVALUE_YOUAREEXHAUSTED);
+		int32_t msLeft = 3000 - static_cast<int32_t>(OTSYS_TIME() - lastToggleMount);
+		double seconds = msLeft / 1000.0;
+		std::string msg = "You must wait " + fmt::format("{:.1f}", seconds) + "s before using the mount again.";
+		sendTextMessage(MESSAGE_STATUS_SMALL, msg);
 		return false;
 	}
 
