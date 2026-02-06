@@ -69,7 +69,7 @@ void Player::addSpectator(ProtocolSpectator* spectator) {
 	
 	std::ostringstream query;
 	query << "UPDATE `players_online` SET `cast_spectators` = '" << spectatorCount << "' WHERE `player_id` = '" << getGUID() << "';";
-	Database::getInstance().executeQuery(query.str());
+	Database::getInstance().executeQuery(query.str()); 
 }
 
 void Player::removeSpectator(ProtocolSpectator* spectator) {
