@@ -54,7 +54,7 @@ function loginMessage.onLogin(player)
 
     if configManager.getBoolean(RESET_SYSTEM_ENABLED) then
         local reductionMultiplier = player:getResetExpReduction()
-        player:setExperienceRate(ExperienceRateType.STAMINA, reductionMultiplier)
+        player:setExperienceRate(ExperienceRateType.STAMINA, reductionMultiplier * 100)
     end
 
     if player:isTokenProtected() then
