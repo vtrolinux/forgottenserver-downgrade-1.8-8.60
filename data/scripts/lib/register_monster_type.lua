@@ -5,6 +5,10 @@ setmetatable(registerMonsterType, {
 	end
 })
 
+local function isInteger(n)
+	return (type(n) == "number") and (math.floor(n) == n)
+end
+
 MonsterType.register = function(self, mask)
 	return registerMonsterType(self, mask)
 end
@@ -36,11 +40,12 @@ registerMonsterType.health = function(mtype, mask)
 		mtype:maxHealth(math.max(mask.health, mtype:maxHealth()))
 	end
 end
-registerMonsterType.runHealth = function(mtype, mask)
-	if mask.runHealth then mtype:runHealth(mask.runHealth) end
-end
 registerMonsterType.maxSummons = function(mtype, mask)
-	if mask.maxSummons then mtype:maxSummons(mask.maxSummons) end
+	if mask.maxSummons then
+		mtype:maxSummons(mask.maxSummons)
+	elseif mask.summon and mask.summon.maxSummons then
+		mtype:maxSummons(mask.summon.maxSummons)
+	end
 end
 registerMonsterType.race = function(mtype, mask)
 	if mask.race then mtype:race(mask.race) end
@@ -92,6 +97,9 @@ registerMonsterType.flags = function(mtype, mask)
 		if mask.flags.targetDistance then
 			mtype:targetDistance(mask.flags.targetDistance)
 		end
+		if mask.flags.runHealth then
+			mtype:runHealth(mask.flags.runHealth)
+		end
 		if mask.flags.staticAttackChance then
 			mtype:staticAttackChance(mask.flags.staticAttackChance)
 		end
@@ -104,8 +112,8 @@ registerMonsterType.flags = function(mtype, mask)
 		if mask.flags.canWalkOnPoison ~= nil then
 			mtype:canWalkOnPoison(mask.flags.canWalkOnPoison)
 		end
-		if mask.flags.rewardboss ~= nil or mask.flags.isrewardboss ~= nil then
-			mtype:isRewardBoss(mask.flags.rewardboss or mask.flags.isrewardboss)
+		if mask.flags.rewardBoss ~= nil or mask.flags.isrewardboss ~= nil then
+			mtype:isRewardBoss(mask.flags.rewardBoss or mask.flags.isrewardboss)
 		end
 	end
 end
@@ -133,9 +141,10 @@ registerMonsterType.voices = function(mtype, mask)
 	end
 end
 registerMonsterType.summons = function(mtype, mask)
-	if type(mask.summons) == "table" then
-		for k, v in pairs(mask.summons) do
-			mtype:addSummon(v.name, v.interval, v.chance, v.effect, v.masterEffect)
+	local summonData = mask.summons or (mask.summon and mask.summon.summons)
+	if type(summonData) == "table" then
+		for k, v in pairs(summonData) do
+			mtype:addSummon(v.name, v.interval, v.chance, v.effect, v.masterEffect, v.count)
 		end
 	end
 end
@@ -149,21 +158,30 @@ registerMonsterType.loot = function(mtype, mask)
 		local lootError = false
 		for _, loot in pairs(mask.loot) do
 			local parent <close> = Loot()
-			if not loot.id or loot.id == "" then
+			if loot.name then
+				if not parent:setIdFromName(loot.name) then lootError = true end
+			elseif loot.id and isInteger(loot.id) and loot.id > 0 then
+				parent:setId(loot.id)
+			else
 				lootError = true
-			elseif not parent:setId(loot.id) then 
-				lootError = true 
+			end
+
+			if loot.subType or loot.charges then
+				parent:setSubType(loot.subType or loot.charges)
+			else
+				local lType = ItemType(loot.name or loot.id)
+				if lType and lType:getCharges() > 1 then
+					parent:setSubType(lType:getCharges())
+				end
 			end
 			if loot.chance then parent:setChance(loot.chance) end
 			if loot.maxCount then parent:setMaxCount(loot.maxCount) end
+			if loot.minCount then parent:setMinCount(loot.minCount) end
 			if loot.aid or loot.actionId then
 				parent:setActionId(loot.aid or loot.actionId)
 			end
 			if loot.unique then
 				parent:setUnique(loot.unique)
-			end
-			if loot.subType or loot.charges then
-				parent:setSubType(loot.subType or loot.charges)
 			end
 			if loot.text or loot.description then
 				parent:setDescription(loot.text or loot.description)
@@ -171,10 +189,21 @@ registerMonsterType.loot = function(mtype, mask)
 			if loot.child then
 				for _, children in pairs(loot.child) do
 					local child <close> = Loot()
-					if not children.id or children.id == "" then
+					if children.name then
+						if not child:setIdFromName(children.name) then lootError = true end
+					elseif children.id and isInteger(children.id) and children.id > 0 then
+						child:setId(children.id)
+					else
 						lootError = true
-					elseif not child:setId(children.id) then 
-						lootError = true 
+					end
+
+					if children.subType or children.charges then
+						child:setSubType(children.subType or children.charges)
+					else
+						local cType = ItemType(children.name or children.id)
+						if cType and cType:getCharges() > 1 then
+							child:setSubType(cType:getCharges())
+						end
 					end
 					if children.chance then child:setChance(children.chance) end
 					if children.maxCount then child:setMaxCount(children.maxCount) end
@@ -183,9 +212,6 @@ registerMonsterType.loot = function(mtype, mask)
 					end
 					if children.unique then
 						child:setUnique(children.unique)
-					end
-					if children.subType or children.charges then
-						child:setSubType(children.subType or children.charges)
 					end
 					if children.text or children.description then
 						child:setDescription(children.text or children.description)
@@ -260,6 +286,10 @@ local function AbilityTableToSpell(ability)
 				spell:setCombatValue(ability.minDamage, ability.maxDamage)
 			end
 			if ability.effect then spell:setCombatEffect(ability.effect) end
+			local outfit = ability.outfit or ability.monster or ability.item
+			if outfit and spell.setOutfit then
+				spell:setOutfit(outfit)
+			end
 			if ability.shootEffect then spell:setCombatShootEffect(ability.shootEffect) end
 			if ability.drunkenness then
 				spell:setConditionDrunkenness(ability.drunkenness)
