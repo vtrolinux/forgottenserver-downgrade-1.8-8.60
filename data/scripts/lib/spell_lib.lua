@@ -463,7 +463,20 @@ RANGE = {
 }
 
 -- This array contains all destroyable field items
-FIELDS = {1487,1488,1489,1490,1491,1492,1493,1494,1495,1496,1500,1501,1502,1503,1504}
+FIELDS = {
+	-- Fire fields
+	2118, 2119, 2120, -- PVP (full, medium, small)
+	2123, 2124, 2125, -- Persistent (full, medium, small)
+	21465,            -- NoPVP
+	-- Poison fields
+	105,              -- PVP
+	2121,             -- Persistent
+	2134,             -- NoPVP
+	-- Energy fields
+	2122,             -- PVP
+	2126,             -- Persistent
+	2135,             -- NoPVP
+}
 
 function Player:addPartyCondition(combat, variant, condition, baseMana)
 	local party = self:getParty()
