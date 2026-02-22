@@ -15,7 +15,7 @@ function poisonArrow.onUseWeapon(player, variant)
     return true
 end
 
-poisonArrow:id(2545)
+poisonArrow:id(3448)
 poisonArrow:action("removecount")
 poisonArrow:ammoType("arrow")
 poisonArrow:shootType(CONST_ANI_POISONARROW)
