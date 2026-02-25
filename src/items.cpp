@@ -5,13 +5,12 @@
 
 #include "items.h"
 
-#include "logger.h"
 #include "movement.h"
 #include "pugicast.h"
 #include "script.h"
 #include "spells.h"
 #include "weapons.h"
-
+#include "logger.h"
 #include <fmt/format.h>
 
 extern MoveEvents* g_moveEvents;
@@ -694,8 +693,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 							it.group = ITEM_GROUP_CONTAINER;
 						}
 					} else {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown type: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown type: {}", valueAttribute.as_string()));
 					}
 					break;
 				}
@@ -748,8 +746,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 				case ITEM_PARSE_ATTACK_SPEED: {
 					it.attackSpeed = pugi::cast<uint32_t>(valueAttribute.value());
 					if (it.attackSpeed > 0 && it.attackSpeed < 100) {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] AttackSpeed lower than 100 for item: {}",
-						                     it.id));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] AttackSpeed lower than 100 for item: {}", it.id));
 						it.attackSpeed = 100;
 					}
 					break;
@@ -801,8 +798,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 					if (it2 != TileStatesMap.end()) {
 						it.floorChange |= it2->second;
 					} else {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown floorChange: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown floorChange: {}", valueAttribute.as_string()));
 					}
 					break;
 				}
@@ -813,8 +809,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 					if (it2 != RaceTypesMap.end()) {
 						it.corpseType = it2->second;
 					} else {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown corpseType: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown corpseType: {}", valueAttribute.as_string()));
 					}
 					break;
 				}
@@ -830,8 +825,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 					if (it2 != FluidTypesMap.end()) {
 						it.fluidSource = it2->second;
 					} else {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown fluidSource: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown fluidSource: {}", valueAttribute.as_string()));
 					}
 					break;
 				}
@@ -863,8 +857,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 					if (it2 != WeaponTypesMap.end()) {
 						it.weaponType = it2->second;
 					} else {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown weaponType: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown weaponType: {}", valueAttribute.as_string()));
 					}
 					break;
 				}
@@ -896,8 +889,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 					} else if (tmpStrValue == "hand") {
 						it.slotPosition |= SLOTP_HAND;
 					} else {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown slotType: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown slotType: {}", valueAttribute.as_string()));
 					}
 					break;
 				}
@@ -905,8 +897,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 				case ITEM_PARSE_AMMOTYPE: {
 					it.ammoType = getAmmoType(boost::algorithm::to_lower_copy<std::string>(valueAttribute.as_string()));
 					if (it.ammoType == AMMO_NONE) {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown ammoType: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown ammoType: {}", valueAttribute.as_string()));
 					}
 					break;
 				}
@@ -917,8 +908,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 					if (shoot != CONST_ANI_NONE) {
 						it.shootType = shoot;
 					} else {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown shootType: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown shootType: {}", valueAttribute.as_string()));
 					}
 					break;
 				}
@@ -929,8 +919,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 					if (effect != CONST_ME_NONE) {
 						it.magicEffect = effect;
 					} else {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown effect: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown effect: {}", valueAttribute.as_string()));
 					}
 					break;
 				}
@@ -1707,8 +1696,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 						conditionDamage = new ConditionDamage(CONDITIONID_COMBAT, CONDITION_BLEEDING);
 						combatType = COMBAT_PHYSICALDAMAGE;
 					} else {
-						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown field value: {}",
-						                     valueAttribute.as_string()));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown field value: {}", valueAttribute.as_string()));
 					}
 
 					if (combatType != COMBAT_NONE) {
@@ -1887,9 +1875,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 				case ITEM_PARSE_WORTH: {
 					uint64_t worth = pugi::cast<uint64_t>(valueAttribute.value());
 					if (currencyItems.find(worth) != currencyItems.end()) {
-						LOG_WARN(fmt::format(
-						    "[Warning - Items::parseItemNode] Duplicated currency worth. Item {} redefines worth {}",
-						    id, worth));
+						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Duplicated currency worth. Item {} redefines worth {}", id, worth));
 					} else {
 						currencyItems.insert(CurrencyMap::value_type(worth, id));
 						it.worth = worth;
@@ -1936,8 +1922,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 					// It should not ever get to here, only if you add a new key to the map and don't configure a case
 					// for it.
 					// for it.
-					LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Not configured key value: {}",
-					                     keyAttribute.as_string()));
+					LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Not configured key value: {}", keyAttribute.as_string()));
 					break;
 				}
 			}

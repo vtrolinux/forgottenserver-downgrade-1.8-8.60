@@ -11,17 +11,16 @@
 #include "database.h"
 #include "events.h"
 #include "game.h"
-#include "inbox.h"
 #include "iologindata.h"
-#include "logger.h"
+#include "inbox.h"
 #include "monster.h"
 #include "movement.h"
 #include "rewardchest.h"
 #include "scheduler.h"
+#include "logger.h"
+#include <fmt/format.h>
 #include "tools.h"
 #include "weapons.h"
-
-#include <fmt/format.h>
 
 extern Game g_game;
 extern Chat* g_chat;
@@ -64,19 +63,16 @@ Player::~Player()
 	setEditHouse(nullptr);
 }
 
-void Player::addSpectator(ProtocolSpectator* spectator)
-{
+void Player::addSpectator(ProtocolSpectator* spectator) {
 	spectators.push_back(spectator);
 	spectatorCount++;
-
+	
 	std::ostringstream query;
-	query << "UPDATE `players_online` SET `cast_spectators` = '" << spectatorCount << "' WHERE `player_id` = '"
-	      << getGUID() << "';";
-	Database::getInstance().executeQuery(query.str());
+	query << "UPDATE `players_online` SET `cast_spectators` = '" << spectatorCount << "' WHERE `player_id` = '" << getGUID() << "';";
+	Database::getInstance().executeQuery(query.str()); 
 }
 
-void Player::removeSpectator(ProtocolSpectator* spectator)
-{
+void Player::removeSpectator(ProtocolSpectator* spectator) {
 	auto it = std::find(spectators.begin(), spectators.end(), spectator);
 	if (it == spectators.end()) {
 		return;
@@ -84,15 +80,13 @@ void Player::removeSpectator(ProtocolSpectator* spectator)
 
 	spectators.erase(it);
 	spectatorCount--;
-
+	
 	std::ostringstream query;
-	query << "UPDATE `players_online` SET `cast_spectators` = '" << spectatorCount << "' WHERE `player_id` = '"
-	      << getGUID() << "';";
+	query << "UPDATE `players_online` SET `cast_spectators` = '" << spectatorCount << "' WHERE `player_id` = '" << getGUID() << "';";
 	Database::getInstance().executeQuery(query.str());
 }
 
-bool Player::startLiveCasting(const std::string& password)
-{
+bool Player::startLiveCasting(const std::string& password) {
 	liveCasting = true;
 
 	castPassword = password;
@@ -102,8 +96,7 @@ bool Player::startLiveCasting(const std::string& password)
 	Database& db = Database::getInstance();
 
 	std::ostringstream query;
-	query << "UPDATE `players_online` SET `cast_password` = " << db.escapeString(password)
-	      << " WHERE `player_id` = " << getGUID() << ";";
+	query << "UPDATE `players_online` SET `cast_password` = " << db.escapeString(password) << " WHERE `player_id` = " << getGUID() << ";";
 	db.executeQuery(query.str());
 
 	g_game.addLiveCaster(this);
@@ -127,13 +120,12 @@ bool Player::startLiveCasting(const std::string& password)
 	return isLiveCasting();
 }
 
-bool Player::stopLiveCasting()
-{
+bool Player::stopLiveCasting() {
 	liveCasting = false;
 	castPassword = "";
 
 	std::vector<ProtocolSpectator*> spectatorsCopy = spectators;
-	for (ProtocolSpectator* spectator : spectatorsCopy) {
+	for(ProtocolSpectator* spectator : spectatorsCopy) {
 		if (spectator) {
 			spectator->disconnect();
 		}
@@ -142,8 +134,7 @@ bool Player::stopLiveCasting()
 	spectatorCount = 0;
 
 	std::ostringstream query;
-	query << "UPDATE `players_online` SET `cast_password` = NULL, `cast_spectators` = '0' WHERE `player_id` = '"
-	      << getGUID() << "';";
+	query << "UPDATE `players_online` SET `cast_password` = NULL, `cast_spectators` = '0' WHERE `player_id` = '" << getGUID() << "';";
 	Database::getInstance().executeQuery(query.str());
 
 	g_game.removeLiveCaster(this);
@@ -160,7 +151,7 @@ bool Player::setVocation(uint16_t vocId)
 	vocation = voc;
 
 	updateRegeneration();
-	setBaseSpeed(voc->getBaseSpeed());
+	setBaseSpeed(voc->getBaseSpeed()); 
 	updateBaseSpeed();
 	g_game.changeSpeed(this, 0);
 	return true;
@@ -182,7 +173,7 @@ bool Player::canMoveOwnItems(const Item* item) const
 
 	uint16_t itemId = item->getID();
 	const auto& exceptions = ConfigManager::getTokenProtectionExceptions();
-
+	
 	if (std::find(exceptions.begin(), exceptions.end(), itemId) != exceptions.end()) {
 		return true;
 	}
@@ -202,7 +193,7 @@ bool Player::unlockWithToken(const std::string& token)
 	}
 	char hashStr[9];
 	snprintf(hashStr, sizeof(hashStr), "%08x", hash);
-
+	
 	if (tokenHash == hashStr) {
 		tokenLocked = false;
 		return true;
@@ -1213,8 +1204,7 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 				// Use configurable threshold (default 600 seconds / 10 minutes)
 				int64_t threshold = ConfigManager::getInteger(ConfigManager::OFFLINE_TRAINING_THRESHOLD);
 				if (offlineTime >= threshold) {
-					uint32_t trainingTime =
-					    static_cast<uint32_t>(std::min<int32_t>(offlineTime, offlineTrainingTime / 1000));
+					uint32_t trainingTime = static_cast<uint32_t>(std::min<int32_t>(offlineTime, offlineTrainingTime / 1000));
 					if (trainingTime > 0) {
 						applyOfflineTraining(trainingTime);
 						removeOfflineTrainingTime(trainingTime * 1000);
@@ -1283,17 +1273,13 @@ void Player::onChangeZone(ZoneType_t zone)
 
 			staminaPzActive = true;
 			staminaPzTicks = 0;
-			uint32_t delay =
-			    (staminaMinutes > 2400) ? staminaPzGreenDelayMs / (60 * 1000) : staminaPzOrangeDelayMs / (60 * 1000);
+			uint32_t delay = (staminaMinutes > 2400) ? staminaPzGreenDelayMs / (60 * 1000) : staminaPzOrangeDelayMs / (60 * 1000);
 			uint32_t gain = ConfigManager::getInteger(ConfigManager::STAMINA_PZ_GAIN);
-			sendTextMessage(
-			    MESSAGE_STATUS_SMALL,
-			    fmt::format("You're in the protection zone. Every {} minutes, gain {} stamina.", delay, gain));
+			sendTextMessage(MESSAGE_STATUS_SMALL, fmt::format("You're in the protection zone. Every {} minutes, gain {} stamina.", delay, gain));
 		}
 	} else {
 		// Stop stamina regeneration when leaving protection zone
-		sendTextMessage(MESSAGE_STATUS_SMALL,
-		                "You are no longer refilling stamina, since you left a regeneration zone.");
+		sendTextMessage(MESSAGE_STATUS_SMALL, "You are no longer refilling stamina, since you left a regeneration zone.");
 		staminaPzActive = false;
 	}
 
@@ -1335,23 +1321,20 @@ void Player::updateStaminaRegen(int64_t timePassed)
 	// Stamina PZ regeneration
 	if (staminaPzActive && staminaMinutes < 2520) {
 		staminaPzTicks += timePassed;
-
+		
 		// Calculate delay based on current stamina level (cached for efficiency)
 		uint32_t delayMs = (staminaMinutes > 2400) ? staminaPzGreenDelayMs : staminaPzOrangeDelayMs;
-
+		
 		if (staminaPzTicks >= delayMs) {
 			staminaPzTicks -= delayMs;
 			uint16_t gain = ConfigManager::getInteger(ConfigManager::STAMINA_PZ_GAIN);
 			setStaminaMinutes(staminaMinutes + gain);
 			sendStats();
-			sendTextMessage(
-			    MESSAGE_STATUS_SMALL,
-			    fmt::format("It has been regenerated {} of stamina due to being in the protection zone.", gain));
-
+			sendTextMessage(MESSAGE_STATUS_SMALL, fmt::format("It has been regenerated {} of stamina due to being in the protection zone.", gain));
+			
 			if (staminaMinutes >= 2520) {
 				staminaPzActive = false;
-				sendTextMessage(MESSAGE_STATUS_SMALL,
-				                "You are no longer refilling stamina, because your stamina is already full.");
+				sendTextMessage(MESSAGE_STATUS_SMALL, "You are no longer refilling stamina, because your stamina is already full.");
 			}
 		}
 	}
@@ -1367,8 +1350,7 @@ void Player::updateStaminaRegen(int64_t timePassed)
 				uint16_t gain = ConfigManager::getInteger(ConfigManager::STAMINA_TRAINER_GAIN);
 				setStaminaMinutes(staminaMinutes + gain);
 				sendStats();
-				sendTextMessage(MESSAGE_EVENT_ADVANCE,
-				                fmt::format("It has been regenerated {} of stamina by being in training.", gain));
+				sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("It has been regenerated {} of stamina by being in training.", gain));
 			}
 		} else {
 			staminaTrainerActive = false;
@@ -1727,7 +1709,7 @@ void Player::onThink(uint32_t interval)
 		if (timeNow - lastDllCheck >= checkInterval) {
 			lastDllCheck = timeNow;
 			client->sendDllCheck();
-
+			
 			if (isLiveCasting()) {
 				for (auto& spectator : spectators) {
 					if (spectator && spectator->acceptPackets && !spectator->isOTCv8) {
@@ -1957,7 +1939,7 @@ void Player::addExperience(Creature* source, uint64_t exp, bool sendText /* = fa
 		return;
 	}
 
-	g_events->eventPlayerOnGainExperience(this, source, exp, rawExp);
+	g_events->eventPlayerOnGainExperience(this, source, exp, rawExp, sendText);
 	if (exp == 0) {
 		return;
 	}
@@ -1973,27 +1955,6 @@ void Player::addExperience(Creature* source, uint64_t exp, bool sendText /* = fa
 	}
 
 	experience += exp;
-
-	if (sendText) {
-		std::string expString = std::to_string(exp) + (exp != 1 ? " experience points." : " experience point.");
-
-		TextMessage message(MESSAGE_STATUS_DEFAULT, "You gained " + expString);
-		sendTextMessage(message);
-
-		g_game.addAnimatedText(std::to_string(exp), position, TEXTCOLOR_WHITE);
-
-		SpectatorVec spectators;
-		g_game.map.getSpectators(spectators, position, false, true);
-		spectators.erase(this);
-		if (!spectators.empty()) {
-			message.type = MESSAGE_STATUS_DEFAULT;
-			message.text = getName() + " gained " + expString;
-			for (Creature* spectator : spectators) {
-				assert(dynamic_cast<Player*>(spectator) != nullptr);
-				static_cast<Player*>(spectator)->sendTextMessage(message);
-			}
-		}
-	}
 
 	uint32_t prevLevel = level;
 	while (experience >= nextLevelExp) {
@@ -2131,12 +2092,11 @@ uint16_t Player::getBasisPointLevel(uint64_t count, uint64_t nextLevelCount)
 		return 0;
 	}
 
-	// Use double precision to avoid overflow with large XP values
-	double result = (static_cast<double>(count) * 10000.0) / static_cast<double>(nextLevelCount);
-	if (result > 10000.0) {
+	uint16_t result = ((count * 10000.) / nextLevelCount);
+	if (result > 10000) {
 		return 10000;
 	}
-	return static_cast<uint16_t>(result);
+	return result;
 }
 
 void Player::onBlockHit()
@@ -2832,7 +2792,7 @@ ReturnValue Player::queryAdd(int32_t index, const Thing& thing, uint32_t count, 
 			if (cylinder && (dynamic_cast<const DepotChest*>(cylinder) || dynamic_cast<const Player*>(cylinder))) {
 				return RETURNVALUE_NEEDEXCHANGE;
 			}
-			return RETURNVALUE_NOTENOUGHROOM;
+			return RETURNVALUE_NOTENOUGHROOM;	
 		}
 
 		return RETURNVALUE_NEEDEXCHANGE;
@@ -3338,9 +3298,7 @@ void Player::postAddNotification(Thing* thing, const Cylinder* oldParent, int32_
 
 			for (const auto& it : openContainers) {
 				Container* container = it.second.container;
-				if (!container) {
-					continue;
-				}
+			if (!container) { continue; }
 				if (!container->getPosition().isInRange(getPosition(), 1, 1, 0)) {
 					containers.push_back(container);
 				}
@@ -3952,8 +3910,8 @@ bool Player::onKilledCreature(Creature* target, bool lastHit /* = true*/)
 
 			if (lastHit && hasCondition(CONDITION_INFIGHT)) {
 				pzLocked = true;
-				Condition* condition = Condition::createCondition(
-				    CONDITIONID_DEFAULT, CONDITION_INFIGHT, getInteger(ConfigManager::WHITE_SKULL_TIME) * 1000, 0);
+				Condition* condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_INFIGHT,
+				                                            getInteger(ConfigManager::WHITE_SKULL_TIME) * 1000, 0);
 				addCondition(condition);
 			}
 		}
@@ -4186,7 +4144,7 @@ void Player::doReset() // reset system
 	++reset;
 	uint32_t bonusReset = reset * getInteger(ConfigManager::RESET_STATBONUS);
 	capacity += bonusReset;
-
+	
 	mana = getMaxMana();
 	health = getMaxHealth();
 	experience = 0;
@@ -4522,8 +4480,7 @@ void Player::reloadWarList(bool updateVisuals)
 
 	Database& db = Database::getInstance();
 	std::ostringstream query;
-	query << "SELECT `guild1`, `guild2` FROM `guild_wars` WHERE (`guild1` = " << guild->getId()
-	      << " OR `guild2` = " << guild->getId() << ") AND `status` = 1";
+	query << "SELECT `guild1`, `guild2` FROM `guild_wars` WHERE (`guild1` = " << guild->getId() << " OR `guild2` = " << guild->getId() << ") AND `status` = 1";
 
 	DBResult_ptr result = db.storeQuery(query.str());
 	if (result) {
@@ -4858,8 +4815,7 @@ void Player::parseAutoLootWindow(const std::string& text)
 		oldItems.insert(pair.first);
 	}
 
-	size_t maxItems = isPremium() ? ConfigManager::getInteger(ConfigManager::AUTOLOOT_MAXITEMS_PREMIUM)
-	                              : ConfigManager::getInteger(ConfigManager::AUTOLOOT_MAXITEMS_FREE);
+	size_t maxItems = isPremium() ? ConfigManager::getInteger(ConfigManager::AUTOLOOT_MAXITEMS_PREMIUM) : ConfigManager::getInteger(ConfigManager::AUTOLOOT_MAXITEMS_FREE);
 	std::string blockConfig = std::string(ConfigManager::getString(ConfigManager::AUTOLOOT_BLOCKIDS));
 	std::vector<std::string_view> blockIdStrings = explodeString(blockConfig, ";");
 	std::set<uint16_t> blockedIds;
@@ -4915,7 +4871,7 @@ void Player::parseAutoLootWindow(const std::string& text)
 		}
 
 		if (blockedIds.find(itemId) != blockedIds.end()) {
-			continue;
+			continue; 
 		}
 
 		uint16_t backpackId = 0;
@@ -4937,7 +4893,7 @@ void Player::parseAutoLootWindow(const std::string& text)
 		}
 	}
 	autolootConfig.text = text;
-
+	
 	std::ostringstream removedItems;
 	bool firstRemovedItem = true;
 	for (uint16_t oldId : oldItems) {
@@ -4953,14 +4909,13 @@ void Player::parseAutoLootWindow(const std::string& text)
 	if (!firstAddedItem) {
 		sendTextMessage(MESSAGE_STATUS_CONSOLE_BLUE, fmt::format("AutoLoot added: {:s}", addedItems.str()));
 	}
-
+	
 	if (!firstRemovedItem) {
 		sendTextMessage(MESSAGE_STATUS_CONSOLE_BLUE, fmt::format("AutoLoot removed: {:s}", removedItems.str()));
 	}
 
 	if (limitReached) {
-		sendTextMessage(MESSAGE_STATUS_SMALL,
-		                fmt::format("AutoLoot limit reached ({:d} items). Some items were not added.", maxItems));
+		sendTextMessage(MESSAGE_STATUS_SMALL, fmt::format("AutoLoot limit reached ({:d} items). Some items were not added.", maxItems));
 	}
 
 	if (firstAddedItem && firstRemovedItem && !limitReached) {
@@ -5086,8 +5041,7 @@ void Player::lootCorpse(Container* container)
 			continue;
 		}
 
-		g_game.internalMoveItem(container, backpack->getContainer(), INDEX_WHEREEVER, item, item->getItemCount(),
-		                        nullptr);
+		g_game.internalMoveItem(container, backpack->getContainer(), INDEX_WHEREEVER, item, item->getItemCount(), nullptr);
 	}
 
 	if (totalDepositValue > 0) {
@@ -5095,8 +5049,7 @@ void Player::lootCorpse(Container* container)
 		for (Item* item : itemsToRemove) {
 			g_game.internalRemoveItem(item, item->getItemCount());
 		}
-		sendTextMessage(MESSAGE_STATUS_CONSOLE_BLUE,
-		                fmt::format("AutoLoot: Deposited {:d} gold to your bank account.", totalDepositValue));
+		sendTextMessage(MESSAGE_STATUS_CONSOLE_BLUE, fmt::format("AutoLoot: Deposited {:d} gold to your bank account.", totalDepositValue));
 	}
 }
 
@@ -5942,18 +5895,19 @@ bool Player::addOfflineTrainingTries(skills_t skill, uint64_t tries)
 	return sendUpdate;
 }
 
+
+
+
 void Player::addReset(uint32_t count /*= 1*/)
 {
 	reset += count;
-	Database::getInstance().executeQuery(
-	    fmt::format("UPDATE `players` SET `reset` = {:d} WHERE `id` = {:d}", reset, getGUID()));
+	Database::getInstance().executeQuery(fmt::format("UPDATE `players` SET `reset` = {:d} WHERE `id` = {:d}", reset, getGUID()));
 }
 
 void Player::setResetCount(uint32_t count)
 {
 	reset = count;
-	Database::getInstance().executeQuery(
-	    fmt::format("UPDATE `players` SET `reset` = {:d} WHERE `id` = {:d}", reset, getGUID()));
+	Database::getInstance().executeQuery(fmt::format("UPDATE `players` SET `reset` = {:d} WHERE `id` = {:d}", reset, getGUID()));
 }
 
 double Player::getResetExpReduction() const

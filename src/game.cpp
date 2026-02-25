@@ -31,7 +31,6 @@
 #include "logger.h"
 #include <fmt/format.h>
 #include <limits>
-#include "luascript.h"
 
 extern Actions* g_actions;
 extern Chat* g_chat;
@@ -45,7 +44,6 @@ extern Monsters g_monsters;
 extern MoveEvents* g_moveEvents;
 extern Weapons* g_weapons;
 extern Scripts* g_scripts;
-extern LuaEnvironment g_luaEnvironment;
 
 void Game::start(ServiceManager* manager)
 {
@@ -2244,7 +2242,6 @@ void Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, uint8_t f
 		return;
 	}
 
-
 	Position walkToPos = fromPos;
 	ReturnValue ret = g_actions->canUse(player, fromPos);
 	if (ret == RETURNVALUE_NOERROR) {
@@ -2335,7 +2332,6 @@ void Game::playerUseItem(uint32_t playerId, const Position& pos, uint8_t stackPo
 		return;
 	}
 
-
 	ReturnValue ret = g_actions->canUse(player, pos);
 	if (ret != RETURNVALUE_NOERROR) {
 		if (ret == RETURNVALUE_TOOFARAWAY) {
@@ -2390,7 +2386,6 @@ void Game::playerUseWithCreature(uint32_t playerId, const Position& fromPos, uin
 	if (!creature) {
 		return;
 	}
-
 
 	if (!creature->getPosition().isInRange(player->getPosition(), Map::maxClientViewportX - 1,
 	                                       Map::maxClientViewportY - 1, 0)) {
@@ -3496,33 +3491,6 @@ void Game::playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type, s
 	if (muteTime > 0) {
 		player->sendTextMessage(MESSAGE_STATUS_SMALL, fmt::format("You are still muted for {:d} seconds.", muteTime));
 		return;
-	}
-
-	if (!player->isAccessPlayer()) {
-		lua_State* L = g_luaEnvironment.getLuaState();
-		if (L) {
-			if (g_luaEnvironment.loadFile("data/anti_advertising.lua") == 0) {
-				lua_getglobal(L, "checkMessage");
-				if (lua_isfunction(L, -1)) {
-					lua_pushlstring(L, text.data(), text.length());
-					lua_pushboolean(L, player->isAccessPlayer());
-					
-					if (lua_pcall(L, 2, 2, 0) == 0) {
-						bool isBlocked = lua_toboolean(L, -2);
-						if (isBlocked) {
-							std::string replacement = lua_tostring(L, -1);
-							internalCreatureSay(player, TALKTYPE_SAY, replacement, false);
-							return;
-						}
-						lua_pop(L, 2);
-					} else {
-						lua_pop(L, 1);
-					}
-				} else {
-					lua_pop(L, 1);
-				}
-			}
-		}
 	}
 
 	if (!text.empty() && text.front() == '/' && player->isAccessPlayer()) {
