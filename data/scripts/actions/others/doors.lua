@@ -1,3 +1,6 @@
+-- Door action script (Crystal Server style)
+-- Uses structured tables from data/lib/core/doors.lua
+
 local positionOffsets = {
 	Position(1, 0, 0), -- east
 	Position(0, 1, 0), -- south
@@ -51,89 +54,242 @@ local function findPushPosition(creature, round)
 	if round < 4 then return findPushPosition(creature, round + 1) end
 end
 
-local door = Action()
+-- Helper: push creatures out of a door position when closing it
+local function pushCreaturesFromDoor(player, toPosition)
+	local creaturePositionTable = {}
+	local doorCreatures = Tile(toPosition):getCreatures()
+	if doorCreatures and #doorCreatures > 0 then
+		for _, doorCreature in pairs(doorCreatures) do
+			local pushPosition = findPushPosition(doorCreature, 1)
+			if not pushPosition then
+				player:sendCancelMessage(RETURNVALUE_NOTENOUGHROOM)
+				return false
+			end
+			table.insert(creaturePositionTable,
+			             {creature = doorCreature, position = pushPosition})
+		end
+		for _, tableCreature in ipairs(creaturePositionTable) do
+			tableCreature.creature:teleportTo(tableCreature.position, true)
+		end
+	end
+	return true
+end
 
-function door.onUse(player, item, fromPosition, target, toPosition, isHotkey)
-	local itemId = item:getId()
-	if table.contains(closedQuestDoors, itemId) then
-		if player:getStorageValue(item.actionid) ~= -1 or
-			player:getGroup():getAccess() then
-			item:transform(itemId + 1)
-			player:teleportTo(toPosition, true)
-		else
-			player:sendTextMessage(MESSAGE_EVENT_ADVANCE,
-			                       "The door seems to be sealed against unwanted intruders.")
-		end
-		return true
-	elseif table.contains(closedLevelDoors, itemId) then
-		if item.actionid > 0 and player:getLevel() >= item.actionid -
-			actionIds.levelDoor or player:getGroup():getAccess() then
-			item:transform(itemId + 1)
-			player:teleportTo(toPosition, true)
-		else
-			player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "Only the worthy may pass.")
-		end
-		return true
-	elseif table.contains(keys, itemId) then
-		local tile = Tile(toPosition)
-		if not tile then return false end
-		target = tile:getTopVisibleThing()
-		if target.actionid == 0 then return false end
-		if table.contains(keys, target.itemid) then return false end
-		if not table.contains(openDoors, target.itemid) and
-			not table.contains(closedDoors, target.itemid) and
-			not table.contains(lockedDoors, target.itemid) then return false end
-		if item.actionid ~= target.actionid then
-			player:sendTextMessage(MESSAGE_STATUS_SMALL, "The key does not match.")
-			return true
-		end
-		local transformTo = target.itemid + 2
-		if table.contains(openDoors, target.itemid) then
-			transformTo = target.itemid - 2
-		elseif table.contains(closedDoors, target.itemid) then
-			transformTo = target.itemid - 1
-		end
-		target:transform(transformTo)
-		return true
-	elseif table.contains(lockedDoors, itemId) then
+-- ============================
+-- Key Door Action (locked/unlocked/open)
+-- ============================
+local keyDoorIds = {}
+local keyLockedDoorIds = {}
+
+for _, value in ipairs(KeyDoorTable) do
+	if not table.contains(keyDoorIds, value.closedDoor) then
+		table.insert(keyDoorIds, value.closedDoor)
+	end
+	if not table.contains(keyDoorIds, value.lockedDoor) then
+		table.insert(keyDoorIds, value.lockedDoor)
+	end
+	if not table.contains(keyDoorIds, value.openDoor) then
+		table.insert(keyDoorIds, value.openDoor)
+	end
+	if not table.contains(keyLockedDoorIds, value.lockedDoor) then
+		table.insert(keyLockedDoorIds, value.lockedDoor)
+	end
+end
+
+for _, value in ipairs(keysID) do
+	if not table.contains(keyDoorIds, value) then
+		table.insert(keyDoorIds, value)
+	end
+end
+
+local keyDoor = Action()
+function keyDoor.onUse(player, item, fromPosition, target, toPosition, isHotkey)
+	-- Locked door message
+	if table.contains(keyLockedDoorIds, item.itemid) then
 		player:sendTextMessage(MESSAGE_INFO_DESCR, "It is locked.")
 		return true
-	elseif table.contains(openDoors, itemId) or
-		table.contains(openExtraDoors, itemId) or
-		table.contains(openHouseDoors, itemId) then
-		local creaturePositionTable = {}
-		local doorCreatures = Tile(toPosition):getCreatures()
-		if doorCreatures and #doorCreatures > 0 then
-			for _, doorCreature in pairs(doorCreatures) do
-				local pushPosition = findPushPosition(doorCreature, 1)
-				if not pushPosition then
-					player:sendCancelMessage(RETURNVALUE_NOTENOUGHROOM)
+	end
+
+	-- Use unlocked key door (open it)
+	for _, value in ipairs(KeyDoorTable) do
+		if value.closedDoor == item.itemid then
+			item:transform(value.openDoor)
+			return true
+		end
+	end
+
+	-- Close an open key door
+	for _, value in ipairs(KeyDoorTable) do
+		if value.openDoor == item.itemid then
+			if not pushCreaturesFromDoor(player, toPosition) then
+				return true
+			end
+			item:transform(value.closedDoor)
+			return true
+		end
+	end
+
+	-- Key use on locked door
+	if target and target.actionid and target.actionid > 0 then
+		for _, value in ipairs(KeyDoorTable) do
+			if item.actionid ~= target.actionid and value.lockedDoor == target.itemid then
+				player:sendTextMessage(MESSAGE_STATUS_SMALL, "The key does not match.")
+				return true
+			end
+			if item.actionid == target.actionid then
+				if value.lockedDoor == target.itemid then
+					target:transform(value.openDoor)
+					return true
+				elseif value.openDoor == target.itemid or value.closedDoor == target.itemid then
+					target:transform(value.lockedDoor)
 					return true
 				end
-				table.insert(creaturePositionTable,
-				             {creature = doorCreature, position = pushPosition})
-			end
-			for _, tableCreature in ipairs(creaturePositionTable) do
-				tableCreature.creature:teleportTo(tableCreature.position, true)
 			end
 		end
-
-		item:transform(itemId - 1)
-		return true
-	elseif table.contains(closedDoors, itemId) or
-		table.contains(closedExtraDoors, itemId) or
-		table.contains(closedHouseDoors, itemId) then
-		item:transform(itemId + 1)
-		return true
 	end
 	return false
 end
 
-local doorTables = {
-	keys, openDoors, closedDoors, lockedDoors, openExtraDoors, closedExtraDoors,
- openHouseDoors, closedHouseDoors, closedQuestDoors, closedLevelDoors
-}
-for _, doors in pairs(doorTables) do
-	for _, doorId in pairs(doors) do door:id(doorId) end
+for _, value in ipairs(keyDoorIds) do
+	keyDoor:id(value)
 end
-door:register()
+keyDoor:register()
+
+-- ============================
+-- Custom Door Action (simple open/close, including house doors)
+-- ============================
+local customDoorIds = {}
+
+for _, value in ipairs(CustomDoorTable) do
+	if not table.contains(customDoorIds, value.openDoor) then
+		table.insert(customDoorIds, value.openDoor)
+	end
+	if not table.contains(customDoorIds, value.closedDoor) then
+		table.insert(customDoorIds, value.closedDoor)
+	end
+end
+
+local customDoor = Action()
+function customDoor.onUse(player, item, fromPosition, target, toPosition, isHotkey)
+	-- Open a closed custom door
+	for _, value in ipairs(CustomDoorTable) do
+		if value.closedDoor == item.itemid then
+			item:transform(value.openDoor)
+			return true
+		end
+	end
+
+	-- Close an open custom door
+	for _, value in ipairs(CustomDoorTable) do
+		if value.openDoor == item.itemid then
+			if not pushCreaturesFromDoor(player, toPosition) then
+				return true
+			end
+			item:transform(value.closedDoor)
+			return true
+		end
+	end
+	return true
+end
+
+for _, value in ipairs(customDoorIds) do
+	customDoor:id(value)
+end
+customDoor:register()
+
+-- ============================
+-- Quest Door Action
+-- ============================
+local questDoorIds = {}
+
+for _, value in ipairs(QuestDoorTable) do
+	if not table.contains(questDoorIds, value.openDoor) then
+		table.insert(questDoorIds, value.openDoor)
+	end
+	if not table.contains(questDoorIds, value.closedDoor) then
+		table.insert(questDoorIds, value.closedDoor)
+	end
+end
+
+local questDoor = Action()
+function questDoor.onUse(player, item, fromPosition, target, toPosition, isHotkey)
+	for _, value in ipairs(QuestDoorTable) do
+		if value.closedDoor == item.itemid then
+			if item.actionid > 0 and (player:getStorageValue(item.actionid) ~= -1 or
+				player:getGroup():getAccess()) then
+				item:transform(value.openDoor)
+				player:teleportTo(toPosition, true)
+				return true
+			else
+				player:sendTextMessage(MESSAGE_EVENT_ADVANCE,
+				                       "The door seems to be sealed against unwanted intruders.")
+				return true
+			end
+		end
+	end
+
+	-- Close an open quest door (push creatures out)
+	for _, value in ipairs(QuestDoorTable) do
+		if value.openDoor == item.itemid then
+			if not pushCreaturesFromDoor(player, toPosition) then
+				return true
+			end
+			item:transform(value.closedDoor)
+			return true
+		end
+	end
+	return true
+end
+
+for _, value in ipairs(questDoorIds) do
+	questDoor:id(value)
+end
+questDoor:register()
+
+-- ============================
+-- Level Door Action
+-- ============================
+local levelDoorIds = {}
+
+for _, value in ipairs(LevelDoorTable) do
+	if not table.contains(levelDoorIds, value.openDoor) then
+		table.insert(levelDoorIds, value.openDoor)
+	end
+	if not table.contains(levelDoorIds, value.closedDoor) then
+		table.insert(levelDoorIds, value.closedDoor)
+	end
+end
+
+local levelDoor = Action()
+function levelDoor.onUse(player, item, fromPosition, target, toPosition, isHotkey)
+	for _, value in ipairs(LevelDoorTable) do
+		if value.closedDoor == item.itemid then
+			if item.actionid > 0 and (player:getLevel() >= item.actionid -
+				actionIds.levelDoor or player:getGroup():getAccess()) then
+				item:transform(value.openDoor)
+				player:teleportTo(toPosition, true)
+				return true
+			else
+				player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "Only the worthy may pass.")
+				return true
+			end
+		end
+	end
+
+	-- Close an open level door (push creatures out)
+	for _, value in ipairs(LevelDoorTable) do
+		if value.openDoor == item.itemid then
+			if not pushCreaturesFromDoor(player, toPosition) then
+				return true
+			end
+			item:transform(value.closedDoor)
+			return true
+		end
+	end
+	return true
+end
+
+for _, value in ipairs(levelDoorIds) do
+	levelDoor:id(value)
+end
+levelDoor:register()

@@ -73,3 +73,26 @@ function Tile:getTopPlayer()
 	local creature = self:getTopCreature()
 	return creature and creature:getPlayer()
 end
+
+function Tile:isRopeSpot()
+	if not self then
+		return false
+	end
+
+	if not self:getGround() then
+		return false
+	end
+
+	if table.contains(ropeSpots, self:getGround():getId()) then
+		return true
+	end
+
+	for i = 1, self:getTopItemCount() do
+		local thing = self:getThing(i)
+		if thing and table.contains(specialRopeSpots, thing:getId()) then
+			return true
+		end
+	end
+
+	return false
+end
