@@ -114,6 +114,7 @@ struct BasicTile {
     std::shared_ptr<BasicItem> ground{nullptr};
     std::vector<std::shared_ptr<BasicItem>> items;
     
+    uint16_t groundId{0};
     uint32_t flags{0};
     uint32_t houseId{0};
     
@@ -133,6 +134,7 @@ struct BasicTile {
     size_t hash() const {
         size_t h = 0;
         
+        if (groundId > 0) hash_combine(h, groundId);
         if (flags > 0) hash_combine(h, flags);
         if (houseId > 0) hash_combine(h, houseId);
         if (isStatic) hash_combine(h, 1);
@@ -157,7 +159,7 @@ struct BasicTile {
      * Equality operator for hash collision detection
      */
     bool operator==(const BasicTile& other) const {
-        if (flags != other.flags || houseId != other.houseId || isStatic != other.isStatic) {
+        if (groundId != other.groundId || flags != other.flags || houseId != other.houseId || isStatic != other.isStatic) {
             return false;
         }
         

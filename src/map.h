@@ -60,6 +60,8 @@ inline constexpr int32_t FLOOR_MASK = (FLOOR_SIZE - 1);
 
 struct Floor
 {
+	static constexpr uint32_t FLOOR_TOTAL = FLOOR_SIZE * FLOOR_SIZE;
+
 	Floor() = default;
 	~Floor() = default;
 
@@ -67,18 +69,25 @@ struct Floor
 	Floor(const Floor&) = delete;
 	Floor& operator=(const Floor&) = delete;
 
-	// Pair: <Tile (real), BasicTile (cache)>
-	// BasicTile is stored during map load, real Tile is created on first access (lazy loading)
 	std::pair<std::unique_ptr<Tile>, std::shared_ptr<BasicTile>> tiles[FLOOR_SIZE][FLOOR_SIZE];
 
-	// Get tile, creating from cache if needed (z is needed for tile creation)
+	alignas(32) uint32_t soaFlags[FLOOR_TOTAL]{};
+	alignas(32) uint32_t soaHouseId[FLOOR_TOTAL]{};
+	alignas(32) uint16_t soaGroundId[FLOOR_TOTAL]{};
+
 	Tile* getTile(uint16_t x, uint16_t y, uint8_t z);
-
-	// Set tile cache (during map load)
 	void setTileCache(uint16_t x, uint16_t y, const std::shared_ptr<BasicTile>& basicTile);
-
-	// Get tile cache
 	std::shared_ptr<BasicTile> getTileCache(uint16_t x, uint16_t y) const;
+
+	uint32_t getFlags(uint16_t x, uint16_t y) const {
+		return soaFlags[(x & FLOOR_MASK) * FLOOR_SIZE + (y & FLOOR_MASK)];
+	}
+	uint32_t getHouseId(uint16_t x, uint16_t y) const {
+		return soaHouseId[(x & FLOOR_MASK) * FLOOR_SIZE + (y & FLOOR_MASK)];
+	}
+	uint16_t getGroundId(uint16_t x, uint16_t y) const {
+		return soaGroundId[(x & FLOOR_MASK) * FLOOR_SIZE + (y & FLOOR_MASK)];
+	}
 };
 
 class FrozenPathingConditionCall;
