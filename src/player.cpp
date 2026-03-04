@@ -1670,6 +1670,9 @@ void Player::onThink(uint32_t interval)
 	if (lastStatsTrainingTime != getOfflineTrainingTime() / 60 / 1000) {
 		sendStats();
 	}
+
+	// Update stamina regeneration
+	updateStaminaRegen(interval);
 }
 
 uint32_t Player::isMuted() const
