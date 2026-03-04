@@ -248,6 +248,9 @@ public:
 	void removeBlessing(uint8_t blessing) { blessings.reset(blessing); }
 	bool hasBlessing(uint8_t blessing) const { return blessings.test(blessing); }
 
+	int32_t getHarmony() const { return harmonyPoints; }
+	void setHarmony(int32_t value) { harmonyPoints = value; }
+
 	bool isOffline() const { return (getID() == 0); }
 	void disconnect()
 	{
@@ -1287,6 +1290,7 @@ private:
 	bool tokenLocked = false;
 	bool staminaPzActive = false;
 	bool staminaTrainerActive = false;
+	int32_t harmonyPoints = 0;
 
 	AccountManagerMode accountManager{ACCOUNT_MANAGER_NONE};
 	std::array<bool, 15> managerTalkState{};

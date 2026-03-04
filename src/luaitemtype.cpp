@@ -945,6 +945,24 @@ int luaItemTypeGetTier(lua_State* L)
 	return 1;
 }
 
+
+int luaItemTypeGetElementalBond(lua_State* L)
+{
+	// itemType:getElementalBond()
+	const ItemType* itemType = getUserdata<const ItemType>(L, 1);
+	if (!itemType) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	if (!itemType->elementalBond.empty()) {
+		pushString(L, itemType->elementalBond);
+	} else {
+		pushString(L, "physical");
+	}
+	return 1;
+}
+
 } // namespace
 
 void LuaScriptInterface::registerItemType()
@@ -1001,6 +1019,7 @@ void LuaScriptInterface::registerItemType()
 
 	registerMethod("ItemType", "getElementType", luaItemTypeGetElementType);
 	registerMethod("ItemType", "getElementDamage", luaItemTypeGetElementDamage);
+	registerMethod("ItemType", "getElementalBond", luaItemTypeGetElementalBond);
 
 	registerMethod("ItemType", "getTransformEquipId", luaItemTypeGetTransformEquipId);
 	registerMethod("ItemType", "getTransformDeEquipId", luaItemTypeGetTransformDeEquipId);

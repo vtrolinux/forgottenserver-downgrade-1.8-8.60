@@ -182,6 +182,10 @@ public:
 	void setAggressive(bool a) { aggressive = a; }
 	bool getPzLock() const { return pzLock; }
 	void setPzLock(bool pzLock) { this->pzLock = pzLock; }
+	bool getHarmony() const { return harmony; }
+	void setHarmony(bool h) { harmony = h; }
+	bool getAllowOnSelf() const { return allowOnSelf; }
+	void setAllowOnSelf(bool a) { allowOnSelf = a; }
 
 	SpellType_t spellType = SPELL_UNDEFINED;
 
@@ -206,6 +210,8 @@ protected:
 
 	bool selfTarget = false;
 	bool needTarget = false;
+	bool harmony = false;
+	bool allowOnSelf = true;
 
 private:
 	uint32_t mana = 0;

@@ -546,6 +546,39 @@ int luaSpellPzLock(lua_State* L)
 	return 1;
 }
 
+int luaSpellHarmony(lua_State* L)
+{
+	// spell:harmony(bool)
+	Spell* spell = getUserdata<Spell>(L, 1);
+	if (spell) {
+		if (lua_gettop(L) == 1) {
+			pushBoolean(L, spell->getHarmony());
+		} else {
+			spell->setHarmony(getBoolean(L, 2));
+			pushBoolean(L, true);
+		}
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaSpellAllowOnSelf(lua_State* L)
+{
+	// spell:allowOnSelf(bool)
+	Spell* spell = getUserdata<Spell>(L, 1);
+	if (spell) {
+		if (lua_gettop(L) == 1) {
+			pushBoolean(L, spell->getAllowOnSelf());
+		} else {
+			spell->setAllowOnSelf(getBoolean(L, 2));
+			pushBoolean(L, true);
+		}
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
 int luaSpellVocation(lua_State* L)
 {
 	// spell:vocation(vocation)
@@ -921,6 +954,8 @@ void LuaScriptInterface::registerSpells()
 	registerMethod("Spell", "isBlocking", luaSpellBlocking);
 	registerMethod("Spell", "isAggressive", luaSpellAggressive);
 	registerMethod("Spell", "isPzLock", luaSpellPzLock);
+	registerMethod("Spell", "harmony", luaSpellHarmony);
+	registerMethod("Spell", "allowOnSelf", luaSpellAllowOnSelf);
 	registerMethod("Spell", "vocation", luaSpellVocation);
 
 	// only for InstantSpell

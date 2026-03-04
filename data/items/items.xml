@@ -20279,6 +20279,7 @@
 		<attribute key="attack" value="28" />
 		<attribute key="defense" value="15" />
 		<attribute key="weight" value="5000" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="10390" article="a" name="Zaoan sword">
 		<attribute key="weaponType" value="sword" />
@@ -20293,6 +20294,7 @@
 		<attribute key="attack" value="41" />
 		<attribute key="defense" value="16" />
 		<attribute key="weight" value="6000" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="10392" article="a" name="twin hooks">
 		<attribute key="weaponType" value="sword" />
@@ -27332,6 +27334,7 @@
 		<attribute key="attack" value="40" />
 		<attribute key="defense" value="15" />
 		<attribute key="weight" value="4500" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="17829" article="a" name="buckle">
 		<attribute key="slotType" value="body" />
@@ -62118,16 +62121,19 @@
 		<attribute key="defense" value="21" />
 		<attribute key="skillfist" value="5" />
 		<attribute key="weight" value="7100" />
+		<attribute key="elementalbond" value="earth" />
 	</item>
 	<item id="50158" article="a" name="grand sanguine claws">
 		<attribute key="weaponType" value="fist" />
 		<attribute key="slotType" value="two-handed" />
+		<attribute key="elementalbond" value="earth" />
 		<attribute key="attack" value="47" />
 		<attribute key="defense" value="21" />
 		<attribute key="criticalhitchance" value="1000" />
 		<attribute key="magiclevelpoints" value="2" />
 		<attribute key="skillfist" value="5" />
 		<attribute key="weight" value="6900" />
+		<attribute key="elementalbond" value="earth" />
 	</item>
 	<item id="50159" article="a" name="soulkamas">
 		<attribute key="weaponType" value="fist" />
@@ -62138,6 +62144,7 @@
 		<attribute key="skillfist" value="5" />
 		<attribute key="magiclevelpoints" value="1" />
 		<attribute key="weight" value="8400" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50160" article="a" name="naga katar">
 		<attribute key="weaponType" value="fist" />
@@ -62147,6 +62154,7 @@
 		<attribute key="skillfist" value="3" />
 		<attribute key="magiclevelpoints" value="1" />
 		<attribute key="weight" value="6000" />
+		<attribute key="elementalbond" value="earth" />
 	</item>
 	<item id="50161" article="a" name="falcon sai">
 		<attribute key="weaponType" value="fist" />
@@ -62157,6 +62165,7 @@
 		<attribute key="defense" value="20" />
 		<attribute key="skillfist" value="4" />
 		<attribute key="weight" value="8200" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="50162" article="a" name="lion claws">
 		<attribute key="weaponType" value="fist" />
@@ -62166,6 +62175,7 @@
 		<attribute key="defense" value="19" />
 		<attribute key="skillfist" value="4" />
 		<attribute key="weight" value="7800" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50163" article="a" name="crude umbral katar">
 		<attribute key="weaponType" value="fist" />
@@ -62174,6 +62184,7 @@
 		<attribute key="defense" value="16" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="7900" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="50164" article="an" name="umbral katar">
 		<attribute key="weaponType" value="fist" />
@@ -62182,6 +62193,7 @@
 		<attribute key="defense" value="17" />
 		<attribute key="skillfist" value="2" />
 		<attribute key="weight" value="7400" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="50165" article="an" name="umbral master katar">
 		<attribute key="weaponType" value="fist" />
@@ -62190,6 +62202,7 @@
 		<attribute key="defense" value="18" />
 		<attribute key="skillfist" value="3" />
 		<attribute key="weight" value="6900" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="50166" article="a" name="light jo staff">
 		<attribute key="weaponType" value="fist" />
@@ -62198,6 +62211,7 @@
 		<attribute key="defense" value="6" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="1700" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50167" article="a" name="cobra bo">
 		<attribute key="weaponType" value="fist" />
@@ -62208,6 +62222,7 @@
 		<attribute key="lifeleechchance" value="10000" />
 		<attribute key="lifeleechamount" value="1400" />
 		<attribute key="weight" value="5600" />
+		<attribute key="elementalbond" value="earth" />
 	</item>
 	<item id="50168" article="a" name="nunchaku of destruction">
 		<attribute key="weaponType" value="fist" />
@@ -62215,6 +62230,7 @@
 		<attribute key="attack" value="42" />
 		<attribute key="defense" value="17" />
 		<attribute key="weight" value="7000" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="50169" article="an" name="eldritch crescent moon spade">
 		<attribute key="weaponType" value="fist" />
@@ -62224,6 +62240,7 @@
 		<attribute key="skillfist" value="2" />
 		<attribute key="magiclevelpoints" value="2" />
 		<attribute key="weight" value="8800" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50170" article="a" name="gilded eldritch crescent moon spade">
 		<attribute key="description" value="Refined by the legendary artisan Gnomaurum" />
@@ -62234,6 +62251,7 @@
 		<attribute key="skillfist" value="2" />
 		<attribute key="magiclevelpoints" value="2" />
 		<attribute key="weight" value="8600" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50171" article="a" name="jo staff">
 		<attribute key="weaponType" value="fist" />
@@ -62242,6 +62260,7 @@
 		<attribute key="defense" value="12" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="3500" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50176" article="a" name="depth claws">
 		<attribute key="weaponType" value="fist" />
@@ -62251,6 +62270,7 @@
 		<attribute key="skillfist" value="2" />
 		<attribute key="magiclevelpoints" value="1" />
 		<attribute key="weight" value="6400" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50181" article="a" name="pair of monk fists">
 		<attribute key="weaponType" value="fist" />
@@ -62259,6 +62279,7 @@
 		<attribute key="defense" value="14" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="1200" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="50182" article="a" name="nunchaku">
 		<attribute key="weaponType" value="fist" />
@@ -62267,6 +62288,7 @@
 		<attribute key="defense" value="15" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="2500" />
+		<attribute key="elementalbond" value="earth" />
 	</item>
 	<item id="50183" article="a" name="sai">
 		<attribute key="weaponType" value="fist" />
@@ -62275,6 +62297,7 @@
 		<attribute key="defense" value="16" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="4900" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50184" name="mutant hide trousers">
 		<attribute key="slotType" value="legs" />
@@ -62397,6 +62420,7 @@
 		<attribute key="skillfist" value="5" />
 		<attribute key="magiclevelpoints" value="1" />
 		<attribute key="weight" value="8600" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="50240" name="soulsoles">
 		<attribute key="slotType" value="feet" />
@@ -62433,6 +62457,7 @@
 		<attribute key="defense" value="21" />
 		<attribute key="skillfist" value="4" />
 		<attribute key="weight" value="8400" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50251" article="a" name="rending inferniarch claws">
 		<attribute key="weaponType" value="fist" />
@@ -62442,6 +62467,7 @@
 		<attribute key="defense" value="21" />
 		<attribute key="skillfist" value="4" />
 		<attribute key="weight" value="8400" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50252" article="a" name="draining inferniarch claws">
 		<attribute key="weaponType" value="fist" />
@@ -62452,6 +62478,7 @@
 		<attribute key="lifeleechchance" value="10000" />
 		<attribute key="lifeleechamount" value="2900" />
 		<attribute key="weight" value="8400" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50253" article="a" name="siphoning inferniarch claws">
 		<attribute key="weaponType" value="fist" />
@@ -62462,6 +62489,7 @@
 		<attribute key="defense" value="21" />
 		<attribute key="skillfist" value="4" />
 		<attribute key="weight" value="8400" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50254" name="soulgarb">
 		<attribute key="slotType" value="body" />
@@ -62584,6 +62612,7 @@
 		<attribute key="defense" value="19" />
 		<attribute key="skillfist" value="2" />
 		<attribute key="weight" value="3800" />
+		<attribute key="elementalbond" value="earth" />
 	</item>
 	<item id="50271" name="fists of enlightenment">
 		<attribute key="description" value="Traditional wraps worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths" />
@@ -62593,6 +62622,7 @@
 		<attribute key="defense" value="14" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="1800" />
+		<attribute key="elementalbond" value="energy" />
 	</item>
 	<item id="50272" article="a" name="sai of enlightenment">
 		<attribute key="description" value="Traditional sai worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths" />
@@ -62602,6 +62632,7 @@
 		<attribute key="defense" value="16" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="5900" />
+		<attribute key="elementalbond" value="earth" />
 	</item>
 	<item id="50273" article="a" name="nunchaku of enlightenment">
 		<attribute key="description" value="Traditional nunchaku used by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths" />
@@ -62611,6 +62642,7 @@
 		<attribute key="defense" value="15" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="2900" />
+		<attribute key="elementalbond" value="physical" />
 	</item>
 	<item id="50274" name="coned hat of enlightenment">
 		<attribute key="description" value="Traditional coned hat worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths" />
@@ -62776,6 +62808,7 @@
 		<attribute key="defense" value="8" />
 		<attribute key="skillfist" value="1" />
 		<attribute key="weight" value="1800" />
+		<attribute key="elementalbond" value="earth" />
 	</item>
 	<item id="51186" name="voodoo chair">
 		<attribute key="rotateto" value="51188" />

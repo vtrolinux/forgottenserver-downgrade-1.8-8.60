@@ -1603,6 +1603,28 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(CONST_ME_CACAO);
 	registerEnum(CONST_ME_CANDY_FLOSS);
 
+	// 15.00 effects
+	registerEnum(CONST_ME_GREEN_HITAREA);
+	registerEnum(CONST_ME_RED_HITAREA);
+	registerEnum(CONST_ME_BLUE_HITAREA);
+	registerEnum(CONST_ME_YELLOW_HITAREA);
+	registerEnum(CONST_ME_WHITE_FLURRYOFBLOWS);
+	registerEnum(CONST_ME_GREEN_FLURRYOFBLOWS);
+	registerEnum(CONST_ME_PINK_FLURRYOFBLOWS);
+	registerEnum(CONST_ME_WHITE_ENERGYPULSE);
+	registerEnum(CONST_ME_GREEN_ENERGYPULSE);
+	registerEnum(CONST_ME_PINK_ENERGYPULSE);
+	registerEnum(CONST_ME_WHITE_TIGERCLASH);
+	registerEnum(CONST_ME_GREEN_TIGERCLASH);
+	registerEnum(CONST_ME_PINK_TIGERCLASH);
+	registerEnum(CONST_ME_WHITE_EXPLOSIONHIT);
+	registerEnum(CONST_ME_GREEN_EXPLOSIONHIT);
+	registerEnum(CONST_ME_BLUE_EXPLOSIONHIT);
+	registerEnum(CONST_ME_PINK_EXPLOSIONHIT);
+	registerEnum(CONST_ME_WHITE_ENERGYSHOCK);
+	registerEnum(CONST_ME_GREEN_ENERGYSHOCK);
+	registerEnum(CONST_ME_YELLOW_ENERGYSHOCK);
+
 	registerEnum(CONST_ANI_NONE);
 	registerEnum(CONST_ANI_SPEAR);
 	registerEnum(CONST_ANI_BOLT);

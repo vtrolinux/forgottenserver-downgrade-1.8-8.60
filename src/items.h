@@ -225,6 +225,7 @@ enum ItemParseAttributes_t
 	ITEM_PARSE_EXPERIENCERATE_BONUS,
 	ITEM_PARSE_EXPERIENCERATE_STAMINA,
 	ITEM_PARSE_REDUCESKILLLOSS,
+	ITEM_PARSE_ELEMENTALBOND,
 };
 
 struct Abilities
@@ -332,6 +333,7 @@ public:
 	std::string description;
 	std::string runeSpellName;
 	std::string vocationString;
+	std::string elementalBond;
 
 	std::unique_ptr<Abilities> abilities;
 	std::unique_ptr<ConditionDamage> conditionDamage;

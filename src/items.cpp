@@ -214,6 +214,7 @@ const std::unordered_map<std::string, ItemParseAttributes_t> ItemParseAttributes
     {"experienceratebonus", ITEM_PARSE_EXPERIENCERATE_BONUS},
     {"experienceratestamina", ITEM_PARSE_EXPERIENCERATE_STAMINA},
     {"reduceskillloss", ITEM_PARSE_REDUCESKILLLOSS},
+    {"elementalbond", ITEM_PARSE_ELEMENTALBOND},
 };
 
 const std::unordered_map<std::string, ItemTypes_t> ItemTypesMap = {{"key", ITEM_TYPE_KEY},
@@ -1915,6 +1916,11 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 
 				case ITEM_PARSE_STACKSIZE: {
 					it.stackSize = pugi::cast<uint8_t>(valueAttribute.value());
+					break;
+				}
+
+				case ITEM_PARSE_ELEMENTALBOND: {
+					it.elementalBond = valueAttribute.as_string();
 					break;
 				}
 

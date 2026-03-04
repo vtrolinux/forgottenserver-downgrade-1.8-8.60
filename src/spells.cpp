@@ -496,6 +496,14 @@ bool Spell::configureSpell(const pugi::xml_node& node)
 		aggressive = booleanString(attr.as_string());
 	}
 
+	if ((attr = node.attribute("harmony"))) {
+		harmony = booleanString(attr.as_string());
+	}
+
+	if ((attr = node.attribute("allowonself"))) {
+		allowOnSelf = booleanString(attr.as_string());
+	}
+
 	if (group == SPELLGROUP_NONE) {
 		group = (aggressive ? SPELLGROUP_ATTACK : SPELLGROUP_HEALING);
 	}
@@ -759,6 +767,10 @@ void Spell::postCastSpell(Player* player, bool finishedCast /*= true*/, bool pay
 
 	if (payCost) {
 		Spell::postCastSpell(player, getManaCost(player), getSoulCost());
+	}
+
+	if (harmony) {
+		player->setHarmony(0);
 	}
 }
 

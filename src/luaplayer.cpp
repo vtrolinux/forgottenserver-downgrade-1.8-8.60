@@ -1026,6 +1026,45 @@ int luaPlayerAddSoul(lua_State* L)
 	return 1;
 }
 
+int luaPlayerGetHarmony(lua_State* L)
+{
+	// player:getHarmony()
+	const Player* player = getUserdata<const Player>(L, 1);
+	if (player) {
+		lua_pushinteger(L, player->getHarmony());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaPlayerSetHarmony(lua_State* L)
+{
+	// player:setHarmony(value)
+	Player* player = getUserdata<Player>(L, 1);
+	if (player) {
+		int32_t value = getInteger<int32_t>(L, 2);
+		player->setHarmony(value);
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaPlayerAddHarmony(lua_State* L)
+{
+	// player:addHarmony(value)
+	Player* player = getUserdata<Player>(L, 1);
+	if (player) {
+		int32_t value = getInteger<int32_t>(L, 2);
+		player->setHarmony(player->getHarmony() + value);
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
 int luaPlayerGetMaxSoul(lua_State* L)
 {
 	// player:getMaxSoul()
@@ -3030,6 +3069,10 @@ void LuaScriptInterface::registerPlayer()
 	registerMethod("Player", "getSoul", luaPlayerGetSoul);
 	registerMethod("Player", "addSoul", luaPlayerAddSoul);
 	registerMethod("Player", "getMaxSoul", luaPlayerGetMaxSoul);
+
+	registerMethod("Player", "getHarmony", luaPlayerGetHarmony);
+	registerMethod("Player", "setHarmony", luaPlayerSetHarmony);
+	registerMethod("Player", "addHarmony", luaPlayerAddHarmony);
 
 	registerMethod("Player", "getBankBalance", luaPlayerGetBankBalance);
 	registerMethod("Player", "setBankBalance", luaPlayerSetBankBalance);
