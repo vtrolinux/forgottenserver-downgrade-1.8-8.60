@@ -3807,7 +3807,12 @@ void Game::checkCreatures(size_t index)
 		if (creature->creatureCheck) {
 			if (!creature->isDead()) {
 				creature->onThink(EVENT_CREATURE_THINK_INTERVAL);
-				creature->onAttacking(EVENT_CREATURE_THINK_INTERVAL);
+
+				// Optimization: skip attacking logic if monster has no target
+				if (creature->getAttackedCreature()) {
+					creature->onAttacking(EVENT_CREATURE_THINK_INTERVAL);
+				}
+
 				creature->executeConditions(EVENT_CREATURE_THINK_INTERVAL);
 			}
 			++it;

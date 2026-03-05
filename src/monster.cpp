@@ -770,17 +770,28 @@ void Monster::setIdle(bool idle)
 
 void Monster::updateIdleStatus()
 {
-    bool idle = false;
-    if (!isSummon() && targetList.empty()) {
-        if (spawn && !position.isInRange(masterPos, 1, 1)) {
-            idle = false;
-        } else {
-            idle = std::find_if(conditions.begin(), conditions.end(),
-                                [](Condition* condition) { return condition->isAggressive(); }) == conditions.end();
-        }
-    }
+	bool idle = false;
+	if (!isSummon() && targetList.empty()) {
+		if (spawn && !position.isInRange(masterPos, 1, 1)) {
+			// Optimization: only stay active to return to spawn if there are players nearby
+			// This prevents hundreds of monsters from staying active forever when blocked or far away.
+			bool playersNearby = false;
+			SpectatorVec spectators;
+			g_game.map.getSpectators(spectators, position, true, true);
+			for (Creature* spectator : spectators) {
+				if (spectator->getPlayer()) {
+					playersNearby = true;
+					break;
+				}
+			}
+			idle = !playersNearby;
+		} else {
+			idle = std::find_if(conditions.begin(), conditions.end(),
+			                    [](Condition* condition) { return condition->isAggressive(); }) == conditions.end();
+		}
+	}
 
-    setIdle(idle);
+	setIdle(idle);
 }
 
 void Monster::onAddCondition(ConditionType_t)
