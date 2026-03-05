@@ -230,10 +230,11 @@ void Monster::onCreatureMove(Creature* creature, const Tile* newTile, const Posi
 	if (creature == this) {
 		if (isSummon()) {
 			isMasterInRange = canSee(getMaster()->getPosition());
-		}
-
-		if (isSummon()) {
 			updateTargetList();
+		} else {
+			if (!followCreature) {
+				updateTargetList();
+			}
 		}
 		updateIdleStatus();
 	} else {
@@ -256,20 +257,26 @@ void Monster::onCreatureMove(Creature* creature, const Tile* newTile, const Posi
 
 		if (!isSummon()) {
 			if (followCreature) {
-				const Position& followPosition = followCreature->getPosition();
-				const Position& position = getPosition();
+				if (!hasFollowPath && isOpponent(creature) && creature != followCreature) {
+					if (!attackedCreature || !canSeeCreature(attackedCreature)) {
+						selectTarget(creature);
+					}
+				} else {
+					const Position& followPosition = followCreature->getPosition();
+					const Position& position = getPosition();
 
-				int32_t offset_x = followPosition.getDistanceX(position);
-				int32_t offset_y = followPosition.getDistanceY(position);
-				if ((offset_x > 1 || offset_y > 1) && mType->info.changeTargetChance > 0) {
-					Direction dir = getDirectionTo(position, followPosition);
-					const Position& checkPosition = getNextPosition(dir, position);
+					int32_t offset_x = followPosition.getDistanceX(position);
+					int32_t offset_y = followPosition.getDistanceY(position);
+					if ((offset_x > 1 || offset_y > 1) && mType->info.changeTargetChance > 0) {
+						Direction dir = getDirectionTo(position, followPosition);
+						const Position& checkPosition = getNextPosition(dir, position);
 
-					Tile* tile = g_game.map.getTile(checkPosition);
-					if (tile) {
-						Creature* topCreature = tile->getTopCreature();
-						if (topCreature && followCreature != topCreature && isOpponent(topCreature)) {
-							selectTarget(topCreature);
+						Tile* tile = g_game.map.getTile(checkPosition);
+						if (tile) {
+							Creature* topCreature = tile->getTopCreature();
+							if (topCreature && followCreature != topCreature && isOpponent(topCreature)) {
+								selectTarget(topCreature);
+							}
 						}
 					}
 				}
@@ -861,6 +868,9 @@ void Monster::onThink(uint32_t interval)
 						searchTarget(TARGETSEARCH_ATTACKRANGE);
 					}
 				}
+			} else if (!isSummon() && (followCreature || attackedCreature)) {
+				setAttackedCreature(nullptr);
+				setFollowCreature(nullptr);
 			}
 
 			onThinkTarget(interval);
