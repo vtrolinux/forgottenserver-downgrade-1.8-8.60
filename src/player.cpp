@@ -522,17 +522,13 @@ void Player::addSkillAdvance(skills_t skill, uint64_t count, bool artificial /*=
 
 	uint32_t newPercent;
 	if (nextReqTries > currReqTries) {
-		// convert basis points (0..10000) to percent (0..100)
-		newPercent = Player::getBasisPointLevel(skills[skill].tries, nextReqTries) / 100;
-		if (newPercent > 100) {
-			newPercent = 100;
-		}
+		newPercent = Player::getBasisPointLevel(skills[skill].tries, nextReqTries);
 	} else {
 		newPercent = 0;
 	}
 
 	if (skills[skill].percent != newPercent) {
-		skills[skill].percent = static_cast<uint16_t>(newPercent);
+		skills[skill].percent = static_cast<uint8_t>(newPercent);
 		sendUpdateSkills = true;
 	}
 
@@ -561,16 +557,8 @@ void Player::removeSkillTries(skills_t skill, uint64_t count, bool notify /* = f
 	}
 
 	skills[skill].tries = std::max<int32_t>(0, skills[skill].tries - count);
-	{
-		// convert basis points (0..10000) to percent (0..100)
-		uint32_t basis =
-		    Player::getBasisPointLevel(skills[skill].tries, vocation->getReqSkillTries(skill, skills[skill].level));
-		uint32_t percent = basis / 100;
-		if (percent > 100) {
-			percent = 100;
-		}
-		skills[skill].percent = static_cast<uint16_t>(percent);
-	}
+	skills[skill].percent =
+	    Player::getBasisPointLevel(skills[skill].tries, vocation->getReqSkillTries(skill, skills[skill].level));
 
 	if (notify) {
 		bool sendUpdateSkills = false;
@@ -1790,10 +1778,7 @@ void Player::addManaSpent(uint64_t amount, bool artificial /*= false*/)
 
 	uint8_t oldPercent = magLevelPercent;
 	if (nextReqMana > currReqMana) {
-		uint32_t basis = Player::getBasisPointLevel(manaSpent, nextReqMana);
-		uint32_t percent = basis / 100;
-		if (percent > 100) percent = 100;
-		magLevelPercent = static_cast<uint8_t>(percent);
+		magLevelPercent = Player::getBasisPointLevel(manaSpent, nextReqMana);
 	} else {
 		magLevelPercent = 0;
 	}
@@ -1826,10 +1811,7 @@ void Player::removeManaSpent(uint64_t amount, bool notify /* = false*/)
 
 	uint64_t nextReqMana = vocation->getReqMana(magLevel + 1);
 	if (nextReqMana > vocation->getReqMana(magLevel)) {
-		uint32_t basis = Player::getBasisPointLevel(manaSpent, nextReqMana);
-		uint32_t percent = basis / 100;
-		if (percent > 100) percent = 100;
-		magLevelPercent = static_cast<uint8_t>(percent);
+		magLevelPercent = Player::getBasisPointLevel(manaSpent, nextReqMana);
 	} else {
 		magLevelPercent = 0;
 	}
@@ -2004,7 +1986,7 @@ uint16_t Player::getBasisPointLevel(uint64_t count, uint64_t nextLevelCount)
 
 	uint16_t result = ((count * 10000.) / nextLevelCount);
 	if (result > 10000) {
-		return 10000;
+		return 0;
 	}
 	return result;
 }
@@ -5716,11 +5698,7 @@ bool Player::addOfflineTrainingTries(skills_t skill, uint64_t tries)
 
 		uint8_t newPercent;
 		if (nextReqMana > currReqMana) {
-			uint32_t basis = Player::getBasisPointLevel(manaSpent, nextReqMana);
-			uint32_t percent = basis / 100;
-			if (percent > 100) percent = 100;
-			newPercent = static_cast<uint8_t>(percent);
-			newPercentToNextLevel = static_cast<long double>(manaSpent * 100) / nextReqMana;
+			newPercent = Player::getBasisPointLevel(manaSpent, nextReqMana);
 		} else {
 			newPercent = 0;
 			newPercentToNextLevel = 0;
@@ -5773,11 +5751,7 @@ bool Player::addOfflineTrainingTries(skills_t skill, uint64_t tries)
 
 		uint8_t newPercent;
 		if (nextReqTries > currReqTries) {
-			uint32_t basis = Player::getBasisPointLevel(skills[skill].tries, nextReqTries);
-			uint32_t percent = basis / 100;
-			if (percent > 100) percent = 100;
-			newPercent = static_cast<uint8_t>(percent);
-			newPercentToNextLevel = static_cast<long double>(skills[skill].tries * 100) / nextReqTries;
+			newPercent = Player::getBasisPointLevel(skills[skill].tries, nextReqTries);
 		} else {
 			newPercent = 0;
 			newPercentToNextLevel = 0;

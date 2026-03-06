@@ -5647,6 +5647,7 @@
 	</item>
 	<item id="3031" article="a" name="gold coin">
 		<attribute key="weight" value="10" />
+		<attribute key="worth" value="1" />
 	</item>
 	<item id="3032" article="a" name="small emerald">
 		<attribute key="weight" value="10" />
@@ -5660,6 +5661,7 @@
 	</item>
 	<item id="3035" article="a" name="platinum coin">
 		<attribute key="weight" value="10" />
+		<attribute key="worth" value="100" />
 	</item>
 	<item id="3036" article="a" name="violet gem">
 		<attribute key="weight" value="30" />
@@ -5684,6 +5686,7 @@
 	</item>
 	<item id="3043" article="a" name="crystal coin">
 		<attribute key="weight" value="10" />
+		<attribute key="worth" value="1" />
 	</item>
 	<item id="3044" article="a" name="tusk">
 		<attribute key="weight" value="1000" />
