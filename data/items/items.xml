@@ -24532,10 +24532,16 @@
 	</item>
 	<item fromid="10837" toid="10839" article="a" name="skull pillar">
 	</item>
-	<item id="10840" article="a" name="dimensional portal" />
+	<item id="10840" article="a" name="dimensional portal">
+		<attribute key="type" value="teleport" />
+		<attribute key="effect" value="teleport" />
+	</item>
 	<item id="10841" article="a" name="skull pillar">
 	</item>
-	<item id="10842" article="a" name="dimensional portal" />
+	<item id="10842" article="a" name="dimensional portal">
+		<attribute key="type" value="teleport" />
+		<attribute key="effect" value="teleport" />
+	</item>
 	<item id="10846" article="a" name="stone wall">
 	</item>
 	<item id="10847" article="a" name="black crystals" />
@@ -25196,6 +25202,7 @@
 	</item>
 	<item fromid="11553" toid="11554" article="a" name="magic portal">
 		<attribute key="type" value="teleport" />
+		<attribute key="effect" value="teleport" />
 		<attribute key="description" value="You can see the other side through it." />
 	</item>
 	<item fromid="11555" toid="11570" article="a" name="palisade">
