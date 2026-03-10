@@ -93,7 +93,7 @@ const std::string& Monster::getNameDescription() const
 
 bool Monster::canSee(const Position& pos) const
 {
-	return Creature::canSee(getPosition(), pos, Map::maxClientViewportX + 1, Map::maxClientViewportX + 1);
+	return Creature::canSee(getPosition(), pos, Map::maxClientViewportX + 1, Map::maxClientViewportY + 1);
 }
 
 bool Monster::canWalkOnFieldType(CombatType_t combatType) const
@@ -784,7 +784,14 @@ void Monster::updateIdleStatus()
 					break;
 				}
 			}
-			idle = !playersNearby;
+			
+			if (!playersNearby) {
+			    idle = true;
+			    walkingToSpawn = false; 
+			    listWalkDir.clear();
+			} else {
+			    idle = false;
+			}
 		} else {
 			idle = std::find_if(conditions.begin(), conditions.end(),
 			                    [](Condition* condition) { return condition->isAggressive(); }) == conditions.end();
