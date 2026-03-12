@@ -53,6 +53,7 @@ endif ()
 # Find packages.
 find_package(OpenSSL 3.0.0 REQUIRED COMPONENTS Crypto)
 find_package(ZLIB REQUIRED)
+find_package(absl CONFIG REQUIRED)
 
 find_package(fmt 8.1.1 CONFIG)
 find_package(spdlog CONFIG REQUIRED)
@@ -121,7 +122,7 @@ add_subdirectory(src)
 
 
 add_executable(tfs ${tfs_MAIN})
-target_link_libraries(tfs tfslib ZLIB::ZLIB OpenSSL::Crypto)
+target_link_libraries(tfs tfslib ZLIB::ZLIB OpenSSL::Crypto absl::flat_hash_map)
 target_include_directories(tfs PUBLIC)
 
 ### INTERPROCEDURAL_OPTIMIZATION ###

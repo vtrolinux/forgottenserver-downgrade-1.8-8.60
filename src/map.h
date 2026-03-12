@@ -12,7 +12,40 @@
 #include "spawn.h"
 #include "town.h"
 
+#include <cstring>
+#include <unordered_map>
+#include <absl/container/flat_hash_map.h>
+
 class Creature;
+
+struct SpectatorsCache {
+	struct FloorData {
+		bool hasFloor{false};
+		bool hasMultiFloor{false};
+		SpectatorVec floor;
+		SpectatorVec multiFloor;
+	};
+
+	int32_t minRangeX{0};
+	int32_t maxRangeX{0};
+	int32_t minRangeY{0};
+	int32_t maxRangeY{0};
+
+	FloorData creatures;
+	FloorData monsters;
+	FloorData npcs;
+	FloorData players;
+};
+
+struct PositionHasher {
+	std::size_t operator()(const Position& pos) const {
+		std::size_t h = 0;
+		hash_combine(h, pos.x);
+		hash_combine(h, pos.y);
+		hash_combine(h, pos.z);
+		return h;
+	}
+};
 
 inline constexpr int32_t MAP_MAX_LAYERS = 16;
 
@@ -52,7 +85,7 @@ private:
 	int_fast32_t closedNodes;
 };
 
-using SpectatorCache = std::map<Position, SpectatorVec>;
+using SpectatorCache = absl::flat_hash_map<Position, SpectatorsCache, PositionHasher>;
 
 inline constexpr int32_t FLOOR_BITS = 3;
 inline constexpr int32_t FLOOR_SIZE = (1 << FLOOR_BITS);
@@ -227,10 +260,9 @@ public:
 
 	void getSpectators(SpectatorVec& spectators, const Position& centerPos, bool multifloor = false,
 	                   bool onlyPlayers = false, int32_t minRangeX = 0, int32_t maxRangeX = 0, int32_t minRangeY = 0,
-	                   int32_t maxRangeY = 0);
+	                   int32_t maxRangeY = 0, bool onlyMonsters = false, bool onlyNpcs = false);
 
 	void clearSpectatorCache();
-	void clearPlayersSpectatorCache();
 
 	/**
 	 * Checks if you can throw an object to that position
@@ -285,8 +317,7 @@ public:
 	Houses houses;
 
 private:
-	SpectatorCache spectatorCache;
-	SpectatorCache playersSpectatorCache;
+	SpectatorCache spectatorsCache;
 
 	QTreeNode root;
 
@@ -298,7 +329,7 @@ private:
 
 	void getSpectatorsInternal(SpectatorVec& spectators, const Position& centerPos, int32_t minRangeX,
 	                           int32_t maxRangeX, int32_t minRangeY, int32_t maxRangeY, int32_t minRangeZ,
-	                           int32_t maxRangeZ, bool onlyPlayers) const;
+	                           int32_t maxRangeZ, bool onlyPlayers, bool onlyMonsters, bool onlyNpcs) const;
 
 	friend class Game;
 	friend class IOMap;

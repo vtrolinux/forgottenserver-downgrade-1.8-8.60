@@ -13,6 +13,7 @@
 #include "game.h"
 #include "iomap.h"
 #include "fileloader.h"
+#include <mutex>
 #include <iostream>
 #include "logger.h"
 
@@ -45,8 +46,10 @@ std::shared_ptr<BasicItem> MapCache::tryGetItemFromCache(const std::shared_ptr<B
                 ++itemCacheHits;
                 return cached;
             } else {
+                // #ifdef _DEBUG
                 // LOG_WARN(fmt::format("[MapCache] Hash collision detected for item ID {} (hash: {})", 
                 //                        item->id, h));
+                // #endif
             }
         } else {
             // Expired weak_ptr, remove it
@@ -76,7 +79,9 @@ std::shared_ptr<BasicTile> MapCache::tryGetTileFromCache(const std::shared_ptr<B
                 ++tileCacheHits;
                 return cached;
             } else {
+                // #ifdef _DEBUG
                 // LOG_WARN(fmt::format("[MapCache] Hash collision detected for tile (hash: {})", h));
+                // #endif
             }
         } else {
             // Expired weak_ptr, remove it
@@ -90,8 +95,7 @@ std::shared_ptr<BasicTile> MapCache::tryGetTileFromCache(const std::shared_ptr<B
 }
 
 void MapCache::flush() {
-    std::lock_guard<std::mutex> itemLock(itemCacheMutex);
-    std::lock_guard<std::mutex> tileLock(tileCacheMutex);
+    std::scoped_lock lock(itemCacheMutex, tileCacheMutex);
     
     size_t itemCount = itemCache.size();
     size_t tileCount = tileCache.size();
@@ -108,9 +112,9 @@ void MapCache::flush() {
     itemCache.clear();
     tileCache.clear();
     
-    LOG_INFO(fmt::format("\033[1;32m[Cache Map System]\033[0m Map cache flushed: \033[1;36m{}\033[0m unique items, \033[1;36m{}\033[0m unique tiles deduplicated", 
+    LOG_MAPCACHE(fmt::format("Map cache flushed: [\033[1;36m{}\033[0m] unique items, [\033[1;36m{}\033[0m] unique tiles deduplicated", 
                          itemCount, tileCount));
-    LOG_INFO(fmt::format("\033[1;32m[Cache Map System]\033[0m Cache hit rates: Items \033[1;33m{:.2f}%\033[0m (\033[1;36m{}\033[0m/\033[1;36m{}\033[0m), Tiles \033[1;33m{:.2f}%\033[0m (\033[1;36m{}\033[0m/\033[1;36m{}\033[0m)",
+    LOG_MAPCACHE(fmt::format("Cache hit rates: Items [\033[1;33m{:.2f}%\033[0m] (\033[1;36m{}\033[0m/\033[1;36m{}\033[0m), Tiles [\033[1;33m{:.2f}%\033[0m] (\033[1;36m{}\033[0m/\033[1;36m{}\033[0m)",
                          itemHitRate, itemCacheHits.load(), totalItemRequests,
                          tileHitRate, tileCacheHits.load(), totalTileRequests));
     

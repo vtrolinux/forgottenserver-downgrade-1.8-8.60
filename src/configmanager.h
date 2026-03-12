@@ -66,6 +66,7 @@ enum Boolean
 	ADMIN_LOCALHOST_ONLY,
 	ADMIN_REQUIRE_LOGIN,
 	ADMIN_LOGS,
+	GUILD_WAR_ANNOUNCE_KILLS,
 
 	LAST_BOOLEAN /* this must be the last one */
 };
@@ -203,6 +204,8 @@ enum Integer
 
 	AUTOLOOT_MAXITEMS_FREE,
 	AUTOLOOT_MAXITEMS_PREMIUM,
+	GUILD_WAR_MIN_FRAG_LIMIT,
+	GUILD_WAR_MAX_FRAG_LIMIT,
 
 	LAST_INTEGER /* this must be the last one */
 };
@@ -220,6 +223,8 @@ enum float_config_t
 	OFFLINE_TRAINING_PALADIN_SHIELD,
 	OFFLINE_TRAINING_KNIGHT_MELEE,
 	OFFLINE_TRAINING_KNIGHT_SHIELD,
+	OFFLINE_TRAINING_MONK_MELEE,
+	OFFLINE_TRAINING_MONK_SHIELD,
 	LAST_FLOAT_CONFIG /* this must be the last one */
 };
 
@@ -230,6 +235,8 @@ std::string_view getString(String what);
 int64_t getInteger(Integer what);
 float getFloat(float_config_t what);
 float getExperienceStage(uint32_t level);
+float getSkillStage(uint32_t level);
+float getMagicLevelStage(uint32_t level);
 const std::vector<uint16_t>& getFastPotionIds();
 const std::vector<uint16_t>& getBlockedTeleportIds();
 const std::vector<uint16_t>& getTokenProtectionExceptions();

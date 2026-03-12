@@ -3850,6 +3850,11 @@ bool Player::onKilledCreature(Creature* target, bool lastHit /* = true*/)
 		}
 	}
 
+	// Register guild war kill
+	if (lastHit && isInWar(targetPlayer)) {
+		IOGuild::registerGuildWarKill(this, targetPlayer);
+	}
+
 	return unjustified;
 }
 
@@ -5884,6 +5889,12 @@ void Player::applyOfflineTraining(uint32_t trainingTime)
 
 			addOfflineTrainingTries(bestMelee, static_cast<uint64_t>(tries * knightMelee));
 			addOfflineTrainingTries(SKILL_SHIELD, static_cast<uint64_t>(tries * knightShield));
+		} else if (isMonk()) {
+			float monkMelee = ConfigManager::getFloat(ConfigManager::OFFLINE_TRAINING_MONK_MELEE);
+			float monkShield = ConfigManager::getFloat(ConfigManager::OFFLINE_TRAINING_MONK_SHIELD);
+
+			addOfflineTrainingTries(SKILL_FIST, static_cast<uint64_t>(tries * monkMelee));
+			addOfflineTrainingTries(SKILL_SHIELD, static_cast<uint64_t>(tries * monkShield));
 		}
 	} else {
 		// Manual mode
@@ -5904,4 +5915,25 @@ Inbox* Player::getInbox()
 		}
 	}
 	return nullptr;
+}
+
+void Player::clearCooldowns()
+{
+	for (auto it = conditions.begin(); it != conditions.end(); ++it) {
+		Condition* condition = *it;
+		if (!condition) {
+			continue;
+		}
+
+		ConditionType_t type = condition->getType();
+		if (type == CONDITION_SPELLCOOLDOWN || type == CONDITION_SPELLGROUPCOOLDOWN) {
+			uint32_t subId = condition->getSubId();
+			condition->setTicks(0);
+			if (type == CONDITION_SPELLGROUPCOOLDOWN) {
+				sendSpellGroupCooldown(static_cast<SpellGroup_t>(subId), 0);
+			} else {
+				sendSpellCooldown(static_cast<uint8_t>(subId), 0);
+			}
+		}
+	}
 }

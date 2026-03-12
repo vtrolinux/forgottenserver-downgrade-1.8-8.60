@@ -34,13 +34,13 @@ bool Map::loadMap(const std::string& identifier, bool loadHouses)
 		IOMapSerialize::loadHouseInfo();
 		IOMapSerialize::loadHouseItems(this);
 		
-		LOG_INFO(fmt::format(">> Loaded \033[1;33m{}\033[0m towns with \033[1;33m{}\033[0m houses in total", towns.getTowns().size(), houses.getHouses().size()));
+		LOG_INFO(fmt::format(">> Loaded [\033[1;33m{}\033[0m] towns with [\033[1;33m{}\033[0m] houses in total", towns.getTowns().size(), houses.getHouses().size()));
 	}
 
 	if (!IOMap::loadSpawns(this)) {
 		LOG_WARN("[Warning - Map::loadMap] Failed to load spawn data.");
 	} else {
-		LOG_INFO(fmt::format(">> Loaded \033[1;33m{}\033[0m npcs and spawned \033[1;33m{}\033[0m monsters", spawns.getNpcCount(), spawns.getMonsterCount()));
+		LOG_INFO(fmt::format(">> Loaded [\033[1;33m{}\033[0m] npcs and spawned [\033[1;33m{}\033[0m] monsters", spawns.getNpcCount(), spawns.getMonsterCount()));
 	}
 	return true;
 }
@@ -351,7 +351,7 @@ void Map::moveCreature(Creature& creature, Tile& newTile, bool forceTeleport /* 
 
 void Map::getSpectatorsInternal(SpectatorVec& spectators, const Position& centerPos, int32_t minRangeX,
                                 int32_t maxRangeX, int32_t minRangeY, int32_t maxRangeY, int32_t minRangeZ,
-                                int32_t maxRangeZ, bool onlyPlayers) const
+                                int32_t maxRangeZ, bool onlyPlayers, bool onlyMonsters, bool onlyNpcs) const
 {
 	auto min_y = centerPos.y + minRangeY;
 	auto min_x = centerPos.x + minRangeX;
@@ -385,6 +385,15 @@ void Map::getSpectatorsInternal(SpectatorVec& spectators, const Position& center
 					if (!creature || creature->isRemoved()) {
 						continue;
 					}
+
+					if (onlyMonsters && !creature->getMonster()) {
+						continue;
+					}
+
+					if (onlyNpcs && !creature->getNpc()) {
+						continue;
+					}
+
 					const Position& cpos = creature->getPosition();
 					if (minRangeZ > cpos.z || maxRangeZ < cpos.z) {
 						continue;
@@ -414,99 +423,109 @@ void Map::getSpectatorsInternal(SpectatorVec& spectators, const Position& center
 
 void Map::getSpectators(SpectatorVec& spectators, const Position& centerPos, bool multifloor /*= false*/,
                         bool onlyPlayers /*= false*/, int32_t minRangeX /*= 0*/, int32_t maxRangeX /*= 0*/,
-                        int32_t minRangeY /*= 0*/, int32_t maxRangeY /*= 0*/)
+                        int32_t minRangeY /*= 0*/, int32_t maxRangeY /*= 0*/, bool onlyMonsters /*= false*/, bool onlyNpcs /*= false*/)
 {
 	if (centerPos.z >= MAP_MAX_LAYERS) {
 		return;
 	}
-
-	bool foundCache = false;
-	bool cacheResult = false;
 
 	minRangeX = (minRangeX == 0 ? -maxViewportX : -minRangeX);
 	maxRangeX = (maxRangeX == 0 ? maxViewportX : maxRangeX);
 	minRangeY = (minRangeY == 0 ? -maxViewportY : -minRangeY);
 	maxRangeY = (maxRangeY == 0 ? maxViewportY : maxRangeY);
 
-	if (minRangeX == -maxViewportX && maxRangeX == maxViewportX && minRangeY == -maxViewportY &&
-	    maxRangeY == maxViewportY && multifloor) {
-		if (onlyPlayers) {
-			if (playersSpectatorCache.contains(centerPos)) {
-				if (!spectators.empty()) {
-					spectators.addSpectators(playersSpectatorCache[centerPos]);
-				} else {
-					spectators = playersSpectatorCache[centerPos];
-				}
+	bool cacheResult = (minRangeX == -maxViewportX && maxRangeX == maxViewportX &&
+	                    minRangeY == -maxViewportY && maxRangeY == maxViewportY);
 
-				foundCache = true;
-			}
-		}
+	SpectatorVec* cacheOpt = nullptr;
+	bool* hasCacheOpt = nullptr;
 
-		if (!foundCache) {
-			if (spectatorCache.contains(centerPos)) {
-				if (!onlyPlayers) {
-					if (!spectators.empty()) {
-						const SpectatorVec& cachedSpectators = spectatorCache[centerPos];
-						spectators.addSpectators(cachedSpectators);
-					} else {
-						spectators = spectatorCache[centerPos];
-					}
-				} else {
-					const SpectatorVec& cachedSpectators = spectatorCache[centerPos];
-					for (Creature* spectator : cachedSpectators) {
-						if (spectator->getPlayer()) {
-							spectators.emplace_back(spectator);
-						}
-					}
-				}
-
-				foundCache = true;
+	if (cacheResult) {
+		auto iter = spectatorsCache.find(centerPos);
+		if (iter != spectatorsCache.end()) {
+			auto& entry = iter->second;
+			SpectatorsCache::FloorData* cacheFloorData;
+			if (onlyPlayers) {
+				cacheFloorData = &entry.players;
+			} else if (onlyMonsters) {
+				cacheFloorData = &entry.monsters;
+			} else if (onlyNpcs) {
+				cacheFloorData = &entry.npcs;
 			} else {
-				cacheResult = true;
+				cacheFloorData = &entry.creatures;
+			}
+
+			if (multifloor) {
+				cacheOpt = &cacheFloorData->multiFloor;
+				hasCacheOpt = &cacheFloorData->hasMultiFloor;
+			} else {
+				cacheOpt = &cacheFloorData->floor;
+				hasCacheOpt = &cacheFloorData->hasFloor;
+			}
+
+			if (*hasCacheOpt) {
+				if (!spectators.empty()) {
+					spectators.addSpectators(*cacheOpt);
+				} else {
+					spectators = *cacheOpt;
+				}
+				return;
 			}
 		}
 	}
 
-	if (!foundCache) {
-		int32_t minRangeZ;
-		int32_t maxRangeZ;
+	int32_t minRangeZ;
+	int32_t maxRangeZ;
 
-		if (multifloor) {
-			if (centerPos.z > 7) {
-				// underground (8->15)
-				minRangeZ = std::max(centerPos.getZ() - 2, 0);
-				maxRangeZ = std::min(centerPos.getZ() + 2, MAP_MAX_LAYERS - 1);
-			} else if (centerPos.z == 6) {
-				minRangeZ = 0;
-				maxRangeZ = 8;
-			} else if (centerPos.z == 7) {
-				minRangeZ = 0;
-				maxRangeZ = 9;
-			} else {
-				minRangeZ = 0;
-				maxRangeZ = 7;
-			}
+	if (multifloor) {
+		if (centerPos.z > 7) {
+			// underground (8->15) — ±2 floors
+			minRangeZ = std::max(centerPos.getZ() - 2, 0);
+			maxRangeZ = std::min(centerPos.getZ() + 2, MAP_MAX_LAYERS - 1);
 		} else {
-			minRangeZ = centerPos.z;
-			maxRangeZ = centerPos.z;
+			// above ground — limit to ±2 floors
+			minRangeZ = std::max(centerPos.getZ() - 2, 0);
+			maxRangeZ = std::min(centerPos.getZ() + 2, 7);
+		}
+	} else {
+		minRangeZ = centerPos.z;
+		maxRangeZ = centerPos.z;
+	}
+
+	getSpectatorsInternal(spectators, centerPos, minRangeX, maxRangeX, minRangeY, maxRangeY, minRangeZ, maxRangeZ,
+	                      onlyPlayers, onlyMonsters, onlyNpcs);
+
+	if (cacheResult) {
+		auto [iter, inserted] = spectatorsCache.try_emplace(centerPos);
+		auto& entry = iter->second;
+		
+		entry.minRangeX = minRangeX;
+		entry.maxRangeX = maxRangeX;
+		entry.minRangeY = minRangeY;
+		entry.maxRangeY = maxRangeY;
+
+		SpectatorsCache::FloorData* cacheFloorData;
+		if (onlyPlayers) {
+			cacheFloorData = &entry.players;
+		} else if (onlyMonsters) {
+			cacheFloorData = &entry.monsters;
+		} else if (onlyNpcs) {
+			cacheFloorData = &entry.npcs;
+		} else {
+			cacheFloorData = &entry.creatures;
 		}
 
-		getSpectatorsInternal(spectators, centerPos, minRangeX, maxRangeX, minRangeY, maxRangeY, minRangeZ, maxRangeZ,
-		                      onlyPlayers);
-
-		if (cacheResult) {
-			if (onlyPlayers) {
-				playersSpectatorCache[centerPos] = spectators;
-			} else {
-				spectatorCache[centerPos] = spectators;
-			}
+		if (multifloor) {
+			cacheFloorData->hasMultiFloor = true;
+			cacheFloorData->multiFloor = spectators;
+		} else {
+			cacheFloorData->hasFloor = true;
+			cacheFloorData->floor = spectators;
 		}
 	}
 }
 
-void Map::clearSpectatorCache() { spectatorCache.clear(); }
-
-void Map::clearPlayersSpectatorCache() { playersSpectatorCache.clear(); }
+void Map::clearSpectatorCache() { spectatorsCache.clear(); }
 
 bool Map::canThrowObjectTo(const Position& fromPos, const Position& toPos, bool checkLineOfSight /*= true*/,
                            bool sameFloor /*= false*/, int32_t rangex /*= Map::maxClientViewportX*/,

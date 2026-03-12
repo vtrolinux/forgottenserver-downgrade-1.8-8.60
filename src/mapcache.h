@@ -23,8 +23,6 @@ inline void hash_combine(size_t& seed, size_t value) {
     seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
-#pragma pack(push, 1)
-
 /**
  * BasicItem - Lightweight item structure for map loading cache
  * Uses minimal memory compared to full Item objects
@@ -191,8 +189,6 @@ struct BasicTile {
         return !(*this == other);
     }
 };
-
-#pragma pack(pop)
 
 /**
  * MapCache - Global cache for item and tile deduplication during map loading
