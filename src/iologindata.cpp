@@ -80,12 +80,10 @@ bool IOLoginData::loginserverAuthentication(std::string_view name, std::string_v
     }
 
     std::string storedPassword = std::string{result->getString("password")};
-    std::string inputPassword = transformToSHA1Hex(password);
     
-    if (storedPassword != inputPassword) {
+    if (!verifyPassword(password, storedPassword)) {
         return false;
     }
-    
 
 	account.id = result->getNumber<uint32_t>("id");
 	account.name = result->getString("name");
@@ -93,6 +91,13 @@ bool IOLoginData::loginserverAuthentication(std::string_view name, std::string_v
 	account.accountType = static_cast<AccountType_t>(result->getNumber<int32_t>("type"));
 	account.premiumEndsAt = result->getNumber<time_t>("premium_ends_at");
 	account.tibiaCoins = result->getNumber<uint64_t>("tibia_coins");
+
+	// Transparent migration: upgrade SHA1 hash to SHA256+salt on successful login
+	if (storedPassword.find("$SHA256$") != 0) {
+		std::string newHash = hashPasswordSHA256(password);
+		db.executeQuery(fmt::format("UPDATE `accounts` SET `password` = {:s} WHERE `id` = {:d}",
+		    db.escapeString(newHash), account.id));
+	}
 
     result = db.storeQuery(fmt::format(
         "SELECT `name` FROM `players` WHERE `account_id` = {:d} AND `deletion` = 0 ORDER BY `name` ASC", account.id));
@@ -134,9 +139,15 @@ std::pair<uint32_t, uint32_t> IOLoginData::gameworldAuthentication(std::string_v
 
         uint32_t fallbackAccountId = accountCheck->getNumber<uint32_t>("id");
         std::string storedPassword = std::string{accountCheck->getString("password")};
-        std::string inputPassword = transformToSHA1Hex(password);
-        if (storedPassword != inputPassword) {
+        if (!verifyPassword(password, storedPassword)) {
             return {};
+        }
+
+        // Transparent migration: upgrade SHA1 to SHA256+salt
+        if (storedPassword.find("$SHA256$") != 0) {
+            std::string newHash = hashPasswordSHA256(password);
+            db.executeQuery(fmt::format("UPDATE `accounts` SET `password` = {:s} WHERE `id` = {:d}",
+                db.escapeString(newHash), fallbackAccountId));
         }
 
         // Special-case: Account Manager selection from non-1 account
@@ -163,15 +174,20 @@ std::pair<uint32_t, uint32_t> IOLoginData::gameworldAuthentication(std::string_v
     }
 
     std::string storedPassword = std::string{result->getString("password")};
-    std::string inputPassword = transformToSHA1Hex(password);
     
-    if (storedPassword != inputPassword) {
+    if (!verifyPassword(password, storedPassword)) {
         return {};
     }
-    
 
 	uint32_t accountId = result->getNumber<uint32_t>("account_id");
 	uint32_t characterId = result->getNumber<uint32_t>("character_id");
+
+	// Transparent migration: upgrade SHA1 to SHA256+salt
+	if (storedPassword.find("$SHA256$") != 0) {
+		std::string newHash = hashPasswordSHA256(password);
+		db.executeQuery(fmt::format("UPDATE `accounts` SET `password` = {:s} WHERE `id` = {:d}",
+		    db.escapeString(newHash), accountId));
+	}
 
 	if (ConfigManager::getBoolean(ConfigManager::ACCOUNT_MANAGER) && characterName == "Account Manager" && accountId != 1) {
         result = db.storeQuery("SELECT `id` FROM `players` WHERE `name` = 'Account Manager' AND `account_id` = 1 AND `deletion` = 0");
@@ -1486,7 +1502,7 @@ bool IOLoginData::createAccount(const std::string& name, const std::string& pass
     if (result) {
         return false;
     }
-    std::string hashedPassword = transformToSHA1Hex(password);
+    std::string hashedPassword = hashPasswordSHA256(password);
     if (!db.executeQuery(fmt::format("INSERT INTO `accounts` (`name`, `password`, `type`, `premium_ends_at`, `email`, `creation`) VALUES ({:s}, {:s}, 1, 0, '', {:d})",
         db.escapeString(name), db.escapeString(hashedPassword), static_cast<uint32_t>(time(nullptr))))) {
         return false;
@@ -1502,7 +1518,7 @@ bool IOLoginData::createAccount(const std::string& name, const std::string& pass
 bool IOLoginData::setPassword(uint32_t accountId, const std::string& newPassword)
 {
 	Database& db = Database::getInstance();
-	std::string hashedPassword = transformToSHA1Hex(newPassword);
+	std::string hashedPassword = hashPasswordSHA256(newPassword);
 	return db.executeQuery(fmt::format("UPDATE `accounts` SET `password` = {:s} WHERE `id` = {:d}", db.escapeString(hashedPassword), accountId));
 }
 
