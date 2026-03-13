@@ -35,8 +35,7 @@ project(tfs CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-
-# Solo warnings estrictos para nuestros sources, no para dependencias
+# Strict warnings only for our sources, not for dependencies
 if (NOT WIN32)
     add_compile_options(-Wall -Wextra -Wnon-virtual-dtor -pedantic -Werror -pipe -fvisibility=hidden)
     add_compile_options(-Wno-error=old-style-cast)
@@ -84,7 +83,7 @@ if (APPLE)
     find_package(Iconv REQUIRED)
 endif()
 
-# Forzar soporte UTF-8 en MSVC (Visual Studio/VSCode en Windows)
+# Force UTF-8 support in MSVC (Visual Studio/VSCode on Windows)
 if(MSVC)
   add_compile_options(/utf-8)
 endif()
@@ -110,6 +109,53 @@ include_directories(${Boost_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${LUA_INCLUDE_D
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+### LINUX RELEASE OPTIMIZATIONS ###
+if (NOT WIN32)
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -flto -fomit-frame-pointer -DNDEBUG")
+    set(CMAKE_C_FLAGS_RELEASE "-O3 -march=native -mtune=native -flto -fomit-frame-pointer -DNDEBUG")
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-flto -fuse-linker-plugin")
+
+    # Profile-Guided Optimization (2 steps)
+    # Step 1: cmake -DCMAKE_BUILD_TYPE=Release -DPGO_GENERATE=ON ..
+    # Step 2: run server under load, then: cmake -DCMAKE_BUILD_TYPE=Release -DPGO_USE=ON ..
+    option(PGO_GENERATE "Generate PGO profile data" OFF)
+    option(PGO_USE "Use PGO profile data" OFF)
+    if (PGO_GENERATE)
+        add_compile_options(-fprofile-generate)
+        add_link_options(-fprofile-generate)
+    elseif (PGO_USE)
+        add_compile_options(-fprofile-use -fprofile-correction)
+        add_link_options(-fprofile-use)
+    endif()
+endif()
+### END LINUX RELEASE OPTIMIZATIONS ###
+
+### MIMALLOC ALLOCATOR ###
+option(USE_MIMALLOC "Use mimalloc allocator for better performance on Linux" OFF)
+if (USE_MIMALLOC AND NOT WIN32)
+    find_package(mimalloc CONFIG)
+    if (mimalloc_FOUND)
+        message(STATUS "mimalloc found - using as memory allocator")
+    else()
+        find_library(MIMALLOC_LIB mimalloc)
+        if (MIMALLOC_LIB)
+            message(STATUS "mimalloc found at ${MIMALLOC_LIB}")
+        else()
+            message(WARNING "mimalloc not found. Install with: sudo apt install libmimalloc-dev")
+            set(USE_MIMALLOC OFF)
+        endif()
+    endif()
+endif()
+### END MIMALLOC ###
+
+### SLOW TASK DETECTION ###
+option(ENABLE_SLOW_TASK_DETECTION "Enable slow task detection logging (adds overhead)" ON)
+if (ENABLE_SLOW_TASK_DETECTION)
+    ADD_DEFINITIONS(-DSLOW_TASK_DETECTION)
+    message(STATUS "Slow task detection enabled. Disable for production: -DENABLE_SLOW_TASK_DETECTION=OFF")
+endif()
+### END SLOW TASK DETECTION ###
+
 if (BUILD_TESTING)
     message(STATUS "Building unit tests")
     enable_testing()
@@ -120,12 +166,21 @@ option(ENABLE_UNITY_BUILD "Enable unity build" ON)
 
 add_subdirectory(src)
 
-
 add_executable(tfs ${tfs_MAIN})
 target_link_libraries(tfs tfslib ZLIB::ZLIB OpenSSL::Crypto absl::flat_hash_map)
+
+# Link mimalloc if enabled
+if (USE_MIMALLOC AND NOT WIN32)
+    if (mimalloc_FOUND)
+        target_link_libraries(tfs mimalloc)
+    elseif (MIMALLOC_LIB)
+        target_link_libraries(tfs ${MIMALLOC_LIB})
+    endif()
+endif()
+
 target_include_directories(tfs PUBLIC)
 
-### INTERPROCEDURAL_OPTIMIZATION ###
+### INTERPROCEDURAL OPTIMIZATION ###
 include(CheckIPOSupported)
 check_ipo_supported(RESULT result OUTPUT error)
 if (result)
@@ -133,7 +188,7 @@ if (result)
 else ()
     message(STATUS "IPO is not supported: ${error}")
 endif ()
-### END INTERPROCEDURAL_OPTIMIZATION ###
+### END INTERPROCEDURAL OPTIMIZATION ###
 
 ### Git Version ###
 # Define the two required variables before including
@@ -148,6 +203,6 @@ if(NOT SKIP_GIT)
         target_include_directories(tfs PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 endif()
-### END  Git Version ###
+### END Git Version ###
 
 target_precompile_headers(tfs PUBLIC src/otpch.h)

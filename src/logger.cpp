@@ -387,9 +387,9 @@ void loggerSignalHandler(int signal)
 	// Use write() for signal-safe output to stderr
 	const char prefix[] = "[CRITICAL] Signal received: ";
 	const char suffix[] = ", >> shutting down\n";
-	write(STDERR_FILENO, prefix, sizeof(prefix) - 1);
-	write(STDERR_FILENO, signalName, strlen(signalName));
-	write(STDERR_FILENO, suffix, sizeof(suffix) - 1);
+	[[maybe_unused]] ssize_t r1 = write(STDERR_FILENO, prefix, sizeof(prefix) - 1);
+	[[maybe_unused]] ssize_t r2 = write(STDERR_FILENO, signalName, strlen(signalName));
+	[[maybe_unused]] ssize_t r3 = write(STDERR_FILENO, suffix, sizeof(suffix) - 1);
 
 	std::signal(signal, SIG_DFL);
 	std::raise(signal);

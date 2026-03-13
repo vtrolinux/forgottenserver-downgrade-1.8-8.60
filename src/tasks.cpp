@@ -33,7 +33,7 @@ void Dispatcher::threadMain()
     threadId = std::this_thread::get_id();
 
     std::vector<Task*> tmpTaskList;
-    tmpTaskList.reserve(32);
+    tmpTaskList.reserve(128);
 
 #ifdef STATS_ENABLED
     std::chrono::high_resolution_clock::time_point time_point;
@@ -58,6 +58,11 @@ void Dispatcher::threadMain()
             break;
         }
 
+        // Drain all pending signals to coalesce multiple wakeups into one pass
+        while (taskSignal.try_acquire()) {
+            // consume extra signals
+        }
+
         // Critical section: move tasks to the temporary list
         {
             std::lock_guard<std::mutex> lockGuard(taskLock);
@@ -68,7 +73,9 @@ void Dispatcher::threadMain()
 
         // Process all available tasks
         for (Task* task : tmpTaskList) {
+#if defined(STATS_ENABLED) || defined(SLOW_TASK_DETECTION)
             auto taskStart = std::chrono::high_resolution_clock::now();
+#endif
 
 #ifdef STATS_ENABLED
             if (g_stats.isEnabled()) {
@@ -80,7 +87,8 @@ void Dispatcher::threadMain()
                 ++totalTasksProcessed;
                 (*task)();
 
-                // Slow task detection
+#ifdef SLOW_TASK_DETECTION
+                // Slow task detection (disabled in production with -DENABLE_SLOW_TASK_DETECTION=OFF)
                 auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(
                     std::chrono::high_resolution_clock::now() - taskStart
                 ).count();
@@ -94,6 +102,7 @@ void Dispatcher::threadMain()
                         LOG_WARN(">> Slow task detected: {}ms [unknown]", elapsedMs);
                     }
                 }
+#endif
             }
 
 #ifdef STATS_ENABLED
