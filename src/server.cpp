@@ -20,7 +20,27 @@ struct ConnectBlock
 	uint64_t lastAttempt;
 	uint64_t blockTime = 0;
 	uint32_t count = 1;
+	uint32_t totalBlocks = 0;  // escalation counter
 };
+
+// Cleanup stale entries periodically to prevent memory growth
+void cleanupConnectMap(std::map<uint32_t, ConnectBlock>& ipConnectMap, uint64_t currentTime)
+{
+	static uint64_t lastCleanup = 0;
+	if (currentTime - lastCleanup < 60000) { // every 60 seconds
+		return;
+	}
+	lastCleanup = currentTime;
+
+	for (auto it = ipConnectMap.begin(); it != ipConnectMap.end(); ) {
+		// Remove entries idle for more than 5 minutes
+		if (currentTime - it->second.lastAttempt > 300000) {
+			it = ipConnectMap.erase(it);
+		} else {
+			++it;
+		}
+	}
+}
 
 bool acceptConnection(const uint32_t clientIP)
 {
@@ -30,6 +50,10 @@ bool acceptConnection(const uint32_t clientIP)
 	uint64_t currentTime = OTSYS_TIME();
 
 	static std::map<uint32_t, ConnectBlock> ipConnectMap;
+
+	// Periodic cleanup of stale entries
+	cleanupConnectMap(ipConnectMap, currentTime);
+
 	auto it = ipConnectMap.find(clientIP);
 	if (it == ipConnectMap.end()) {
 		ipConnectMap.emplace(clientIP, ConnectBlock{.lastAttempt = currentTime});
@@ -38,7 +62,8 @@ bool acceptConnection(const uint32_t clientIP)
 
 	ConnectBlock& connectBlock = it->second;
 	if (connectBlock.blockTime > currentTime) {
-		connectBlock.blockTime += 250;
+		// Escalate block time for repeat offenders (DDoS protection)
+		connectBlock.blockTime += 500;
 		return false;
 	}
 
@@ -47,13 +72,29 @@ bool acceptConnection(const uint32_t clientIP)
 	if (timeDiff <= 5000) {
 		if (++connectBlock.count > 5) {
 			connectBlock.count = 0;
+			connectBlock.totalBlocks++;
+
+			// Escalating block: repeat offenders get longer bans
+			uint64_t blockDuration = 3000;
+			if (connectBlock.totalBlocks >= 10) {
+				blockDuration = 300000; // 5 minutes
+			} else if (connectBlock.totalBlocks >= 5) {
+				blockDuration = 60000;  // 1 minute
+			} else if (connectBlock.totalBlocks >= 3) {
+				blockDuration = 15000;  // 15 seconds
+			}
+
 			if (timeDiff <= 500) {
-				connectBlock.blockTime = currentTime + 3000;
+				connectBlock.blockTime = currentTime + blockDuration;
 				return false;
 			}
 		}
 	} else {
 		connectBlock.count = 1;
+		// Slowly decay totalBlocks when the IP behaves
+		if (timeDiff > 60000 && connectBlock.totalBlocks > 0) {
+			connectBlock.totalBlocks--;
+		}
 	}
 	return true;
 }

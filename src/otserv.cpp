@@ -322,6 +322,15 @@ void startServer()
 #endif
 	}
 
+	// --- Shutdown Watchdog ---
+	// If shutdown takes longer than 60 seconds, force terminate to prevent hanging forever.
+	std::thread watchdog([]() {
+		std::this_thread::sleep_for(std::chrono::seconds(60));
+		LOG_ERROR("[Watchdog] Shutdown exceeded 60 seconds. Forcing termination.");
+		std::_Exit(EXIT_FAILURE);
+	});
+	watchdog.detach();
+
 	// Shutdown ThreadPool first - async map saves need DB connection alive
 	g_threadPool.shutdown();
 

@@ -30,7 +30,7 @@ private:
 	std::atomic<uint32_t> lastPlayersSaved{0};
 	std::atomic<int64_t> lastSaveTimestamp{0};
 
-	static constexpr int64_t MIN_SAVE_INTERVAL_MS = 5000;
+	static constexpr int64_t MIN_SAVE_INTERVAL_MS = 2000;
 };
 
 extern SaveManager g_saveManager;
