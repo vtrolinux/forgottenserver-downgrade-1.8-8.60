@@ -9,6 +9,9 @@ function harmonyLogin.onLogin(player)
     if isMonk(player) then
         syncHarmonyOpcode(player)
         player:registerEvent("harmonyGain")
+        if player:getHarmony() >= HARMONY_MAX then
+            startHarmonyFullLoop(player:getId())
+        end
     end
     return true
 end

@@ -78,16 +78,21 @@ end
 function addHarmonyPoint(player)
 	local current = player:getHarmony()
 	if current >= HARMONY_MAX then
+		startHarmonyFullLoop(player:getId())
 		return false
 	end
 
-	-- Avatar of Balance doubles harmony gained
 	local amount = isAvatarActive(player) and 2 or 1
 	player:addHarmony(amount)
 	syncHarmonyOpcode(player)
 
-	if player:getHarmony() >= HARMONY_MAX then
+	local newValue = player:getHarmony()
+	if newValue >= HARMONY_MAX then
 		onHarmonyFull(player)
+	else
+		local pos = player:getPosition()
+		pcall(Game.sendAnimatedText, "Harmony " .. newValue .. "/" .. HARMONY_MAX, pos, 18)
+		pos:sendMagicEffect(CONST_ME_MAGIC_GREEN)
 	end
 	return true
 end
@@ -100,6 +105,7 @@ function spendHarmony(player)
 	local points = getHarmonyPoints(player)
 	local bonus = getHarmonyBonus(player)
 	player:setHarmony(0)
+	stopHarmonyFullLoop(player:getId())
 	syncHarmonyOpcode(player)
 	return points, bonus
 end
@@ -144,13 +150,56 @@ function getVirtueName(player)
 end
 
 -- ============================================================
+-- Harmony Full Loop — animated text + effect while 5/5
+-- ============================================================
+harmonyFullLoopActive = {}
+
+local HARMONY_LOOP_INTERVAL = 2000 -- ms between each animated text
+local HARMONY_LOOP_COLOR = 210    -- TEXTCOLOR_YELLOW
+
+function startHarmonyFullLoop(playerId)
+	if harmonyFullLoopActive[playerId] then
+		return -- already running
+	end
+	harmonyFullLoopActive[playerId] = true
+	harmonyFullLoopTick(playerId)
+end
+
+function stopHarmonyFullLoop(playerId)
+	harmonyFullLoopActive[playerId] = nil
+end
+
+function harmonyFullLoopTick(playerId)
+	if not harmonyFullLoopActive[playerId] then
+		return
+	end
+
+	local player = Player(playerId)
+	if not player then
+		harmonyFullLoopActive[playerId] = nil
+		return
+	end
+
+	if player:getHarmony() < HARMONY_MAX then
+		harmonyFullLoopActive[playerId] = nil
+		return
+	end
+
+	local pos = player:getPosition()
+	pos:sendMagicEffect(CONST_ME_HOLYAREA)
+	pcall(Game.sendAnimatedText, "Full Harmony!", pos, HARMONY_LOOP_COLOR)
+
+	addEvent(harmonyFullLoopTick, HARMONY_LOOP_INTERVAL, playerId)
+end
+
+-- ============================================================
 -- onHarmonyFull(player)
 -- Triggered when reaching 5/5 Harmony points.
 -- ============================================================
 function onHarmonyFull(player)
 	player:sendTextMessage(MESSAGE_STATUS_CONSOLE_ORANGE,
 		"[Harmony] You have reached full Harmony! (5/5) Your abilities are at peak power.")
-	player:getPosition():sendMagicEffect(CONST_ME_HOLYAREA)
+	startHarmonyFullLoop(player:getId())
 end
 
 -- ============================================================

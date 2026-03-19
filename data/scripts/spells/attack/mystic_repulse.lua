@@ -49,7 +49,7 @@ function spell.onCastSpell(creature, var)
 		end
 	end
 
-	creature:addHarmony(1)
+	addHarmonyPoint(creature)
 
 	return combat:execute(creature, var)
 end

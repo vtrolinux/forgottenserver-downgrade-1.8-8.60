@@ -171,7 +171,7 @@ function spell.onCastSpell(creature, var)
 
 	local min, max = onGetFormulaValues(creature, weaponDamage)
 	executeChain(creature, min, max, effectData)
-	creature:addHarmony(1)
+	addHarmonyPoint(creature)
 	return true
 end
 
