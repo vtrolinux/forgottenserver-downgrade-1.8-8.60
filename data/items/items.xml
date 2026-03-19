@@ -41762,7 +41762,7 @@
 	</item>
 	<item id="23721" article="a" name="gold pouch">
 		<attribute key="description" value="A infinity bag where you can hold coins." />
-		<attribute key="containersize" value="30" />
+		<attribute key="containersize" value="20" />
 		<attribute key="movable" value="0" />
 	</item>
 	<item id="23722" article="a" name="gold converter">
@@ -57977,6 +57977,7 @@
 		</attribute>
 	</item>
 	<item id="35524" article="a" name="jungle quiver">
+		<attribute key="weaponType" value="quiver" />
 		<attribute key="slotType" value="right-hand" />
 		<attribute key="containersize" value="8" />
 		<attribute key="weight" value="1800" />
@@ -57987,6 +57988,7 @@
 		</attribute>
 	</item>
 	<item id="35562" article="a" name="quiver">
+		<attribute key="weaponType" value="quiver" />
 		<attribute key="slotType" value="right-hand" />
 		<attribute key="containersize" value="6" />
 		<attribute key="weight" value="1700" />
@@ -58127,6 +58129,7 @@
 		<attribute key="weight" value="350" />
 	</item>
 	<item id="35848" article="a" name="blue quiver">
+		<attribute key="weaponType" value="quiver" />
 		<attribute key="slotType" value="right-hand" />
 		<attribute key="containersize" value="6" />
 		<attribute key="weight" value="1700" />
@@ -58136,6 +58139,7 @@
 		</attribute>
 	</item>
 	<item id="35849" article="a" name="red quiver">
+		<attribute key="weaponType" value="quiver" />
 		<attribute key="slotType" value="right-hand" />
 		<attribute key="containersize" value="6" />
 		<attribute key="weight" value="1700" />
@@ -59101,6 +59105,7 @@
 		</attribute>
 	</item>
 	<item id="36666" article="a" name="eldritch quiver">
+		<attribute key="weaponType" value="quiver" />
 		<attribute key="slotType" value="right-hand" />
 		<attribute key="showattributes" value="1" />
 		<attribute key="containersize" value="8" />
@@ -62108,6 +62113,7 @@
 		</attribute>
 	</item>
 	<item id="39150" article="an" name="alicorn quiver">
+		<attribute key="weaponType" value="quiver" />
 		<attribute key="slotType" value="right-hand" />
 		<attribute key="showattributes" value="1" />
 		<attribute key="containersize" value="12" />
@@ -62299,6 +62305,7 @@
 		</attribute>
 	</item>
 	<item id="39160" article="a" name="naga quiver">
+		<attribute key="weaponType" value="quiver" />
 		<attribute key="slotType" value="right-hand" />
 		<attribute key="showattributes" value="1" />
 		<attribute key="absorbpercentice" value="2" />
@@ -66888,6 +66895,7 @@
 	</item>
 	<item id="45644" article="a" name="candy-coated quiver">
 		<attribute key="description" value="This quiver may run out of arrows, but it will never run out of treats." />
+		<attribute key="weaponType" value="quiver" />
 		<attribute key="slotType" value="right-hand" />
 		<attribute key="containersize" value="8" />
 		<attribute key="showAttributes" value="1" />

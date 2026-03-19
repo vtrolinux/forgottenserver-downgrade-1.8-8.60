@@ -844,6 +844,22 @@ public:
 		}
 	}
 
+	void sendQuiverUpdate(bool sendAll = false)
+	{
+		if (client) {
+			Item* rightItem = inventory[CONST_SLOT_RIGHT];
+			if (rightItem && rightItem->getWeaponType() == WEAPON_QUIVER) {
+				client->sendInventoryItem(CONST_SLOT_RIGHT, rightItem);
+			}
+			if (sendAll) {
+				Item* ammoItem = inventory[CONST_SLOT_AMMO];
+				if (ammoItem) {
+					client->sendInventoryItem(CONST_SLOT_AMMO, ammoItem);
+				}
+			}
+		}
+	}
+
 	// event methods
 	void onUpdateTileItem(const Tile* tile, const Position& pos, const Item* oldItem, const ItemType& oldType,
 	                      const Item* newItem, const ItemType& newType) override;

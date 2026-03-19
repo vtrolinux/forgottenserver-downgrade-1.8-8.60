@@ -340,6 +340,43 @@ bool Weapon::useWeapon(Player* player, Item* item, Creature* target) const
 	return true;
 }
 
+bool Weapon::ammoCheck(const Player* player) const
+{
+	if (!enabled) {
+		return false;
+	}
+
+	if (player->getMana() < mana) {
+		return false;
+	}
+
+	if (player->getHealth() < getHealthCost(player)) {
+		return false;
+	}
+
+	if (isPremium() && !player->isPremium()) {
+		return false;
+	}
+
+	if (player->getLevel() < getReqLevel()) {
+		return false;
+	}
+
+	if (player->getMagicLevel() < getReqMagLv()) {
+		return false;
+	}
+
+	if (player->getSoul() < soul) {
+		return false;
+	}
+
+	if (!hasVocationWeaponSet(player->getVocationId())) {
+		return false;
+	}
+
+	return true;
+}
+
 bool Weapon::useFist(Player* player, Creature* target)
 {
 	if (!player->getPosition().isInRange(target->getPosition(), 1, 1)) {

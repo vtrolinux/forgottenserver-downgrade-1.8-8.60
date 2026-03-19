@@ -1391,6 +1391,9 @@ std::string_view getReturnMessage(ReturnValue value)
 
 		case RETURNVALUE_ITEMSTOKENPROTECTED:
 			return "Your items are token protected. Use !token off to disable protection.";
+
+		case RETURNVALUE_QUIVERAMMOONLY:
+			return "This quiver only holds arrows and bolts.";
 		
 		default: // RETURNVALUE_NOTPOSSIBLE, etc
 			return "Sorry, not possible.";

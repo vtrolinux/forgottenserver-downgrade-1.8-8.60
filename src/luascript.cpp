@@ -1444,6 +1444,7 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(CONDITION_PARAM_AGGRESSIVE);
 
 	registerEnum(RETURNVALUE_CANNOTMOVEEXERCISEWEAPON);
+	registerEnum(RETURNVALUE_QUIVERAMMOONLY);
 
 	registerEnum(CONST_ME_NONE);
 	registerEnum(CONST_ME_DRAWBLOOD);

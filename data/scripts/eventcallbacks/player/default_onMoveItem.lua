@@ -50,12 +50,22 @@ event.onMoveItem = function(self, item, count, fromPosition, toPosition,
 		if (itemType:getSlotPosition() & SLOTP_TWO_HAND) ~= 0 and toPosition.y ==
 			CONST_SLOT_LEFT then
 			moveItem = self:getSlotItem(CONST_SLOT_RIGHT)
+			if moveItem and ItemType(moveItem:getId()):getWeaponType() == WEAPON_QUIVER
+				and itemType:getWeaponType() == WEAPON_DISTANCE then
+				moveItem = nil
+			end
 		elseif itemType:getWeaponType() == WEAPON_SHIELD and toPosition.y ==
 			CONST_SLOT_RIGHT then
 			moveItem = self:getSlotItem(CONST_SLOT_LEFT)
 			if moveItem and
 				(ItemType(moveItem:getId()):getSlotPosition() & SLOTP_TWO_HAND) == 0 then
 				return true
+			end
+		elseif itemType:getWeaponType() == WEAPON_QUIVER and toPosition.y ==
+			CONST_SLOT_RIGHT then
+			moveItem = self:getSlotItem(CONST_SLOT_LEFT)
+			if moveItem and ItemType(moveItem:getId()):getWeaponType() == WEAPON_DISTANCE then
+				moveItem = nil
 			end
 		end
 
