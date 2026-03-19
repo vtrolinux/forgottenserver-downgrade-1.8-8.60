@@ -86,7 +86,7 @@ function talkaction.onSay(player, words, param)
 	local text = "_________AutoLoot System_________\n\n" ..
 	             "AutoLoot Status: " .. status .. "\n" ..
 	             "AutoMoney Mode: Bank\n" ..
-	             "AutoLoot Gold (coins → bank): " .. goldStatus .. "\n\n" ..
+	             "AutoLoot Gold (coins -> bank): " .. goldStatus .. "\n\n" ..
 	             "Commands:\n" ..
 	             "!autoloot on/off\n" ..
 	             "!autoloot gold  (toggle coin collection)\n" ..
@@ -96,7 +96,10 @@ function talkaction.onSay(player, words, param)
 	             "Slots used: " .. usedSlots .. "/" .. (player:isPremium() and limitPremium or limitFree) .. "\n" ..
 	             "--------------------------------------------------\n\n" ..
 	             "Free Account slots: " .. limitFree .. "\n" ..
-	             "Premium Account Slots: " .. limitPremium
+	             "Premium Account Slots: " .. limitPremium .. "\n\n" ..
+	             "-- Gold Pouch --\n" ..
+	             "Free: 30 slots max (no extra pages)\n" ..
+	             "VIP: Unlimited slots (infinite pages)"
 
 	player:popupFYI(text)
 	return false

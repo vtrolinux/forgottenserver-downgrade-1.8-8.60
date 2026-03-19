@@ -64,6 +64,7 @@ public:
 	size_t size(const bool recursive = false) const;
 	bool empty() const { return itemlist.empty(); }
 	uint32_t capacity() const { return maxSize; }
+	bool hasPagination() const { return pagination; }
 
 	ContainerIterator iterator() const;
 
@@ -123,6 +124,7 @@ protected:
 
 private:
 	uint32_t maxSize;
+	bool pagination = false;
 	uint32_t totalWeight = 0;
 	uint32_t serializationCount = 0;
 

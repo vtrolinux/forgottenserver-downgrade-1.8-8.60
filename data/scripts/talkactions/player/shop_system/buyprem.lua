@@ -24,6 +24,6 @@ function talkaction.onSay(player, words, param)
 	end
 	return false
 end
-
+talkaction:separator(" ")
 talkaction:register()
 

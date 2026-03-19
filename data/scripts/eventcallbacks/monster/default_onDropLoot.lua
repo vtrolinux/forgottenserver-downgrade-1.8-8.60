@@ -1,5 +1,10 @@
-local event = Event()
+local CHANNEL_LOOT = 10
 
+local function sendLootMessage(player, text)
+	player:sendChannelMessage("", text, TALKTYPE_CHANNEL_O, CHANNEL_LOOT)
+end
+
+local event = Event()
 event.onDropLoot = function(self, corpse)
 	if configManager.getNumber(configKeys.RATE_LOOT) == 0 then return end
 
@@ -21,7 +26,7 @@ event.onDropLoot = function(self, corpse)
 			if party then
 				party:broadcastPartyLoot(text)
 			else
-				player:sendTextMessage(MESSAGE_INFO_DESCR, text)
+				sendLootMessage(player, text)
 			end
 		end
 	else
@@ -31,9 +36,8 @@ event.onDropLoot = function(self, corpse)
 		if party then
 			party:broadcastPartyLoot(text)
 		else
-			player:sendTextMessage(MESSAGE_INFO_DESCR, text)
+			sendLootMessage(player, text)
 		end
 	end
 end
-
 event:register()

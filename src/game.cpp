@@ -1253,6 +1253,10 @@ ReturnValue Game::internalMoveItem(Cylinder* fromCylinder, Cylinder* toCylinder,
 		                		if (toContainer->isRewardCorpse() || toContainer->getID() == ITEM_REWARD_CONTAINER) {
 			return RETURNVALUE_NOTPOSSIBLE;
 		}
+
+		if (actorPlayer && toContainer->getID() == ITEM_GOLD_POUCH) {
+			return RETURNVALUE_NOTPOSSIBLE;
+		}
 	}
 
 	if (Container* itemContainer = dynamic_cast<Container*>(item)) {

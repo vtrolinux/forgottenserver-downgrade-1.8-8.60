@@ -55,6 +55,8 @@ function loginMessage.onLogin(player)
 
     player:registerEvent("logoutMessage")
 
+    player:openChannel(10)
+
     if configManager.getBoolean(RESET_SYSTEM_ENABLED) then
         local reductionMultiplier = player:getResetExpReduction()
         player:setExperienceRate(ExperienceRateType.STAMINA, reductionMultiplier * 100)

@@ -1095,6 +1095,8 @@ public:
 	void sendAutoLootWindow() const;
 	void parseAutoLootWindow(const std::string& text);
 	Container* findNonEmptyContainer(uint16_t itemId);
+	Container* findGoldPouch() const;
+	Container* getOrCreateGoldPouchPage(Container* pouch);
 	void lootCorpse(Container* container);
 
 	void updateRegeneration();

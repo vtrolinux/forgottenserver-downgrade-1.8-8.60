@@ -4905,6 +4905,36 @@ Container* Player::findNonEmptyContainer(uint16_t itemId)
 	return nullptr;
 }
 
+Container* Player::findGoldPouch() const
+{
+	Item* backpackItem = inventory[CONST_SLOT_BACKPACK];
+	if (!backpackItem) {
+		return nullptr;
+	}
+
+	Container* mainBackpack = backpackItem->getContainer();
+	if (!mainBackpack) {
+		return nullptr;
+	}
+
+	if (mainBackpack->getID() == ITEM_GOLD_POUCH) {
+		return mainBackpack;
+	}
+
+	for (ContainerIterator it = mainBackpack->iterator(); it.hasNext(); it.advance()) {
+		Item* item = *it;
+		if (item && item->getID() == ITEM_GOLD_POUCH) {
+			return item->getContainer();
+		}
+	}
+	return nullptr;
+}
+
+Container* Player::getOrCreateGoldPouchPage(Container* pouch)
+{
+	return pouch;
+}
+
 void Player::lootCorpse(Container* container)
 {
 	if (!container) {
@@ -4917,6 +4947,20 @@ void Player::lootCorpse(Container* container)
 	}
 
 	if (!autolootConfig.enabled) {
+		return;
+	}
+
+	Container* goldPouch = findGoldPouch();
+	if (!goldPouch) {
+		sendTextMessage(MESSAGE_EVENT_ORANGE, "You need a Gold Pouch to use AutoLoot.");
+		return;
+	}
+
+	static constexpr uint32_t GOLD_POUCH_FREE_LIMIT = 30;
+	bool isFreeAccount = !isPremium();
+
+	if (isFreeAccount && goldPouch->size() >= GOLD_POUCH_FREE_LIMIT) {
+		sendTextMessage(MESSAGE_EVENT_ORANGE, "Your Gold Pouch is full (30/30). Upgrade to VIP for unlimited space.");
 		return;
 	}
 
@@ -4973,13 +5017,17 @@ void Player::lootCorpse(Container* container)
 			continue;
 		}
 
-		Item* backpack = pair.second == 0 ? inventory[CONST_SLOT_BACKPACK] : findNonEmptyContainer(pair.second);
-		if (!backpack) {
-			sendTextMessage(MESSAGE_STATUS_SMALL, "AutoLoot: Destination backpack full or missing.");
+		if (isFreeAccount && goldPouch->size() >= GOLD_POUCH_FREE_LIMIT) {
+			sendTextMessage(MESSAGE_EVENT_ORANGE, "Your Gold Pouch is full (30/30). Upgrade to VIP for unlimited space.");
+			break;
+		}
+
+		Container* destination = getOrCreateGoldPouchPage(goldPouch);
+		if (!destination) {
 			continue;
 		}
 
-		g_game.internalMoveItem(container, backpack->getContainer(), INDEX_WHEREEVER, item, item->getItemCount(), nullptr);
+		g_game.internalMoveItem(container, destination, INDEX_WHEREEVER, item, item->getItemCount(), nullptr, FLAG_NOLIMIT);
 	}
 
 	if (autolootConfig.goldEnabled) {
