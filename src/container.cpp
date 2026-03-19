@@ -104,6 +104,10 @@ void Container::updateItemWeight(int32_t diff)
 {
 	totalWeight += diff;
 
+	if (getID() == ITEM_GOLD_POUCH) {
+		return;
+	}
+
 	if (const auto parent = getParent()) {
 		if (const auto item = parent->getItem()) {
 			if (const auto parentContainer = item->getContainer()) {

@@ -1260,8 +1260,28 @@ ReturnValue Game::internalMoveItem(Cylinder* fromCylinder, Cylinder* toCylinder,
 	}
 
 	if (Container* itemContainer = dynamic_cast<Container*>(item)) {
-		                		if (itemContainer->isRewardCorpse() || item->getID() == ITEM_REWARD_CONTAINER) {   
-			return RETURNVALUE_NOERROR; // silently ignore move
+		if (itemContainer->isRewardCorpse() || item->getID() == ITEM_REWARD_CONTAINER) {
+			return RETURNVALUE_NOERROR;
+		}
+	}
+
+	if (actorPlayer && (item->getID() == ITEM_GOLD_POUCH || (dynamic_cast<Container*>(item) && [](Container* c) -> bool {
+		for (ContainerIterator it = c->iterator(); it.hasNext(); it.advance()) {
+			if ((*it)->getID() == ITEM_GOLD_POUCH) return true;
+		}
+		return false;
+	}(dynamic_cast<Container*>(item))))) {
+		Cylinder* destParent = toCylinder;
+		bool isInsidePlayer = false;
+		while (destParent) {
+			if (destParent->getCreature() == actorPlayer) {
+				isInsidePlayer = true;
+				break;
+			}
+			destParent = destParent->getParent();
+		}
+		if (!isInsidePlayer) {
+			return RETURNVALUE_CANNOTMOVEGOLDPOUCH;
 		}
 	}
 

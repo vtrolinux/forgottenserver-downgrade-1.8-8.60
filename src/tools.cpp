@@ -1209,6 +1209,9 @@ std::string_view getReturnMessage(ReturnValue value)
 		case RETURNVALUE_CANNOTMOVEEXERCISEWEAPON:
 			return "You cannot trade or drop this training weapon.";
 
+		case RETURNVALUE_CANNOTMOVEGOLDPOUCH:
+			return "You cannot trade or drop the Gold Pouch.";
+
 		case RETURNVALUE_ONLYGUILDMEMBERSMAYENTER:
 			return "Only members of this guild may enter.";
 

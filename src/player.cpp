@@ -4938,24 +4938,26 @@ Container* Player::findNonEmptyContainer(uint16_t itemId)
 
 Container* Player::findGoldPouch() const
 {
-	Item* backpackItem = inventory[CONST_SLOT_BACKPACK];
-	if (!backpackItem) {
-		return nullptr;
-	}
+	for (int32_t slot = CONST_SLOT_FIRST; slot <= CONST_SLOT_LAST; ++slot) {
+		Item* slotItem = inventory[slot];
+		if (!slotItem) {
+			continue;
+		}
 
-	Container* mainBackpack = backpackItem->getContainer();
-	if (!mainBackpack) {
-		return nullptr;
-	}
+		if (slotItem->getID() == ITEM_GOLD_POUCH) {
+			return slotItem->getContainer();
+		}
 
-	if (mainBackpack->getID() == ITEM_GOLD_POUCH) {
-		return mainBackpack;
-	}
+		Container* container = slotItem->getContainer();
+		if (!container) {
+			continue;
+		}
 
-	for (ContainerIterator it = mainBackpack->iterator(); it.hasNext(); it.advance()) {
-		Item* item = *it;
-		if (item && item->getID() == ITEM_GOLD_POUCH) {
-			return item->getContainer();
+		for (ContainerIterator it = container->iterator(); it.hasNext(); it.advance()) {
+			Item* item = *it;
+			if (item && item->getID() == ITEM_GOLD_POUCH) {
+				return item->getContainer();
+			}
 		}
 	}
 	return nullptr;

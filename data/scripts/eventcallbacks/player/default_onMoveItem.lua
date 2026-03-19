@@ -1,4 +1,4 @@
-local restrictedItems = {
+local exerciseItems = {
 	[31208] = true, [31209] = true, [31210] = true,
 	[37941] = true, [37942] = true, [37943] = true,
 	[31211] = true, [37944] = true,
@@ -10,15 +10,14 @@ local restrictedItems = {
 	[31201] = true
 }
 
-local function containsRestrictedItem(container)
+local function containsExerciseItem(container)
 	local items = container:getItems()
 	for _, item in ipairs(items) do
-		if restrictedItems[item:getId()] then
+		if exerciseItems[item:getId()] then
 			return true
 		end
-		
-		local subContainer = item:getContainer()
-		if subContainer and containsRestrictedItem(subContainer) then
+		local sub = item:getContainer()
+		if sub and containsExerciseItem(sub) then
 			return true
 		end
 	end
@@ -28,11 +27,10 @@ end
 local event = Event()
 event.onMoveItem = function(self, item, count, fromPosition, toPosition,
                             fromCylinder, toCylinder)
-	local isRestricted = restrictedItems[item:getId()]
-	
+	local isRestricted = exerciseItems[item:getId()]
 	if not isRestricted then
 		local container = item:getContainer()
-		if container and containsRestrictedItem(container) then
+		if container and containsExerciseItem(container) then
 			isRestricted = true
 		end
 	end
