@@ -59,21 +59,21 @@ void Game::start(ServiceManager* manager)
 	g_scheduler.addEvent(createSchedulerTask(1000, [this]() { checkSereneStatus(); }));
 }
 
-GameState_t Game::getGameState() const { return gameState; }
+GameState_t Game::getGameState() const { return gameState.load(std::memory_order_acquire); }
 
 void Game::setWorldType(WorldType_t type) { worldType = type; }
 
 void Game::setGameState(GameState_t newState)
 {
-	if (gameState == GAME_STATE_SHUTDOWN) {
+	if (gameState.load(std::memory_order_acquire) == GAME_STATE_SHUTDOWN) {
 		return; // this cannot be stopped
 	}
 
-	if (gameState == newState) {
+	if (gameState.load(std::memory_order_acquire) == newState) {
 		return;
 	}
 
-	gameState = newState;
+	gameState.store(newState, std::memory_order_release);
 	switch (newState) {
 		case GAME_STATE_INIT: {
 			groups.load();
@@ -3118,15 +3118,19 @@ void Game::internalCloseTrade(Player* player, bool sendCancel /* = true*/)
 		return;
 	}
 
-	if (player->getTradeItem()) {
-		auto it = tradeItems.find(player->getTradeItem());
+	// Cache and clear player's trade item before calling Lua callbacks
+	// to prevent reentrancy issues if onTradeEvent modifies trade state.
+	Item* playerTradeItem = player->tradeItem;
+	if (playerTradeItem) {
+		player->tradeItem = nullptr;
+
+		auto it = tradeItems.find(playerTradeItem);
 		if (it != tradeItems.end()) {
 			ReleaseItem(it->first);
 			tradeItems.erase(it);
 		}
 
-		player->tradeItem->onTradeEvent(ON_TRADE_CANCEL, player);
-		player->tradeItem = nullptr;
+		playerTradeItem->onTradeEvent(ON_TRADE_CANCEL, player);
 	}
 
 	player->setTradeState(TRADE_NONE);
@@ -3138,15 +3142,17 @@ void Game::internalCloseTrade(Player* player, bool sendCancel /* = true*/)
 	player->sendTradeClose();
 
 	if (tradePartner) {
-		if (tradePartner->getTradeItem()) {
-			auto it = tradeItems.find(tradePartner->getTradeItem());
+		Item* partnerTradeItem = tradePartner->tradeItem;
+		if (partnerTradeItem) {
+			tradePartner->tradeItem = nullptr;
+
+			auto it = tradeItems.find(partnerTradeItem);
 			if (it != tradeItems.end()) {
 				ReleaseItem(it->first);
 				tradeItems.erase(it);
 			}
 
-			tradePartner->tradeItem->onTradeEvent(ON_TRADE_CANCEL, tradePartner);
-			tradePartner->tradeItem = nullptr;
+			partnerTradeItem->onTradeEvent(ON_TRADE_CANCEL, tradePartner);
 		}
 
 		tradePartner->setTradeState(TRADE_NONE);
@@ -5561,6 +5567,7 @@ void Game::addPlayer(Player* player)
 	mappedPlayerGuids[player->getGUID()] = player;
 	wildcardTree.insert(lowercase_name);
 	players[player->getID()] = player;
+	playersOnline.store(players.size(), std::memory_order_relaxed);
 	checkPlayersRecord();
 }
 
@@ -5571,15 +5578,16 @@ void Game::removePlayer(Player* player)
 	mappedPlayerGuids.erase(player->getGUID());
 	wildcardTree.remove(lowercase_name);
 	players.erase(player->getID());
+	playersOnline.store(players.size(), std::memory_order_relaxed);
 }
 
-void Game::addNpc(Npc* npc) { npcs[npc->getID()] = npc; }
+void Game::addNpc(Npc* npc) { npcs[npc->getID()] = npc; npcsOnline.store(npcs.size(), std::memory_order_relaxed); }
 
-void Game::removeNpc(Npc* npc) { npcs.erase(npc->getID()); }
+void Game::removeNpc(Npc* npc) { npcs.erase(npc->getID()); npcsOnline.store(npcs.size(), std::memory_order_relaxed); }
 
-void Game::addMonster(Monster* monster) { monsters[monster->getID()] = monster; }
+void Game::addMonster(Monster* monster) { monsters[monster->getID()] = monster; monstersOnline.store(monsters.size(), std::memory_order_relaxed); }
 
-void Game::removeMonster(Monster* monster) { monsters.erase(monster->getID()); }
+void Game::removeMonster(Monster* monster) { monsters.erase(monster->getID()); monstersOnline.store(monsters.size(), std::memory_order_relaxed); }
 
 Guild_ptr Game::getGuild(uint32_t id) const
 {

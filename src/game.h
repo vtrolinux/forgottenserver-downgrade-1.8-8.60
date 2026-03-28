@@ -225,9 +225,9 @@ public:
 	void addCreatureCheck(Creature* creature);
 	static void removeCreatureCheck(Creature* creature);
 
-	size_t getPlayersOnline() const { return players.size(); }
-	size_t getMonstersOnline() const { return monsters.size(); }
-	size_t getNpcsOnline() const { return npcs.size(); }
+	size_t getPlayersOnline() const { return playersOnline.load(std::memory_order_relaxed); }
+	size_t getMonstersOnline() const { return monstersOnline.load(std::memory_order_relaxed); }
+	size_t getNpcsOnline() const { return npcsOnline.load(std::memory_order_relaxed); }
 	uint32_t getPlayersRecord() const { return playersRecord; }
 
 	LightInfo getWorldLightInfo() const { return {lightLevel, lightColor}; }
@@ -530,7 +530,7 @@ public:
 	void sendOfflineTrainingDialog(Player* player);
 
 private:
-	std::map<uint32_t, int64_t> storageMap;
+	std::unordered_map<uint32_t, int64_t> storageMap;
 
 	bool playerSaySpell(Player* player, SpeakClasses type, std::string_view text);
 	void playerWhisper(Player* player, std::string_view text);
@@ -559,9 +559,9 @@ private:
 	std::unordered_map<uint32_t, Monster*> monsters;
 
 	// list of items that are in trading state, mapped to the player
-	std::map<Item*, uint32_t> tradeItems;
+	std::unordered_map<Item*, uint32_t> tradeItems;
 
-	std::map<uint32_t, BedItem*> bedSleepersMap;
+	std::unordered_map<uint32_t, BedItem*> bedSleepersMap;
 
 	std::unordered_set<Tile*> tilesToClean;
 
@@ -586,8 +586,13 @@ private:
 	uint8_t lightColor = 215;
 	int16_t worldTime = 0;
 
-	GameState_t gameState = GAME_STATE_NORMAL;
+	std::atomic<GameState_t> gameState{GAME_STATE_NORMAL};
 	WorldType_t worldType = WORLD_TYPE_PVP;
+
+	// Atomic counters for thread-safe reads from protocol/status threads
+	std::atomic<size_t> playersOnline{0};
+	std::atomic<size_t> monstersOnline{0};
+	std::atomic<size_t> npcsOnline{0};
 
 	ServiceManager* serviceManager = nullptr;
 

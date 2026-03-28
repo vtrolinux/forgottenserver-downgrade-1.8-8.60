@@ -465,7 +465,7 @@ protected:
 	friend class LuaScriptInterface;
 
 private:
-	std::map<uint32_t, int64_t> storageMap;
+	std::unordered_map<uint32_t, int64_t> storageMap;
 };
 
 #endif

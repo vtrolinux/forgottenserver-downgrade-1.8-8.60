@@ -39,7 +39,7 @@ MuteCountMap Player::muteCountMap;
 
 uint32_t Player::playerAutoID = 0x10000000;
 
-std::forward_list<Condition*> Player::storedConditionList;
+// storedConditionList is now a per-instance member (see player.h)
 
 Player::Player(ProtocolGame_ptr p) : Creature(), client(std::make_shared<ProtocolSpectator>(std::move(p))), lastPing(OTSYS_TIME()), lastPong(lastPing)
 {

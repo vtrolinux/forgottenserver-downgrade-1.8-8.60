@@ -39,12 +39,13 @@ void DatabaseTasks::addTask(std::string query, std::function<void(DBResult_ptr, 
                             bool store /* = false*/)
 {
 	bool signal = false;
-	taskLock.lock();
-	if (getState() == THREAD_STATE_RUNNING) {
-		signal = tasks.empty();
-		tasks.emplace_back(std::move(query), std::move(callback), store);
+	{
+		std::lock_guard<std::mutex> guard(taskLock);
+		if (getState() == THREAD_STATE_RUNNING) {
+			signal = tasks.empty();
+			tasks.emplace_back(std::move(query), std::move(callback), store);
+		}
 	}
-	taskLock.unlock();
 
 	if (signal) {
 		taskSignal.notify_one();
@@ -82,9 +83,10 @@ void DatabaseTasks::flush()
 
 void DatabaseTasks::shutdown()
 {
-	taskLock.lock();
-	setState(THREAD_STATE_TERMINATED);
-	taskLock.unlock();
+	{
+		std::lock_guard<std::mutex> guard(taskLock);
+		setState(THREAD_STATE_TERMINATED);
+	}
 	flush();
 	taskSignal.notify_one();
 }

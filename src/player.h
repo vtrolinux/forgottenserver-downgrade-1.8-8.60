@@ -1143,7 +1143,7 @@ public:
 	void removeImbuementEffect(std::shared_ptr<Imbuement> imbue);
 	void addImbuementEffect(std::shared_ptr<Imbuement> imbue);
 
-	const std::map<uint8_t, OpenContainer>& getOpenContainers() const { return openContainers; }
+	const std::unordered_map<uint8_t, OpenContainer>& getOpenContainers() const { return openContainers; }
 
 	uint16_t getProtectionTime() const { return protectionTime; }
 	void setProtectionTime(uint16_t newProtectionTime) { protectionTime = newProtectionTime; }
@@ -1259,9 +1259,9 @@ private:
 	std::unordered_set<uint32_t> attackedSet;
 	std::unordered_set<uint32_t> VIPList;
 
-	std::map<uint8_t, OpenContainer> openContainers;
-	std::map<uint32_t, DepotLocker_ptr> depotLockerMap;
-	std::map<uint32_t, DepotChest*> depotChests;
+	std::unordered_map<uint8_t, OpenContainer> openContainers;
+	std::unordered_map<uint32_t, DepotLocker_ptr> depotLockerMap;
+	std::unordered_map<uint32_t, DepotChest*> depotChests;
 
 	std::unordered_map<uint16_t, uint8_t> outfits;
 	std::unordered_set<uint16_t> mounts;
@@ -1273,8 +1273,8 @@ private:
 	std::forward_list<uint32_t> modalWindows;
 	std::forward_list<std::string> learnedInstantSpellList;
 
-	static std::forward_list<Condition*>
-	    storedConditionList; // TODO: This variable is only temporarily used when logging in, get rid of it somehow
+	std::forward_list<Condition*>
+	    storedConditionList; // per-player buffer used temporarily during login
 
 	std::string name;
 	std::string guildNick;
