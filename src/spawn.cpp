@@ -414,7 +414,9 @@ void Spawn::checkSpawn()
 
 	const int64_t now = OTSYS_TIME();
 	const int64_t rate = std::max<int64_t>(1, ConfigManager::getInteger(ConfigManager::RATE_SPAWN));
-	const uint32_t effectDuration = ConfigManager::getBoolean(ConfigManager::SPAWN_START_EFFECT_ENABLED) ? static_cast<uint32_t>(ConfigManager::getInteger(ConfigManager::RATE_START_EFFECT)) : 0;
+	// OPTIMIZATION: Restored rate limiting from upstream to distribute
+  	// spawn load over time instead of processing everything at once.
+  	uint32_t spawnCount = 0;
 
 	for (auto& [spawnId, sb] : spawnMap) {
 		if (spawnedMap.contains(spawnId)) {
@@ -425,12 +427,14 @@ void Spawn::checkSpawn()
 		if (now >= sb.lastSpawn + std::max<uint32_t>(MINSPAWN_INTERVAL, spawnInterval)) {
 			// If there is a player blocking and no monster in the set ignores the block,
 			// we show POFF and retry on the next cycle (no teleport effect).
-			const bool playerBlocking = findPlayer(sb.pos);
-			const bool anyIgnoresBlock = std::ranges::any_of(sb.mTypes, [](const auto& pair) {
-				return pair.first->info.isIgnoringSpawnBlock;
-			});
-			const bool showPoff = playerBlocking && !anyIgnoresBlock;
-			scheduleSpawn(spawnId, effectDuration, showPoff);
+			if (!spawnMonster(spawnId, sb)) {
+				sb.lastSpawn = OTSYS_TIME();
+				continue;
+			}
+			// Rate limiting: only spawn a limited number per cycle
+			if (++spawnCount >= static_cast<uint32_t>(rate)) {
+				break;
+			}
 		}
 	}
 
@@ -447,70 +451,52 @@ void Spawn::scheduleSpawn(uint32_t spawnId, uint32_t interval, bool blocked)
 	}
 
 	auto it = spawnMap.find(spawnId);
-	if (interval == 0 || it == spawnMap.end()) {
-		if (it == spawnMap.end()) {
-			return;
-		}
-
-		spawnBlock_t& sb = it->second;
-		if (blocked) {
-			bool playerBlocking = findPlayer(sb.pos);
-			if (playerBlocking) {
-				bool anyIgnoresBlock = false;
-				for (const auto& pair : sb.mTypes) {
-					if (pair.first->info.isIgnoringSpawnBlock) {
-						anyIgnoresBlock = true;
-						break;
-					}
-				}
-
-				if (!anyIgnoresBlock) {
-					g_game.addMagicEffect(sb.pos, CONST_ME_POFF);
-					sb.lastSpawn = OTSYS_TIME();
-					sb.effectInitialInterval = 0;
-					return;
-				}
-			}
-		}
-
-
-		spawnMonster(spawnId, sb);
-		sb.effectInitialInterval = 0;
+	if (it == spawnMap.end()) {
 		return;
 	}
 
-	spawnBlock_t& sb = it->second;
-	g_game.addMagicEffect(sb.pos, CONST_ME_TELEPORT);
+	spawnBlock_t &sb = it->second;
 
-	uint32_t initialInterval = sb.effectInitialInterval;
-	if (initialInterval == 0) {
-		sb.effectInitialInterval = interval;
-		initialInterval = interval;
+	if (blocked) {
+		bool playerBlocking = findPlayer(sb.pos);
+		if (playerBlocking) {
+			bool anyIgnoresBlock = false;
+			for (const auto &pair : sb.mTypes) {
+				if (pair.first->info.isIgnoringSpawnBlock) {
+					anyIgnoresBlock = true;
+					break;
+				}
+			}
+
+			if (!anyIgnoresBlock) {
+				g_game.addMagicEffect(sb.pos, CONST_ME_POFF);
+				sb.lastSpawn = OTSYS_TIME();
+				sb.effectInitialInterval = 0;
+				return;
+			}
+		}
 	}
 
-	// Base delay between effects from config
-	const uint32_t normalRate = static_cast<uint32_t>(ConfigManager::getInteger(ConfigManager::RATE_BETWEEN_EFFECT));
-	// Minimum delay when accelerating (avoid zero) and enforce scheduler minimum
-	const uint32_t minRate = std::max<uint32_t>(std::max<int32_t>(SCHEDULER_MINTICKS, 50), normalRate / 5);
-	// Use the initial interval as the scaling range and avoid division by zero
-	const uint32_t accelStart = std::max<uint32_t>(1, initialInterval);
-
-	uint32_t nextDelay = normalRate;
-	if (interval <= accelStart) {
-		uint32_t rangeRate = (normalRate > minRate) ? (normalRate - minRate) : 0;
-		uint32_t scaled = minRate + static_cast<uint32_t>((static_cast<uint64_t>(interval) * rangeRate) / accelStart);
-		nextDelay = std::max<uint32_t>(minRate, std::min<uint32_t>(normalRate, scaled));
+	// OPTIMIZATION: Removed recursive event chain. If interval > 0,
+	// schedule a single delayed spawn + one teleport effect instead of
+	// N cascading scheduler events.
+	if (interval > 0) {
+		g_game.addMagicEffect(sb.pos, CONST_ME_TELEPORT);
+		uint32_t eventId =
+				g_scheduler.addEvent(interval, [this, spawnId]()
+				{
+					auto mapIt = spawnMap.find(spawnId);
+					if (mapIt != spawnMap.end()) {
+						spawnMonster(spawnId, mapIt->second);
+						mapIt->second.effectInitialInterval = 0;
+					}
+				});
+		pendingSpawnEvents.push_back(eventId);
+	} else {
+		spawnMonster(spawnId, sb);
+		sb.effectInitialInterval = 0;
 	}
-
-	nextDelay = std::max<uint32_t>(nextDelay, static_cast<uint32_t>(SCHEDULER_MINTICKS));
-
-	uint32_t remaining = (interval > nextDelay) ? (interval - nextDelay) : 0;
-	uint32_t eventId = g_scheduler.addEvent(
-		nextDelay, [this, spawnId, remaining, blocked]()
-		{ scheduleSpawn(spawnId, remaining, blocked); });
-
-	// Track the event ID so stopEvent() can cancel it before Spawn is destroyed.
-	pendingSpawnEvents.push_back(eventId);}
+}
 
 void Spawn::cleanup()
 {

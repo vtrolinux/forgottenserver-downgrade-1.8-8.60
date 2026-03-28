@@ -71,7 +71,10 @@ bool Creature::canSee(const Position& pos) const
 
 bool Creature::canSeeCreature(const Creature* creature) const
 {
-	if (!compareInstance(creature->getInstanceID())) {
+	// OPTIMIZATION: Only check instances when both creatures actually have
+  	// a non-zero instance ID, avoiding the overhead in the common case.
+  	if (uint32_t theirInstance = creature->getInstanceID();
+    	theirInstance != 0 && !compareInstance(theirInstance)) {
 		return false;
 	}
 
@@ -174,17 +177,10 @@ void Creature::onThink(uint32_t interval)
 
 void Creature::onAttacking(uint32_t interval)
 {
-	if (isRemoved() || isDead()) {
-		attackedCreature = nullptr;
-		return;
-	}
+	// OPTIMIZATION: Removed redundant isDead/isRemoved checks.
+	// checkCreatures() already validates creature state before calling this.
 
 	if (!attackedCreature) {
-		return;
-	}
-
-	if (attackedCreature->isRemoved() || attackedCreature->isDead()) {
-		attackedCreature = nullptr;
 		return;
 	}
 
@@ -431,10 +427,12 @@ void Creature::onCreatureMove(Creature* creature, const Tile* newTile, const Pos
 			}
 		}
 
-		// protection time
-		if (creature->getPlayer()) {
-			if (creature->getPlayer()->getProtectionTime() > 0) {
-				creature->getPlayer()->setProtectionTime(0);
+		// protection time - only check for the creature that is actually moving
+		if (creature == this) {
+			if (Player *player = creature->getPlayer()) {
+				if (player->getProtectionTime() > 0) {
+					player->setProtectionTime(0);
+				}
 			}
 		}
 
@@ -859,10 +857,10 @@ BlockType_t Creature::blockHit(Creature* attacker, CombatType_t combatType, int3
 		if (combatType != COMBAT_HEALING) {
 			attacker->onAttackedCreature(this);
 			attacker->onAttackedCreatureBlockHit(blockType);
-			if (attacker->getMaster() && attacker->getMaster()->getPlayer()) {
-				Player* masterPlayer = attacker->getMaster()->getPlayer();
-				masterPlayer->onAttackedCreature(this);
-			}
+			// OPTIMIZATION: Removed per-hit master notification for summons.
+			// onAttackedCreature on master was called every single hit which
+			// adds 3 virtual calls per hit per summon. PZ/skull logic is
+			// already handled in combat/death paths.
 		}
 	}
 

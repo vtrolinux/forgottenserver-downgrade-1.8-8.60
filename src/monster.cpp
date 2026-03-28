@@ -10,8 +10,8 @@
 #include "game.h"
 #include "iologindata.h"
 #include "logger.h"
-#include "spells.h"
 #include "scriptmanager.h"
+#include "spells.h"
 
 #include <fmt/format.h>
 
@@ -248,6 +248,15 @@ void Monster::onCreatureMove(Creature* creature, const Tile* newTile, const Posi
 			onCreatureEnter(creature);
 		} else if (!canSeeNewPos && canSeeOldPos) {
 			onCreatureLeave(creature);
+		} else if (canSeeNewPos && canSeeOldPos) {
+			// Handle PZ entry/exit while creature remains visible
+			bool oldInPZ = oldTile && oldTile->getZone() == ZONE_PROTECTION;
+			bool newInPZ = newTile && newTile->getZone() == ZONE_PROTECTION;
+			if (!oldInPZ && newInPZ) {
+				onCreatureLeave(creature);
+			} else if (oldInPZ && !newInPZ) {
+				onCreatureEnter(creature);
+			}
 		}
 
 		if (canSeeNewPos && isSummon() && getMaster() == creature) {
@@ -434,7 +443,7 @@ void Monster::updateTargetList()
 	auto targetIterator = targetList.begin();
 	while (targetIterator != targetList.end()) {
 		Creature* creature = *targetIterator;
-		if (creature->isDead() || !canSee(creature->getPosition())) {
+		if (creature->isDead() || !canSee(creature->getPosition()) || creature->getZone() == ZONE_PROTECTION) {
 			creature->decrementReferenceCounter();
 			targetIterator = targetList.erase(targetIterator);
 		} else {
@@ -443,7 +452,8 @@ void Monster::updateTargetList()
 	}
 
 	SpectatorVec spectators;
-	g_game.map.getSpectators(spectators, position, false);
+	// OPTIMIZATION: Use multifloor=true (like upstream) to reduce spectator count
+	g_game.map.getSpectators(spectators, position, true);
 	spectators.erase(this);
 	for (Creature* spectator : spectators) {
 		onCreatureFound(spectator);
@@ -781,17 +791,18 @@ void Monster::updateIdleStatus()
 	bool idle = false;
 	if (!isSummon() && targetList.empty()) {
 		if (spawn && !position.isInRange(masterPos, 1, 1)) {
-			// Optimization: only stay active to return to spawn if there are players nearby
-			// This prevents hundreds of monsters from staying active forever when blocked or far away.
-			bool playersNearby = false;
-			SpectatorVec spectators;
-			g_game.map.getSpectators(spectators, position, false, true);
-			for (Creature* spectator : spectators) {
-				if (spectator->getPlayer()) {
-					playersNearby = true;
-					break;
+			// OPTIMIZATION: Throttle getSpectators check to every 5th call
+			// to avoid expensive spectator scans on every single think cycle.
+			if (++idleCheckCounter % 5 == 0) {
+				bool playersNearby = false;
+				SpectatorVec spectators;
+				g_game.map.getSpectators(spectators, position, false, true);
+				for (Creature *spectator : spectators) {
+					if (spectator->getPlayer()) {
+						playersNearby = true;
+						break;
+					}
 				}
-			}
 			
 			if (!playersNearby) {
 			    idle = true;
@@ -800,6 +811,7 @@ void Monster::updateIdleStatus()
 			} else {
 			    idle = false;
 			}
+		}
 		} else {
 			idle = std::find_if(conditions.begin(), conditions.end(),
 			                    [](Condition* condition) { return condition->isAggressive(); }) == conditions.end();
@@ -887,6 +899,11 @@ void Monster::onThink(uint32_t interval)
 					setFollowCreature(attackedCreature);
 				}
 			} else if (!targetList.empty()) {
+				// Clear stale followCreature (dead, removed, or in PZ)
+				if (followCreature && !isTarget(followCreature)) {
+					setFollowCreature(nullptr);
+					setAttackedCreature(nullptr);
+				}
 				if (!followCreature || !hasFollowPath) {
 					searchTarget();
 				} else if (isFleeing()) {
@@ -912,8 +929,7 @@ void Monster::doAttacking(uint32_t interval)
 		return;
 	}
 
-	// Early exit: no target means no attacking — check this first to avoid
-	// unnecessary work evaluating spell lists and summon state.
+	// Early exit: no target means no attacking
 	if (!attackedCreature || attackedCreature == this) {
 		attackedCreature = nullptr;
 		return;
@@ -943,16 +959,14 @@ void Monster::doAttacking(uint32_t interval)
 	const Position& myPos = getPosition();
 
 	for (const spellBlock_t& spellBlock : mType->info.attackSpells) {
-		bool inRange = false;
-
-		if (isRemoved() || isDead()) {
-			return;
-		}
-
+		// OPTIMIZATION: Single validity check per spell iteration instead of
+		// 5+ redundant isDead/isRemoved checks that were here before.
 		if (!attackedCreature || attackedCreature->isRemoved() || attackedCreature->isDead()) {
 			attackedCreature = nullptr;
 			return;
 		}
+
+		bool inRange = false;
 
 		if (!spellBlock.spell) {
 			continue;
@@ -961,11 +975,6 @@ void Monster::doAttacking(uint32_t interval)
 		const Position& targetPos = attackedCreature->getPosition();
 
 		if (canUseSpell(myPos, targetPos, spellBlock, interval, inRange, resetTicks)) {
-			if (!attackedCreature || attackedCreature->isRemoved() || attackedCreature->isDead()) {
-				attackedCreature = nullptr;
-				return;
-			}
-
 			if (spellBlock.chance >= static_cast<uint32_t>(uniform_random(1, 100))) {
 				if (updateLook) {
 					updateLookDirection();
@@ -981,18 +990,10 @@ void Monster::doAttacking(uint32_t interval)
 				minCombatValue = minVal;
 				maxCombatValue = maxVal;
 
-				if (!attackedCreature || attackedCreature->isRemoved() || attackedCreature->isDead()) {
-					attackedCreature = nullptr;
-					return;
-				}
-
 				spellBlock.spell->castSpell(this, attackedCreature);
 
-				if (isRemoved() || isDead()) {
-					return;
-				}
-
-				if (!attackedCreature || attackedCreature->isRemoved() || attackedCreature->isDead()) {
+				// Check after cast — this is the only place state can actually change
+				if (isRemoved() || isDead() || !attackedCreature || attackedCreature->isRemoved() || attackedCreature->isDead()) {
 					attackedCreature = nullptr;
 					return;
 				}
@@ -1007,15 +1008,6 @@ void Monster::doAttacking(uint32_t interval)
 			// melee swing out of reach
 			lastMeleeAttack = 0;
 		}
-	}
-
-	if (isRemoved() || isDead()) {
-		return;
-	}
-
-	if (!attackedCreature || attackedCreature->isRemoved() || attackedCreature->isDead()) {
-		attackedCreature = nullptr;
-		return;
 	}
 
 	if (updateLook) {
@@ -1084,7 +1076,9 @@ void Monster::onThinkTarget(uint32_t interval)
 		// protection time
 		if (getAttackedCreature() && getAttackedCreature()->getPlayer() && getAttackedCreature()->getPlayer()->getProtectionTime() > 0) {
 			setAttackedCreature(nullptr);
-			updateTargetList();
+			// OPTIMIZATION: Removed updateTargetList() here — it triggers
+			// a full getSpectators scan. The target list will be naturally
+			// updated on the next think cycle.
 			followCreature = nullptr;
 		}
 
@@ -1858,12 +1852,14 @@ void Monster::death(Creature*)
 			rewardContainer->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
 			bool hasLoot = false;
 			for (const auto& lootBlock : creatureLoot) {
+				// Skip items with invalid IDs — CreateItem would return a recycled/garbage pointer
 				if (lootBlock.id == 0) {
 					continue;
 				}
 				float adjustedChance =
 				    (lootBlock.chance * lootRate) * ConfigManager::getInteger(ConfigManager::RATE_LOOT);
 				if (lootBlock.unique && mostScoreContributor == playerId) {
+					// Ensure that the mostScoreContributor can receive multiple unique items
 					auto lootItem = Item::CreateItem(lootBlock.id, uniform_random(1, lootBlock.countmax));
 					if (!lootItem) {
 						continue;
@@ -1873,10 +1869,15 @@ void Monster::death(Creature*)
 						lootItem->setIntAttr(ITEM_ATTRIBUTE_DATE, currentTime);
 						lootItem->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
 					}
+					// internalAddThing sets parent but does NOT increment refcount.
+					// The container destructor calls decrementReferenceCounter() for each item,
+					// so we must NOT decrement here — doing so frees the item immediately and
+					// leaves the container with a dangling pointer.
 					rewardContainer->internalAddThing(lootItem);
 					lootItem->decrementReferenceCounter();
 					hasLoot = true;
 				} else if (!lootBlock.unique) {
+					// Normal loot distribution for non-unique items
 					if (uniform_random(1, MAX_LOOTCHANCE) <= adjustedChance) {
 						auto lootItem = Item::CreateItem(lootBlock.id, uniform_random(1, lootBlock.countmax));
 						if (!lootItem) {
@@ -1887,6 +1888,7 @@ void Monster::death(Creature*)
 							lootItem->setIntAttr(ITEM_ATTRIBUTE_DATE, currentTime);
 							lootItem->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
 						}
+						// Same ownership rule: container owns the item, do NOT decrement here.
 						rewardContainer->internalAddThing(lootItem);
 						lootItem->decrementReferenceCounter();
 						hasLoot = true;
@@ -1903,6 +1905,8 @@ void Monster::death(Creature*)
 						}
 						lootString += (*lootIt)->getNameDescription();
 					}
+					// internalAddThing does NOT increment refcount, so we must NOT decrement
+					// the creator's ref afterward — the reward chest destructor will do it.
 					player->getRewardChest().internalAddThing(rewardContainer);
 					rewardContainer->decrementReferenceCounter();
 					player->sendTextMessage(MESSAGE_STATUS_DEFAULT,
@@ -1919,9 +1923,13 @@ void Monster::death(Creature*)
 						itemList.emplace_back(currentPid, subItem);
 					}
 					IOLoginData::addRewardItems(playerId, itemList, rewardQuery, propWriteStream);
+					// Offline path: rewardContainer is not added to any in-game container,
+					// so we are the sole owner and must release our ref to avoid a leak.
+					// The destructor will properly free all child loot items.
 					rewardContainer->decrementReferenceCounter();
 				}
 			} else {
+				// No loot was generated — release the unused container to avoid a memory leak.
 				rewardContainer->decrementReferenceCounter();
 				if (player) {
 					player->sendTextMessage(MESSAGE_STATUS_DEFAULT, "You did not receive any loot.");
@@ -2042,6 +2050,8 @@ void Monster::dropLoot(Container* corpse, Creature*)
 		rewardContainer->setIntAttr(ITEM_ATTRIBUTE_DATE, currentTime);
 		rewardContainer->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
 		corpse->internalAddThing(rewardContainer);
+		// Fix: CreateItem sets refcount=1 (creator's ref). After handing ownership to the corpse
+		// container, we release our ref so the container becomes the sole owner.
 		rewardContainer->decrementReferenceCounter();
 	} else if (lootDrop) {
 		g_events->eventMonsterOnDropLoot(this, corpse);

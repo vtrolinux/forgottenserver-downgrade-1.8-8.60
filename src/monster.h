@@ -178,6 +178,7 @@ private:
 	bool isMasterInRange = false;
 	bool randomStepping = false;
 	bool walkingToSpawn = false;
+	uint8_t idleCheckCounter = 0;
 
 	void onCreatureEnter(Creature* creature);
 	void onCreatureLeave(Creature* creature);

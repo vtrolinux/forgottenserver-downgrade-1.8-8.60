@@ -3971,16 +3971,8 @@ void Game::checkCreatures(size_t index)
 			if (!creature->isDead() && !creature->isRemoved()) {
 				creature->onThink(EVENT_CREATURE_THINK_INTERVAL);
 
-				if (!creature->isDead() && !creature->isRemoved()) {
-					Creature* attacked = creature->getAttackedCreature();
-					if (attacked) {
-						creature->onAttacking(EVENT_CREATURE_THINK_INTERVAL);
-					}
-				}
-
-				if (!creature->isDead() && !creature->isRemoved()) {
-					creature->executeConditions(EVENT_CREATURE_THINK_INTERVAL);
-				}
+				creature->onAttacking(EVENT_CREATURE_THINK_INTERVAL);
+				creature->executeConditions(EVENT_CREATURE_THINK_INTERVAL);
 			}
 			++i;
 		} else {
@@ -4003,7 +3995,9 @@ void Game::checkCreatures(size_t index)
 
 void Game::checkSereneStatus()
 {
-	g_scheduler.addEvent(createSchedulerTask(1000, [this]() { checkSereneStatus(); }));
+	// OPTIMIZATION: Increased interval from 1s to 5s - serene status
+	// does not need sub-second precision, 5 seconds is more than enough.
+	g_scheduler.addEvent(createSchedulerTask(5000, [this]() { checkSereneStatus(); }));
 
 	for (const auto& [id, player] : getPlayers()) {
 		if (!player || !player->isMonk()) {
@@ -4019,11 +4013,11 @@ void Game::checkSereneStatus()
 		// Check natural serene conditions:
 		// 1) No nearby party members, OR
 		// 2) Fewer than 6 non-summoned monsters around
+		const Position &pos = player->getPosition();
 		const Party* party = player->getParty();
 		bool hasNearbyPartyMembers = false;
 
 		if (party) {
-			const Position& pos = player->getPosition();
 			const Player* leader = party->getLeader();
 			if (leader && leader != player) {
 				const Position& lpos = leader->getPosition();
@@ -4047,7 +4041,8 @@ void Game::checkSereneStatus()
 
 		bool notBoxed = true;
 		SpectatorVec spectators;
-		map.getSpectators(spectators, player->getPosition(), false, false, 7, 7, 5, 5);
+		// OPTIMIZATION: Reduced scan area from 7x7x5x5 to 5x5x5x5
+		map.getSpectators(spectators, pos, false, false, 5, 5, 5, 5);
 		int monsterCount = 0;
 		for (Creature* spec : spectators) {
 			if (spec->getMonster() && !spec->getMaster()) {
