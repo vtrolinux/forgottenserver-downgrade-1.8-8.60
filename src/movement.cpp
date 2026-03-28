@@ -24,9 +24,9 @@ void MoveEvents::clearMap(MoveListMap& map, bool fromLua)
 		for (int eventType = MOVE_EVENT_STEP_IN; eventType < MOVE_EVENT_LAST; ++eventType) {
 			auto& moveEvents = it->second.moveEvent[eventType];
 			for (auto find = moveEvents.begin(); find != moveEvents.end();) {
-				if (find->fromItem) {
+				if (fromLua && find->fromItem) {
 					++find;
-				} else if (fromLua == find->fromLua) {
+				} else if (fromLua == find->fromLua || find->fromItem) {
 					find = moveEvents.erase(find);
 				} else {
 					++find;
@@ -42,9 +42,9 @@ void MoveEvents::clearPosMap(MovePosListMap& map, bool fromLua)
 		for (int eventType = MOVE_EVENT_STEP_IN; eventType < MOVE_EVENT_LAST; ++eventType) {
 			auto& moveEvents = it->second.moveEvent[eventType];
 			for (auto find = moveEvents.begin(); find != moveEvents.end();) {
-				if (find->fromItem) {
+				if (fromLua && find->fromItem) {
 					++find;
-				} else if (fromLua == find->fromLua) {
+				} else if (fromLua == find->fromLua || find->fromItem) {
 					find = moveEvents.erase(find);
 				} else {
 					++find;

@@ -27,7 +27,11 @@ PlayerStorageKeys = {
 }
 
 
-GlobalStorageKeys = {}
+GlobalStorageKeys = {
+    workbench = 30050,
+    workbenchOwner = 30051,
+}
+
 AccountStorageKeys = {}
 
 

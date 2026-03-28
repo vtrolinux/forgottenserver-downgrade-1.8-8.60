@@ -120,6 +120,9 @@
     <ClCompile Include="..\src\luahouse.cpp">
       <Filter>Lua Modules</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\luaimbuements.cpp">
+      <Filter>Lua Modules</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\luaitem.cpp">
       <Filter>Lua Modules</Filter>
     </ClCompile>

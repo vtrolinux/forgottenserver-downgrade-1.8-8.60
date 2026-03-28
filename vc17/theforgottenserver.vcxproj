@@ -96,7 +96,7 @@
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <AdditionalIncludeDirectories>$(VcpkgRoot)include\%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>/utf-8 /external:anglebrackets /external:W0 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /external:anglebrackets /external:W0 /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -201,6 +201,7 @@
     <ClCompile Include="..\src\housetile.cpp" />
     <ClCompile Include="..\src\inbox.cpp" />
     <ClCompile Include="..\src\iologindata.cpp" />
+    <ClCompile Include="..\src\imbuement.cpp" />
     <ClCompile Include="..\src\iomap.cpp" />
     <ClCompile Include="..\src\iomapserialize.cpp" />
     <ClCompile Include="..\src\item.cpp" />
@@ -217,6 +218,7 @@
     <ClCompile Include="..\src\luagroup.cpp" />
     <ClCompile Include="..\src\luaguild.cpp" />
     <ClCompile Include="..\src\luahouse.cpp" />
+    <ClCompile Include="..\src\luaimbuements.cpp" />
     <ClCompile Include="..\src\luaitem.cpp" />
     <ClCompile Include="..\src\luaitemtype.cpp" />
     <ClCompile Include="..\src\lualoot.cpp" />
@@ -337,6 +339,7 @@
     <ClInclude Include="..\src\itemloader.h" />
     <ClInclude Include="..\src\logger.h" />
     <ClInclude Include="..\src\items.h" />
+    <ClInclude Include="..\src\imbuement.h" />
     <ClInclude Include="..\src\lockfree.h" />
     <ClInclude Include="..\src\luascript.h" />
     <ClInclude Include="..\src\mailbox.h" />
