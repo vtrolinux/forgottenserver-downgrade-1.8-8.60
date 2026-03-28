@@ -8,6 +8,75 @@
 #include "container.h"
 #include "creature.h"
 
+static std::string utf8_to_latin1(std::string_view utf8)
+{
+	std::string out;
+	out.reserve(utf8.size());
+
+	size_t i = 0;
+
+	if (utf8.size() >= 3 &&
+			static_cast<unsigned char>(utf8[0]) == 0xEF &&
+			static_cast<unsigned char>(utf8[1]) == 0xBB &&
+			static_cast<unsigned char>(utf8[2]) == 0xBF) {
+		i = 3;
+	}
+
+	while (i < utf8.size()) {
+		const auto c = static_cast<unsigned char>(utf8[i]);
+
+		if (c < 0x80) {
+			out += static_cast<char>(c);
+			++i;
+			continue;
+		}
+
+		size_t seq_len = 0;
+		if      ((c& 0xE0) == 0xC0) seq_len = 2;
+		else if ((c& 0xF0) == 0xE0) seq_len = 3;
+		else if ((c& 0xF8) == 0xF0) seq_len = 4;
+		else {
+			out += static_cast<char>(c);
+			++i;
+			continue;
+		}
+
+		if (i + seq_len > utf8.size()) {
+			out += static_cast<char>(c);
+			++i;
+			continue;
+		}
+
+		bool valid = true;
+		for (size_t j = 1; j < seq_len; ++j) {
+			if ((static_cast<unsigned char>(utf8[i + j])& 0xC0) != 0x80) {
+				valid = false;
+				break;
+			}
+		}
+
+		if (!valid) {
+			out += static_cast<char>(c);
+			++i;
+			continue;
+		}
+
+		uint32_t cp = 0;
+		switch (seq_len) {
+			case 2: cp = (c& 0x1F); break;
+			case 3: cp = (c& 0x0F); break;
+			case 4: cp = (c& 0x07); break;
+		}
+		for (size_t j = 1; j < seq_len; ++j)
+			cp = (cp << 6) | (static_cast<unsigned char>(utf8[i + j])& 0x3F);
+
+		out += (cp <= 0xFF) ? static_cast<char>(cp) : '?';
+		i += seq_len;
+	}
+
+	return out;
+}
+
 std::string_view NetworkMessage::getString(uint16_t stringLen /* = 0*/)
 {
 	if (stringLen == 0) {
@@ -34,13 +103,14 @@ Position NetworkMessage::getPosition()
 
 void NetworkMessage::addString(std::string_view value)
 {
-	size_t stringLen = value.length();
+	const std::string latin1 = utf8_to_latin1(value);
+	size_t stringLen = latin1.size();
 	if (!canAdd(stringLen + 2) || stringLen > 8192) {
 		return;
 	}
 
 	add<uint16_t>(stringLen);
-	std::memcpy(buffer.data() + info.position, value.data(), stringLen);
+	std::memcpy(buffer.data() + info.position, latin1.data(), stringLen);
 	info.position += stringLen;
 	info.length += stringLen;
 }
