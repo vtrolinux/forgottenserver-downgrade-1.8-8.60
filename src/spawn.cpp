@@ -21,6 +21,11 @@ extern Events* g_events;
 inline constexpr int32_t MINSPAWN_INTERVAL = 10 * 1000;           // 10 seconds to match RME
 inline constexpr int32_t MAXSPAWN_INTERVAL = 24 * 60 * 60 * 1000; // 1 day
 
+Spawns::~Spawns()
+{
+	clear();
+}
+
 bool Spawns::loadFromXml(std::string_view filename)
 {
 	if (loaded) {
@@ -166,7 +171,7 @@ bool Spawns::loadFromXml(std::string_view filename)
 					continue;
 				}
 
-				Npc* npc = Npc::createNpc(nameAttribute.as_string());
+				auto npc = Npc::createNpc(nameAttribute.as_string());
 				if (!npc) {
 					continue;
 				}
@@ -180,7 +185,8 @@ bool Spawns::loadFromXml(std::string_view filename)
 				    Position(centerPos.x + pugi::cast<uint16_t>(childNode.attribute("x").value()),
 				             centerPos.y + pugi::cast<uint16_t>(childNode.attribute("y").value()), centerPos.z),
 				    radius);
-				npcList.push_front(npc);
+				npcList.push_front(npc.get());
+				npc.release();
 			}
 		}
 	}

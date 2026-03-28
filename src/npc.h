@@ -113,7 +113,7 @@ public:
 	void removeList() override;
 	void addList() override;
 
-	static Npc* createNpc(const std::string& name);
+	static std::unique_ptr<Npc> createNpc(const std::string &name);
 
 	bool canSee(const Position& pos) const override;
 
@@ -157,9 +157,9 @@ public:
 
 	static uint32_t npcAutoID;
 
-private:
 	explicit Npc(const std::string& name);
 
+private:
 	void onCreatureAppear(Creature* creature, bool isLogin) override;
 	void onRemoveCreature(Creature* creature, bool isLogout) override;
 	void onCreatureMove(Creature* creature, const Tile* newTile, const Position& newPos, const Tile* oldTile,

@@ -77,6 +77,9 @@ private:
 class Spawns
 {
 public:
+  Spawns() = default;
+	~Spawns();
+
 	static bool isInZone(const Position& centerPos, int32_t radius, const Position& pos);
 
 	bool loadFromXml(std::string_view filename);

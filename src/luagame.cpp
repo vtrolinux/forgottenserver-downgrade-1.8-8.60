@@ -521,7 +521,7 @@ int luaGameCreateMonster(lua_State* L)
 int luaGameCreateNpc(lua_State* L)
 {
 	// Game.createNpc(npcName, position[, extended = false[, force = false[, magicEffect = CONST_ME_TELEPORT]]])
-	Npc* npc = Npc::createNpc(getString(L, 1));
+	auto npc = Npc::createNpc(getString(L, 1));
 	if (!npc) {
 		lua_pushnil(L);
 		return 1;
@@ -531,11 +531,12 @@ int luaGameCreateNpc(lua_State* L)
 	bool extended = getBoolean(L, 3, false);
 	bool force = getBoolean(L, 4, false);
 	MagicEffectClasses magicEffect = getInteger<MagicEffectClasses>(L, 5, CONST_ME_TELEPORT);
-	if (g_game.placeCreature(npc, position, extended, force, magicEffect)) {
-		pushUserdata<Npc>(L, npc);
+	if (g_game.placeCreature(npc.get(), position, extended, force, magicEffect)) {
+		pushUserdata<Npc>(L, npc.get());
 		setMetatable(L, -1, "Npc");
+		npc.release();
 	} else {
-		delete npc;
+		// unique_ptr automatically deletes
 		lua_pushnil(L);
 	}
 	return 1;

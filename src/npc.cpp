@@ -28,13 +28,13 @@ void Npcs::reload()
 	}
 }
 
-Npc* Npc::createNpc(const std::string& name)
+std::unique_ptr<Npc> Npc::createNpc(const std::string &name)
 {
-	std::unique_ptr<Npc> npc(new Npc(name));
+	std::unique_ptr<Npc> npc = std::make_unique<Npc>(name);
 	if (!npc->load()) {
 		return nullptr;
 	}
-	return npc.release();
+	return npc;
 }
 
 Npc::Npc(const std::string& name) : Creature(), filename("data/npc/" + name + ".xml"), masterRadius(-1), loaded(false)
