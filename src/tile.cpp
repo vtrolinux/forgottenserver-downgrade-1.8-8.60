@@ -1241,9 +1241,14 @@ int32_t Tile::getClientIndexOfCreature(const Player* player, const Creature* cre
 		n = 0;
 	}
 
+	const uint32_t viewerInstanceId = player->getInstanceID();
 	const TileItemVector* items = getItemList();
 	if (items) {
-		n += items->getTopItemCount();
+		for (auto it = items->getBeginTopItem(), end = items->getEndTopItem(); it != end; ++it) {
+			if (InstanceUtils::canSeeItemInInstance(viewerInstanceId, *it)) {
+				++n;
+			}
+		}
 	}
 
 	if (const CreatureVector* creatures = getCreatures()) {
@@ -1269,6 +1274,7 @@ int32_t Tile::getStackposOfItem(const Player* player, const Item* item) const
 		++n;
 	}
 
+	const uint32_t viewerInstanceId = player->getInstanceID();
 	const TileItemVector* items = getItemList();
 	if (items) {
 		if (item->isAlwaysOnTop()) {
@@ -1276,10 +1282,16 @@ int32_t Tile::getStackposOfItem(const Player* player, const Item* item) const
 				if (*it == item) {
 					return n;
 				}
-				++n;
+				if (InstanceUtils::canSeeItemInInstance(viewerInstanceId, *it)) {
+					++n;
+				}
 			}
 		} else {
-			n += items->getTopItemCount();
+			for (auto it = items->getBeginTopItem(), end = items->getEndTopItem(); it != end; ++it) {
+				if (InstanceUtils::canSeeItemInInstance(viewerInstanceId, *it)) {
+					++n;
+				}
+			}
 		}
 	}
 
@@ -1296,7 +1308,9 @@ int32_t Tile::getStackposOfItem(const Player* player, const Item* item) const
 			if (*it == item) {
 				return n;
 			}
-			++n;
+			if (InstanceUtils::canSeeItemInInstance(viewerInstanceId, *it)) {
+				++n;
+			}
 		}
 	}
 	return -1;

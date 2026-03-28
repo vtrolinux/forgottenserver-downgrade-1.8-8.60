@@ -1115,9 +1115,6 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 			if (item) {
 				item->startDecaying();
 				g_moveEvents->onPlayerEquip(this, item, static_cast<slots_t>(slot), false);
-				if (item->hasImbuements()) {
-					addItemImbuements(item);
-				}
 			}
 		}
 

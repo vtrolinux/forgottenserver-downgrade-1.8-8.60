@@ -74,6 +74,11 @@ inline constexpr int32_t RANGE_REQUEST_TRADE_INTERVAL = 400;
 class Game
 {
 public:
+	struct InstanceArea {
+		Position fromPos;
+		Position toPos;
+	};
+
 	Game() = default;
 
 	// non-copyable
@@ -450,14 +455,19 @@ public:
 	// animation help functions
 	void addCreatureHealth(const Creature* target);
 	static void addCreatureHealth(const SpectatorVec& spectators, const Creature* target);
-	void addAnimatedText(std::string_view message, const Position& pos, TextColor_t color);
+	void addAnimatedText(std::string_view message, const Position& pos, TextColor_t color, uint32_t instanceId = 0);
 	static void addAnimatedText(const SpectatorVec& list, std::string_view message, const Position& pos,
 	                            TextColor_t color);
 	void addMagicEffect(const Position& pos, uint16_t effect, uint32_t instanceId = 0);
 	static void addMagicEffect(const SpectatorVec& spectators, const Position& pos, uint16_t effect);
-	void addDistanceEffect(const Position& fromPos, const Position& toPos, uint16_t effect);
+	void addDistanceEffect(const Position& fromPos, const Position& toPos, uint16_t effect, uint32_t instanceId = 0);
 	static void addDistanceEffect(const SpectatorVec& spectators, const Position& fromPos, const Position& toPos,
 	                              uint16_t effect);
+
+	void registerInstanceArea(uint32_t instanceId, const Position& fromPos, const Position& toPos);
+	void unregisterInstanceArea(uint32_t instanceId);
+	const InstanceArea* getInstanceArea(uint32_t instanceId) const;
+	static bool isPositionInArea(const Position& pos, const Position& fromPos, const Position& toPos);
 
 	void setAccountStorageValue(const uint32_t accountId, const uint32_t key, const int32_t value);
 	int32_t getAccountStorageValue(const uint32_t accountId, const uint32_t key) const;
@@ -557,6 +567,7 @@ private:
 
 	std::unordered_map<uint32_t, Npc*> npcs;
 	std::unordered_map<uint32_t, Monster*> monsters;
+	std::unordered_map<uint32_t, InstanceArea> instanceAreas;
 
 	// list of items that are in trading state, mapped to the player
 	std::unordered_map<Item*, uint32_t> tradeItems;

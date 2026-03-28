@@ -489,7 +489,7 @@ int luaGameCreateContainer(lua_State* L)
 int luaGameCreateMonster(lua_State* L)
 {
 	// Game.createMonster(monsterName, position[, extended = false[, force = false[, magicEffect =
-	// CONST_ME_TELEPORT]]])
+	// CONST_ME_TELEPORT[, instanceId = 0]]]])
 	auto monster = Monster::createMonster(getString(L, 1));
 	if (!monster) {
 		lua_pushnil(L);
@@ -500,6 +500,10 @@ int luaGameCreateMonster(lua_State* L)
 	bool extended = getBoolean(L, 3, false);
 	bool force = getBoolean(L, 4, false);
 	MagicEffectClasses magicEffect = getInteger<MagicEffectClasses>(L, 5, CONST_ME_TELEPORT);
+	uint32_t instanceId = getInteger<uint32_t>(L, 6, 0);
+	if (instanceId != 0) {
+		monster->setInstanceID(instanceId);
+	}
 	if (g_events->eventMonsterOnSpawn(monster.get(), position, false, true) || force) {
 		if (g_game.placeCreature(monster.get(), position, extended, force, magicEffect)) {
 			pushUserdata<Monster>(L, monster.get());
@@ -516,7 +520,7 @@ int luaGameCreateMonster(lua_State* L)
 
 int luaGameCreateNpc(lua_State* L)
 {
-	// Game.createNpc(npcName, position[, extended = false[, force = false[, magicEffect = CONST_ME_TELEPORT]]])
+	// Game.createNpc(npcName, position[, extended = false[, force = false[, magicEffect = CONST_ME_TELEPORT[, instanceId = 0]]]])
 	auto npc = Npc::createNpc(getString(L, 1));
 	if (!npc) {
 		lua_pushnil(L);
@@ -527,6 +531,10 @@ int luaGameCreateNpc(lua_State* L)
 	bool extended = getBoolean(L, 3, false);
 	bool force = getBoolean(L, 4, false);
 	MagicEffectClasses magicEffect = getInteger<MagicEffectClasses>(L, 5, CONST_ME_TELEPORT);
+	uint32_t instanceId = getInteger<uint32_t>(L, 6, 0);
+	if (instanceId != 0) {
+		npc->setInstanceID(instanceId);
+	}
 	if (g_game.placeCreature(npc.get(), position, extended, force, magicEffect)) {
 		pushUserdata<Npc>(L, npc.get());
 		setCreatureMetatable(L, -1, npc.get());
@@ -789,6 +797,43 @@ int luaGameSaveGameStorageValues(lua_State* L)
 
 	return 1;
 }
+
+int luaGameRegisterInstanceArea(lua_State* L)
+{
+	// Game.registerInstanceArea(instanceId, fromPos, toPos)
+	uint32_t instanceId = getInteger<uint32_t>(L, 1);
+	const Position& fromPos = getPosition(L, 2);
+	const Position& toPos = getPosition(L, 3);
+	g_game.registerInstanceArea(instanceId, fromPos, toPos);
+	pushBoolean(L, true);
+	return 1;
+}
+
+int luaGameUnregisterInstanceArea(lua_State* L)
+{
+	// Game.unregisterInstanceArea(instanceId)
+	uint32_t instanceId = getInteger<uint32_t>(L, 1);
+	g_game.unregisterInstanceArea(instanceId);
+	pushBoolean(L, true);
+	return 1;
+}
+
+int luaGameGetInstanceArea(lua_State* L)
+{
+	// Game.getInstanceArea(instanceId) -> {fromPos, toPos} or nil
+	uint32_t instanceId = getInteger<uint32_t>(L, 1);
+	const Game::InstanceArea* area = g_game.getInstanceArea(instanceId);
+	if (!area) {
+		lua_pushnil(L);
+		return 1;
+	}
+	lua_createtable(L, 0, 2);
+	pushPosition(L, area->fromPos);
+	lua_setfield(L, -2, "fromPos");
+	pushPosition(L, area->toPos);
+	lua_setfield(L, -2, "toPos");
+	return 1;
+}
 } // namespace
 
 void LuaScriptInterface::registerGame()
@@ -856,4 +901,8 @@ void LuaScriptInterface::registerGame()
 	registerMethod("Game", "getStorageValue", luaGameGetGameStorageValue);
 	registerMethod("Game", "setStorageValue", luaGameSetGameStorageValue);
 	registerMethod("Game", "saveStorageValues", luaGameSaveGameStorageValues);
+
+	registerMethod("Game", "registerInstanceArea", luaGameRegisterInstanceArea);
+	registerMethod("Game", "unregisterInstanceArea", luaGameUnregisterInstanceArea);
+	registerMethod("Game", "getInstanceArea", luaGameGetInstanceArea);
 }

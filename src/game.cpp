@@ -63,6 +63,37 @@ GameState_t Game::getGameState() const { return gameState.load(std::memory_order
 
 void Game::setWorldType(WorldType_t type) { worldType = type; }
 
+void Game::registerInstanceArea(uint32_t instanceId, const Position& fromPos, const Position& toPos)
+{
+	if (instanceId == 0) {
+		return;
+	}
+
+	instanceAreas[instanceId] = {fromPos, toPos};
+}
+
+void Game::unregisterInstanceArea(uint32_t instanceId)
+{
+	instanceAreas.erase(instanceId);
+}
+
+const Game::InstanceArea* Game::getInstanceArea(uint32_t instanceId) const
+{
+	const auto it = instanceAreas.find(instanceId);
+	return it != instanceAreas.end() ? &it->second : nullptr;
+}
+
+bool Game::isPositionInArea(const Position& pos, const Position& fromPos, const Position& toPos)
+{
+	const int32_t minX = std::min<int32_t>(fromPos.x, toPos.x);
+	const int32_t maxX = std::max<int32_t>(fromPos.x, toPos.x);
+	const int32_t minY = std::min<int32_t>(fromPos.y, toPos.y);
+	const int32_t maxY = std::max<int32_t>(fromPos.y, toPos.y);
+	const int32_t minZ = std::min<int32_t>(fromPos.z, toPos.z);
+	const int32_t maxZ = std::max<int32_t>(fromPos.z, toPos.z);
+	return pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY && pos.z >= minZ && pos.z <= maxZ;
+}
+
 void Game::setGameState(GameState_t newState)
 {
 	if (gameState.load(std::memory_order_acquire) == GAME_STATE_SHUTDOWN) {
@@ -4095,9 +4126,14 @@ void Game::changeSpeed(Creature* creature, int32_t varSpeedDelta)
 	// send to clients
 	SpectatorVec spectators;
 	map.getSpectators(spectators, creature->getPosition(), false, true);
+	const uint32_t creatureInstance = creature->getInstanceID();
 	for (Creature* spectator : spectators) {
 		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendChangeSpeed(creature, creature->getStepSpeed());
+		Player* p = static_cast<Player*>(spectator);
+		if (!p->compareInstance(creatureInstance)) {
+			continue;
+		}
+		p->sendChangeSpeed(creature, creature->getStepSpeed());
 	}
 }
 
@@ -4108,8 +4144,13 @@ void Game::setCreatureSpeed(Creature* creature, int32_t speed)
 	//send to clients
 	SpectatorVec spectators;
 	map.getSpectators(spectators, creature->getPosition(), false, true);
+	const uint32_t creatureInstance = creature->getInstanceID();
 	for (Creature* spectator : spectators) {
-		spectator->getPlayer()->sendChangeSpeed(creature, creature->getStepSpeed());
+		Player* p = spectator->getPlayer();
+		if (!p->compareInstance(creatureInstance)) {
+			continue;
+		}
+		p->sendChangeSpeed(creature, creature->getStepSpeed());
 	}
 }
 
@@ -4128,9 +4169,14 @@ void Game::internalCreatureChangeOutfit(Creature* creature, const Outfit_t& outf
 	// send to clients
 	SpectatorVec spectators;
 	map.getSpectators(spectators, creature->getPosition(), true, true);
+	const uint32_t creatureInstance = creature->getInstanceID();
 	for (Creature* spectator : spectators) {
 		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendCreatureChangeOutfit(creature, outfit);
+		Player* p = static_cast<Player*>(spectator);
+		if (!p->compareInstance(creatureInstance)) {
+			continue;
+		}
+		p->sendCreatureChangeOutfit(creature, outfit);
 	}
 }
 
@@ -4139,9 +4185,14 @@ void Game::internalCreatureChangeVisible(Creature* creature, bool visible)
 	// send to clients
 	SpectatorVec spectators;
 	map.getSpectators(spectators, creature->getPosition(), true, true);
+	const uint32_t creatureInstance = creature->getInstanceID();
 	for (Creature* spectator : spectators) {
 		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendCreatureChangeVisible(creature, visible);
+		Player* p = static_cast<Player*>(spectator);
+		if (!p->compareInstance(creatureInstance)) {
+			continue;
+		}
+		p->sendCreatureChangeVisible(creature, visible);
 	}
 }
 
@@ -4150,9 +4201,14 @@ void Game::changeLight(const Creature* creature)
 	// send to clients
 	SpectatorVec spectators;
 	map.getSpectators(spectators, creature->getPosition(), true, true);
+	const uint32_t creatureInstance = creature->getInstanceID();
 	for (Creature* spectator : spectators) {
 		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendCreatureLight(creature);
+		Player* p = static_cast<Player*>(spectator);
+		if (!p->compareInstance(creatureInstance)) {
+			continue;
+		}
+		p->sendCreatureLight(creature);
 	}
 }
 
@@ -4617,7 +4673,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 			}
 
 			if (message.primary.color != TEXTCOLOR_NONE) {
-				addAnimatedText(fmt::format("{:+d}", -message.primary.value), targetPos, message.primary.color);
+				addAnimatedText(spectators, fmt::format("{:+d}", -message.primary.value), targetPos, message.primary.color);
 			}
 		}
 
@@ -4870,7 +4926,7 @@ void Game::addCreatureHealth(const SpectatorVec& spectators, const Creature* tar
 	}
 }
 
-void Game::addAnimatedText(std::string_view message, const Position& pos, TextColor_t color)
+void Game::addAnimatedText(std::string_view message, const Position& pos, TextColor_t color, uint32_t instanceId)
 {
 	if (message.empty()) {
 		return;
@@ -4878,6 +4934,9 @@ void Game::addAnimatedText(std::string_view message, const Position& pos, TextCo
 
 	SpectatorVec spectators;
 	map.getSpectators(spectators, pos, true, true);
+	if (instanceId != 0) {
+		spectators = InstanceUtils::filterByInstance(spectators, instanceId);
+	}
 	addAnimatedText(spectators, message, pos, color);
 }
 
@@ -4915,13 +4974,16 @@ void InstanceUtils::sendMagicEffectToInstance(const Position &pos, uint32_t inst
 	sendMagicEffectToInstance(spectators, pos, effect, instanceId);
 }
 
-void Game::addDistanceEffect(const Position& fromPos, const Position& toPos, uint16_t effect)
+void Game::addDistanceEffect(const Position& fromPos, const Position& toPos, uint16_t effect, uint32_t instanceId)
 {
 	SpectatorVec spectators, toPosSpectators;
 	map.getSpectators(spectators, fromPos, true, true);
 	map.getSpectators(toPosSpectators, toPos, true, true);
 	spectators.addSpectators(toPosSpectators);
 
+	if (instanceId != 0) {
+		spectators = InstanceUtils::filterByInstance(spectators, instanceId);
+	}
 	addDistanceEffect(spectators, fromPos, toPos, effect);
 }
 
@@ -5197,9 +5259,13 @@ void Game::updateCreatureWalkthrough(const Creature* creature)
 	// send to clients
 	SpectatorVec spectators;
 	map.getSpectators(spectators, creature->getPosition(), true, true);
+	const uint32_t creatureInstance = creature->getInstanceID();
 	for (Creature* spectator : spectators) {
 		assert(dynamic_cast<Player*>(spectator) != nullptr);
 		auto tmpPlayer = static_cast<Player*>(spectator);
+		if (!tmpPlayer->compareInstance(creatureInstance)) {
+			continue;
+		}
 		tmpPlayer->sendCreatureWalkthrough(creature, tmpPlayer->canWalkthroughEx(creature));
 	}
 }
@@ -5209,9 +5275,14 @@ void Game::updateKnownCreature(const Creature* creature)
 	// send to clients
 	SpectatorVec spectators;
 	map.getSpectators(spectators, creature->getPosition(), true, true);
+	const uint32_t creatureInstance = creature->getInstanceID();
 	for (Creature* spectator : spectators) {
 		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendUpdateTileCreature(creature);
+		Player* p = static_cast<Player*>(spectator);
+		if (!p->compareInstance(creatureInstance)) {
+			continue;
+		}
+		p->sendUpdateTileCreature(creature);
 	}
 }
 
@@ -5219,8 +5290,13 @@ void Game::updateCreatureEmblem(Creature* creature)
 {
 	SpectatorVec spectators;
 	map.getSpectators(spectators, creature->getPosition(), true, true);
+	const uint32_t creatureInstance = creature->getInstanceID();
 	for (Creature* spectator : spectators) {
-		spectator->getPlayer()->sendCreatureEmblem(creature);
+		Player* p = spectator->getPlayer();
+		if (!p->compareInstance(creatureInstance)) {
+			continue;
+		}
+		p->sendCreatureEmblem(creature);
 	}
 }
 
@@ -5232,9 +5308,14 @@ void Game::updateCreatureSkull(const Creature* creature)
 
 	SpectatorVec spectators;
 	map.getSpectators(spectators, creature->getPosition(), true, true);
+	const uint32_t creatureInstance = creature->getInstanceID();
 	for (Creature* spectator : spectators) {
 		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendCreatureSkull(creature);
+		Player* p = static_cast<Player*>(spectator);
+		if (!p->compareInstance(creatureInstance)) {
+			continue;
+		}
+		p->sendCreatureSkull(creature);
 	}
 }
 
@@ -5242,9 +5323,14 @@ void Game::updatePlayerShield(Player* player)
 {
 	SpectatorVec spectators;
 	map.getSpectators(spectators, player->getPosition(), true, true);
+	const uint32_t creatureInstance = player->getInstanceID();
 	for (Creature* spectator : spectators) {
 		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendCreatureShield(player);
+		Player* p = static_cast<Player*>(spectator);
+		if (!p->compareInstance(creatureInstance)) {
+			continue;
+		}
+		p->sendCreatureShield(player);
 	}
 }
 
