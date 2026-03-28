@@ -86,14 +86,26 @@ This custom version includes several enhanced systems and fully integrated featu
 
 ### 🐧 Ubuntu 22.04 / 24.04
 
+> [!IMPORTANT]
+> This project requires Boost 1.75+ and Lua 5.4.
+> - **Ubuntu 24.04**: Recommended (comes with required versions).
+> - **Ubuntu 22.04**: You may need to manually update Boost, as the default version is 1.74.
+
+#### 1. Install dependencies
+
 ```bash
-# Install dependencies
-sudo apt install git cmake build-essential libluajit-5.1-dev libmysqlclient-dev libboost-system-dev libboost-iostreams-dev libboost-filesystem-dev libboost-locale-dev libpugixml-dev libfmt-dev libssl-dev libspdlog-dev -y
+sudo apt install git cmake build-essential liblua5.4-dev libmysqlclient-dev libboost-system-dev libboost-iostreams-dev libboost-filesystem-dev libboost-locale-dev libboost-regex-dev libpugixml-dev libfmt-dev libssl-dev libspdlog-dev -y
+```
 
-# (Optional but recommended) Install mimalloc for better memory allocation performance
+#### 2. Install mimalloc (optional but recommended)
+
+```bash
 sudo apt install libmimalloc-dev -y
+```
 
-# Clone and compile
+#### 3. Clone and compile
+
+```bash
 git clone -b Revscrypt-full --single-branch https://github.com/Mateuzkl/forgottenserver-downgrade-1.8-8.60.git
 cd forgottenserver-downgrade-1.8-8.60
 mkdir build && cd build
@@ -168,13 +180,12 @@ if(version >= 860) then
     g_game.enableFeature(GameEnhancedAnimations)
     g_game.enableFeature(GameSpritesU32)
     g_game.enableFeature(GameExtendedClientPing)
-    g_game.enableFeature(GameChangeMapAwareRange)
     g_game.enableFeature(GameDoublePlayerGoodsMoney)
 end
 ```
 
 **2. Extended Sprites (GameSpritesU32)**
-- Download the sprites: [860-otcv-revisado2.rar](https://www.mediafire.com/file/iyas69j0sanddyr/860-otcv-revisado2.rar/file)
+- Download the sprites: [Octv8--Classic-8.6](https://github.com/Mateuzkl/Octv8--Classic-8.6)
 - Extract `.spr` and `.dat` to your OTCv8 directory.
 
 > **Client With DLL (Mounts)**: [Download Client 8.60 + DLL](https://github.com/Mateuzkl/Client-cip-8.60-with-DLL-Mount).*
