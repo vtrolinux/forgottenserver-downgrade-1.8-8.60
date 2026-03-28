@@ -1874,6 +1874,7 @@ void Monster::death(Creature*)
 						lootItem->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
 					}
 					rewardContainer->internalAddThing(lootItem);
+					lootItem->decrementReferenceCounter();
 					hasLoot = true;
 				} else if (!lootBlock.unique) {
 					// Normal loot distribution for non-unique items
@@ -1888,6 +1889,7 @@ void Monster::death(Creature*)
 							lootItem->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
 						}
 						rewardContainer->internalAddThing(lootItem);
+						lootItem->decrementReferenceCounter();
 						hasLoot = true;
 					}
 				}
@@ -1903,6 +1905,7 @@ void Monster::death(Creature*)
 						lootString += (*lootIt)->getNameDescription();
 					}
 					player->getRewardChest().internalAddThing(rewardContainer);
+					rewardContainer->decrementReferenceCounter();
 					player->sendTextMessage(MESSAGE_STATUS_DEFAULT,
 					                        "The following items dropped by " + getMonster()->getName() +
 					                            " are available in your reward chest: Reward Container (" + lootString +
