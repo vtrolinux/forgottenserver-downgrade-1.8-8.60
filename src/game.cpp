@@ -112,10 +112,8 @@ void Game::setGameState(GameState_t newState)
 			LOG_INFO(">> Global events saved and shutdown.");
 
 			// kick all players that are still online
-			auto it = players.begin();
-			while (it != players.end()) {
-				it->second->kickPlayer(true);
-				it = players.begin();
+			while (!players.empty()) {
+				players.begin()->second->kickPlayer(true);
 			}
 			LOG_INFO(">> All players kicked.");
 
@@ -145,8 +143,7 @@ void Game::setGameState(GameState_t newState)
 			g_globalEvents->save();
 
 			/* kick all players without the CanAlwaysLogin flag */
-			auto it = players.begin();
-			while (it != players.end()) {
+			for (auto it = players.begin(); it != players.end();) {
 				if (!it->second->hasFlag(PlayerFlag_CanAlwaysLogin)) {
 					it->second->kickPlayer(true);
 					it = players.begin();
@@ -3911,7 +3908,7 @@ bool Game::internalCreatureSay(Creature* creature, SpeakClasses type, std::strin
 void Game::checkCreatureWalk(uint32_t creatureId)
 {
 	Creature* creature = getCreatureByID(creatureId);
-	if (creature && !creature->isDead()) {
+	if (creature && !creature->isRemoved() && !creature->isDead()) {
 		creature->onWalk();
 	}
 }
@@ -3919,7 +3916,7 @@ void Game::checkCreatureWalk(uint32_t creatureId)
 void Game::updateCreatureWalk(uint32_t creatureId)
 {
 	Creature* creature = getCreatureByID(creatureId);
-	if (creature && !creature->isDead()) {
+	if (creature && !creature->isRemoved() && !creature->isDead()) {
 		creature->goToFollowCreature();
 	}
 }
@@ -3927,14 +3924,18 @@ void Game::updateCreatureWalk(uint32_t creatureId)
 void Game::checkCreatureAttack(uint32_t creatureId)
 {
 	Creature* creature = getCreatureByID(creatureId);
-	if (creature && !creature->isDead()) {
+	if (creature && !creature->isRemoved() && !creature->isDead()) {
 		creature->onAttacking(0);
 	}
 }
 
 void Game::addCreatureCheck(Creature* creature)
 {
-	if (!creature) {
+	if (!creature || creature->isRemoved()) {
+		return;
+	}
+
+	if (gameState == GAME_STATE_SHUTDOWN) {
 		return;
 	}
 
@@ -3963,9 +3964,6 @@ void Game::removeCreatureCheck(Creature* creature)
 
 void Game::checkCreatures(size_t index)
 {
-	g_scheduler.addEvent(createSchedulerTask(EVENT_CHECK_CREATURE_INTERVAL,
-	                                         [index]() { g_game.checkCreatures((index + 1) % EVENT_CREATURECOUNT); }));
-
 	auto& checkCreatureList = checkCreatureLists[index];
 	size_t i = 0;
 
@@ -4007,6 +4005,9 @@ void Game::checkCreatures(size_t index)
 #ifdef STATS_ENABLED
 	g_stats.playersOnline = getPlayersOnline();
 #endif
+
+	g_scheduler.addEvent(createSchedulerTask(EVENT_CHECK_CREATURE_INTERVAL,
+	                                         [index]() { g_game.checkCreatures((index + 1) % EVENT_CREATURECOUNT); }));
 }
 
 void Game::checkSereneStatus()

@@ -343,12 +343,8 @@ void startServer()
 	// Shutdown ThreadPool first - async map saves need DB connection alive
 	g_threadPool.shutdown();
 
-	// Cleanup Lua environment before shutting down threads
-	LuaEnvironment::shutdown();
-
-	// Cleanup MySQL connection and library
-	Database::shutdown();
-
+	// Wait for all dispatcher/scheduler tasks to finish (including Game::shutdown)
+	// before closing the Lua environment. NPCs and their NpcScriptInterface
 	g_scheduler.join();
 	g_databaseTasks.join();
 	g_dispatcher.join();
@@ -356,6 +352,12 @@ void startServer()
 	g_stats.join();
 #endif
 
+	// Only now is it safe to close Lua — all NpcScriptInterface destructors
+	// have already run and released their eventTableRef handles.
+	LuaEnvironment::shutdown();
+
+	// Cleanup MySQL connection and library
+	Database::shutdown();
 }
 
 void printServerVersion()

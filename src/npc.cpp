@@ -529,16 +529,11 @@ NpcScriptInterface::NpcScriptInterface() : LuaScriptInterface("Npc interface")
 
 bool NpcScriptInterface::initState()
 {
-	luaState = g_luaEnvironment.getLuaState();
-	if (!luaState) {
+	if (!LuaScriptInterface::initState()) {
 		return false;
 	}
 
 	registerFunctions();
-
-	lua_newtable(luaState);
-	eventTableRef = luaL_ref(luaState, LUA_REGISTRYINDEX);
-	runningEventId = EVENT_ID_USER;
 	return true;
 }
 

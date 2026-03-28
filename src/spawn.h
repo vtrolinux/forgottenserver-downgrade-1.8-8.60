@@ -98,8 +98,9 @@ public:
 	}
 
 private:
-	std::forward_list<Npc*> npcList;
+	std::forward_list<std::unique_ptr<Npc>> npcList;
 	std::forward_list<Spawn> spawnList;
+	std::vector<Npc*> activeNpcs;
 	std::string filename;
 	bool loaded = false;
 	bool started = false;

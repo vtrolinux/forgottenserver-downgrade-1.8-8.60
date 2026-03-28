@@ -23,9 +23,6 @@ inline constexpr int32_t MAXSPAWN_INTERVAL = 24 * 60 * 60 * 1000; // 1 day
 
 Spawns::~Spawns()
 {
-	for (Npc* npc : npcList) {
-		delete npc;
-	}
 	npcList.clear();
 
 	spawnList.clear();
@@ -190,8 +187,7 @@ bool Spawns::loadFromXml(std::string_view filename)
 				    Position(centerPos.x + pugi::cast<uint16_t>(childNode.attribute("x").value()),
 				             centerPos.y + pugi::cast<uint16_t>(childNode.attribute("y").value()), centerPos.z),
 				    radius);
-				npcList.push_front(npc.get());
-				npc.release();
+				npcList.push_front(std::move(npc));
 			}
 		}
 	}
@@ -204,10 +200,13 @@ void Spawns::startup()
 		return;
 	}
 
-	for (Npc* npc : npcList) {
-		if (!g_game.placeCreature(npc, npc->getMasterPos(), false, true)) {
+	for (auto& npc : npcList) {
+		if (g_game.placeCreature(npc.get(), npc->getMasterPos(), false, true)) {
+			activeNpcs.push_back(npc.get());
+			npc.release();
+		} else {
 			LOG_WARN(fmt::format("[Warning - Spawns::startup] Couldn't spawn npc \"{}\" on position: {}.", npc->getName(), npc->getMasterPos()));
-			delete npc;
+			// unique_ptr deletes automatically on clear() below
 		}
 	}
 	npcList.clear();
@@ -226,10 +225,9 @@ void Spawns::clear()
 		spawn.stopEvent();
 	}
 	spawnList.clear();
+	activeNpcs.clear();
 
-	for (Npc* npc : npcList) {
-		delete npc;
-	}
+	// unique_ptr delete automatically
 	npcList.clear();
 
 	loaded = false;
