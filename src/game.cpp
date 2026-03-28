@@ -1186,10 +1186,12 @@ ReturnValue Game::internalMoveItem(Cylinder* fromCylinder, Cylinder* toCylinder,
 					}
 				}
 			}
-			if (const Tile* toTile = toCylinder->getTile()) {
-				if (const TileItemVector* items = toTile->getItemList()) {
-					if (items->size() >= TILE_MAX_ITEMS) {
-						return RETURNVALUE_CANNOTADDMOREITEMSONTILE;
+			if (dynamic_cast<const Tile*>(toCylinder)) {
+				if (const Tile *toTile = toCylinder->getTile()) {
+					if (const TileItemVector *items = toTile->getItemList()) {
+						if (items->size() >= TILE_MAX_ITEMS) {
+							return RETURNVALUE_CANNOTADDMOREITEMSONTILE;
+						}
 					}
 				}
 			}
