@@ -1777,6 +1777,21 @@ void ProtocolGame::sendChannel(uint16_t channelId, std::string_view channelName)
 void ProtocolGame::sendChannelMessage(std::string_view author, std::string_view text, SpeakClasses type,
                                       uint16_t channel)
 {
+	if (!player) {
+		return;
+	}
+
+	ChatChannel* varChannel = g_chat->getChannelById(channel);
+	std::string messageText(text);
+
+	bool isLootChannel = (channel == 10);
+	bool isPlayerInChannel = (varChannel && varChannel->getUsers().contains(player->getID()));
+
+	if (isLootChannel && !isPlayerInChannel) {
+		player->sendTextMessage(MESSAGE_INFO_DESCR, messageText);
+		return;
+	}
+
 	NetworkMessage msg;
 	msg.addByte(0xAA);
 	msg.add<uint32_t>(0x00);

@@ -10,7 +10,13 @@ event.onDropLoot = function(self, corpse)
 
 	local player = Player(corpse:getCorpseOwner())
 	local mType = self:getType()
-	if not player or player:getStamina() > 840 or not configManager.getBoolean(configKeys.STAMINA_SYSTEM) then
+
+	local staminaOk = true
+	if player and configManager.getBoolean(configKeys.STAMINA_SYSTEM) then
+		staminaOk = player:getStamina() > 840
+	end
+
+	if not player or staminaOk then
 		local monsterLoot = mType:getLoot()
 		for i = 1, #monsterLoot do
 			local item = corpse:createLootItem(monsterLoot[i])
