@@ -850,7 +850,7 @@ void LuaScriptInterface::registerGame()
 
 	registerMethod("Game", "getSpectators", luaGameGetSpectators);
 	registerMethod("Game", "getPlayers", luaGameGetPlayers);
-registerMethod("Game", "getSpawnRate", luaGameGetSpawnRate);
+	registerMethod("Game", "getSpawnRate", luaGameGetSpawnRate);
 	registerMethod("Game", "getNpcs", luaGameGetNpcs);
 	registerMethod("Game", "getMonsters", luaGameGetMonsters);
 	registerMethod("Game", "loadMap", luaGameLoadMap);

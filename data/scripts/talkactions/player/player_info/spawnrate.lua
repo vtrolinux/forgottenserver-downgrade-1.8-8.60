@@ -17,7 +17,7 @@ function talkaction.onSay(player, words, param)
 	end
 
 	local msg = string.format(
-		"[Spawn Rate]\n" ..
+		"                  [Spawn Rate]\n" ..
 		"--------------------------------\n" ..
 		"The server spawn rate adjusts\n" ..
 		"based on players online to keep\n" ..
