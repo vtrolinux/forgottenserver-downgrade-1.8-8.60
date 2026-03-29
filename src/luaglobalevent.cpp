@@ -48,6 +48,8 @@ int luaGlobalEventType(lua_State* L)
 			global->setEventType(GLOBALEVENT_RECORD);
 		} else if (tmpStr == "save") {
 			global->setEventType(GLOBALEVENT_SAVE);
+		} else if (tmpStr == "think") {
+			global->setEventType(GLOBALEVENT_TIMER);
 		} else {
 			LOG_ERROR(fmt::format("[Error - CreatureEvent::configureLuaEvent] Invalid type for global event: {}", typeName));
 			pushBoolean(L, false);
