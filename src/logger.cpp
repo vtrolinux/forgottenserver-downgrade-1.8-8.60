@@ -300,7 +300,7 @@ Logger& g_logger()
 		return *loggerInstance;
 	}
 
-	std::lock_guard<std::mutex> lock(loggerMutex);
+	std::scoped_lock lock(loggerMutex);
 	if (!loggerInitialized.load(std::memory_order_acquire) || !loggerInstance) {
 		throw std::runtime_error("Logger not initialized. Call initLogger() first.");
 	}
@@ -309,7 +309,7 @@ Logger& g_logger()
 
 bool initLogger(LogLevel level, std::string_view filePath, size_t rotateSize, size_t rotateFiles)
 {
-	std::lock_guard<std::mutex> lock(loggerMutex);
+	std::scoped_lock lock(loggerMutex);
 
 	if (loggerInitialized.load(std::memory_order_acquire)) {
 		if (loggerInstance) {
@@ -334,7 +334,7 @@ bool initLogger(LogLevel level, std::string_view filePath, size_t rotateSize, si
 
 void shutdownLogger()
 {
-	std::lock_guard<std::mutex> lock(loggerMutex);
+	std::scoped_lock lock(loggerMutex);
 	if (loggerInitialized.load(std::memory_order_acquire)) {
 		shutdownInProgress.store(true, std::memory_order_release);
 

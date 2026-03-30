@@ -16,7 +16,7 @@
 Connection_ptr ConnectionManager::createConnection(boost::asio::io_context& io_context,
                                                    ConstServicePort_ptr servicePort)
 {
-	std::lock_guard<std::mutex> lockClass(connectionManagerLock);
+	std::scoped_lock lockClass(connectionManagerLock);
 
 	if (connections.size() >= static_cast<size_t>(getInteger(ConfigManager::MAX_CONNECTIONS))) {
 		LOG_WARN(fmt::format("[ConnectionManager] Max connections ({}) reached. Rejecting new connection.", getInteger(ConfigManager::MAX_CONNECTIONS)));
@@ -30,7 +30,7 @@ Connection_ptr ConnectionManager::createConnection(boost::asio::io_context& io_c
 
 void ConnectionManager::releaseConnection(const Connection_ptr& connection)
 {
-	std::lock_guard<std::mutex> lockClass(connectionManagerLock);
+	std::scoped_lock lockClass(connectionManagerLock);
 
 	// Decrement IP counter
 	uint32_t ip = connection->getLastIp();
@@ -50,7 +50,7 @@ void ConnectionManager::releaseConnection(const Connection_ptr& connection)
 
 void ConnectionManager::closeAll()
 {
-	std::lock_guard<std::mutex> lockClass(connectionManagerLock);
+	std::scoped_lock lockClass(connectionManagerLock);
 
 	for (const auto& connection : connections) {
 		try {
@@ -66,13 +66,13 @@ void ConnectionManager::closeAll()
 
 bool ConnectionManager::isMaxConnectionsReached()
 {
-	std::lock_guard<std::mutex> lockClass(connectionManagerLock);
+	std::scoped_lock lockClass(connectionManagerLock);
 	return connections.size() >= static_cast<size_t>(getInteger(ConfigManager::MAX_CONNECTIONS));
 }
 
 bool ConnectionManager::isMaxConnectionsPerIPReached(uint32_t ip)
 {
-	std::lock_guard<std::mutex> lockClass(connectionManagerLock);
+	std::scoped_lock lockClass(connectionManagerLock);
 	auto it = ipConnectionCount.find(ip);
 	if (it == ipConnectionCount.end()) {
 		return false;
@@ -88,14 +88,14 @@ bool ConnectionManager::isMaxConnectionsPerIPReached(uint32_t ip)
 
 size_t ConnectionManager::getConnectionCount() const
 {
-	std::lock_guard<std::mutex> lockClass(connectionManagerLock);
+	std::scoped_lock lockClass(connectionManagerLock);
 	return connections.size();
 }
 
 void ConnectionManager::trackIPConnection(uint32_t ip)
 {
 	if (ip == 0) return;
-	std::lock_guard<std::mutex> lockClass(connectionManagerLock);
+	std::scoped_lock lockClass(connectionManagerLock);
 	ipConnectionCount[ip]++;
 }
 
@@ -107,7 +107,7 @@ void Connection::close(bool force)
 	// Previously, releaseConnection was called outside the lock, allowing two threads
 	// to both pass the 'closed' check and corrupt ConnectionManager state.
 
-	std::lock_guard<std::recursive_mutex> lockClass(connectionLock);
+	std::scoped_lock lockClass(connectionLock);
 	if (closed) {
 		return;
 	}
@@ -153,7 +153,7 @@ void Connection::accept(Protocol_ptr protocol)
 
 void Connection::accept()
 {
-	std::lock_guard<std::recursive_mutex> lockClass(connectionLock);
+	std::scoped_lock lockClass(connectionLock);
 	try {
 		readTimer.expires_after(std::chrono::seconds(CONNECTION_READ_TIMEOUT));
 		readTimer.async_wait(
@@ -175,7 +175,7 @@ void Connection::accept()
 
 void Connection::parseHeader(const boost::system::error_code& error)
 {
-	std::lock_guard<std::recursive_mutex> lockClass(connectionLock);
+	std::scoped_lock lockClass(connectionLock);
 	readTimer.cancel();
 
 	if (error) {
@@ -225,7 +225,7 @@ void Connection::parseHeader(const boost::system::error_code& error)
 
 void Connection::parsePacket(const boost::system::error_code& error)
 {
-	std::lock_guard<std::recursive_mutex> lockClass(connectionLock);
+	std::scoped_lock lockClass(connectionLock);
 	readTimer.cancel();
 
 	if (error) {
@@ -292,7 +292,7 @@ void Connection::parsePacket(const boost::system::error_code& error)
 
 void Connection::send(const OutputMessage_ptr& msg)
 {
-	std::lock_guard<std::recursive_mutex> lockClass(connectionLock);
+	std::scoped_lock lockClass(connectionLock);
 	if (closed) {
 		return;
 	}
@@ -334,7 +334,7 @@ void Connection::internalSend(const OutputMessage_ptr& msg)
 
 uint32_t Connection::getIP()
 {
-	std::lock_guard<std::recursive_mutex> lockClass(connectionLock);
+	std::scoped_lock lockClass(connectionLock);
 
 	// IP-address is expressed in network byte order
 	boost::system::error_code error;
@@ -348,7 +348,7 @@ uint32_t Connection::getIP()
 
 void Connection::onWriteOperation(const boost::system::error_code& error)
 {
-	std::lock_guard<std::recursive_mutex> lockClass(connectionLock);
+	std::scoped_lock lockClass(connectionLock);
 	writeTimer.cancel();
 	messageQueue.pop_front();
 

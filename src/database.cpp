@@ -129,11 +129,11 @@ void Database::shutdown()
 
 bool Database::beginTransaction()
 {
-	databaseLock.lock();
+	transactionLock = std::unique_lock(databaseLock);
 	const bool result = executeQuery("START TRANSACTION");
 	retryQueries = !result;
 	if (!result) {
-		databaseLock.unlock();
+		transactionLock.unlock();
 	}
 	return result;
 }
@@ -142,7 +142,7 @@ bool Database::rollback()
 {
 	const bool result = executeQuery("ROLLBACK");
 	retryQueries = true;
-	databaseLock.unlock();
+	transactionLock.unlock();
 	return result;
 }
 
@@ -150,13 +150,13 @@ bool Database::commit()
 {
 	const bool result = executeQuery("COMMIT");
 	retryQueries = true;
-	databaseLock.unlock();
+	transactionLock.unlock();
 	return result;
 }
 
 bool Database::executeQuery(std::string_view query)
 {
-	std::lock_guard<std::recursive_mutex> lockGuard(databaseLock);
+	std::scoped_lock lockGuard(databaseLock);
 #ifdef STATS_ENABLED
 	std::chrono::high_resolution_clock::time_point time_point = std::chrono::high_resolution_clock::now();
 #endif
@@ -177,7 +177,7 @@ bool Database::executeQuery(std::string_view query)
 
 DBResult_ptr Database::storeQuery(std::string_view query)
 {
-	std::lock_guard<std::recursive_mutex> lockGuard(databaseLock);
+	std::scoped_lock lockGuard(databaseLock);
 
 #ifdef STATS_ENABLED
 	std::chrono::high_resolution_clock::time_point time_point = std::chrono::high_resolution_clock::now();

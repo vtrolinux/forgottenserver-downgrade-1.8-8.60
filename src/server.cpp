@@ -45,7 +45,7 @@ void cleanupConnectMap(std::map<uint32_t, ConnectBlock>& ipConnectMap, uint64_t 
 bool acceptConnection(const uint32_t clientIP)
 {
 	static std::recursive_mutex mu;
-	std::lock_guard lock{mu};
+	std::scoped_lock lock{mu};
 
 	uint64_t currentTime = OTSYS_TIME();
 

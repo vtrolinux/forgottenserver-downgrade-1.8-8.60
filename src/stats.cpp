@@ -104,22 +104,22 @@ void Stats::threadMain() {
 }
 
 void Stats::addDispatcherTask(int index, std::unique_ptr<Task> task) {
-	std::lock_guard<std::mutex> lockClass(statsLock);
+	std::scoped_lock lockClass(statsLock);
 	dispatchers[index].queue.push_front(std::move(task));
 }
 
 void Stats::addLuaStats(std::unique_ptr<Stat> stats) {
-	std::lock_guard<std::mutex> lockClass(statsLock);
+	std::scoped_lock lockClass(statsLock);
 	lua.queue.push_front(std::move(stats));
 }
 
 void Stats::addSqlStats(std::unique_ptr<Stat> stats) {
-	std::lock_guard<std::mutex> lockClass(statsLock);
+	std::scoped_lock lockClass(statsLock);
 	sql.queue.push_front(std::move(stats));
 }
 
 void Stats::addSpecialStats(std::unique_ptr<Stat> stats) {
-	std::lock_guard<std::mutex> lockClass(statsLock);
+	std::scoped_lock lockClass(statsLock);
 	special.queue.push_front(std::move(stats));
 }
 

@@ -23,7 +23,7 @@ extern Game g_game;
 
 bool LoginAttemptLimiter::allowLogin(uint32_t ip)
 {
-	std::lock_guard<std::mutex> lock(mu);
+	std::scoped_lock lock(mu);
 	int64_t now = OTSYS_TIME();
 
 	auto it = attempts.find(ip);
@@ -49,7 +49,7 @@ bool LoginAttemptLimiter::allowLogin(uint32_t ip)
 
 void LoginAttemptLimiter::recordFailure(uint32_t ip)
 {
-	std::lock_guard<std::mutex> lock(mu);
+	std::scoped_lock lock(mu);
 	int64_t now = OTSYS_TIME();
 
 	auto& info = attempts[ip];
@@ -73,7 +73,7 @@ void LoginAttemptLimiter::recordFailure(uint32_t ip)
 
 void LoginAttemptLimiter::recordSuccess(uint32_t ip)
 {
-	std::lock_guard<std::mutex> lock(mu);
+	std::scoped_lock lock(mu);
 	attempts.erase(ip);
 }
 

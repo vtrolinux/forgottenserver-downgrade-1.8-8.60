@@ -36,7 +36,7 @@ std::shared_ptr<BasicItem> MapCache::tryGetItemFromCache(const std::shared_ptr<B
     
     size_t h = item->hash();
     
-    std::lock_guard<std::mutex> lock(itemCacheMutex);
+    std::scoped_lock lock(itemCacheMutex);
     
     auto it = itemCache.find(h);
     if (it != itemCache.end()) {
@@ -69,7 +69,7 @@ std::shared_ptr<BasicTile> MapCache::tryGetTileFromCache(const std::shared_ptr<B
     
     size_t h = tile->hash();
     
-    std::lock_guard<std::mutex> lock(tileCacheMutex);
+    std::scoped_lock lock(tileCacheMutex);
     
     auto it = tileCache.find(h);
     if (it != tileCache.end()) {
@@ -127,7 +127,7 @@ void MapCache::flush() {
 
 void MapCache::cleanupExpiredEntries() {
     {
-        std::lock_guard<std::mutex> lock(itemCacheMutex);
+        std::scoped_lock lock(itemCacheMutex);
         for (auto it = itemCache.begin(); it != itemCache.end();) {
             if (it->second.expired()) {
                 it = itemCache.erase(it);
@@ -138,7 +138,7 @@ void MapCache::cleanupExpiredEntries() {
     }
     
     {
-        std::lock_guard<std::mutex> lock(tileCacheMutex);
+        std::scoped_lock lock(tileCacheMutex);
         for (auto it = tileCache.begin(); it != tileCache.end();) {
             if (it->second.expired()) {
                 it = tileCache.erase(it);
@@ -150,12 +150,12 @@ void MapCache::cleanupExpiredEntries() {
 }
 
 size_t MapCache::getItemCacheSize() {
-    std::lock_guard<std::mutex> lock(itemCacheMutex);
+    std::scoped_lock lock(itemCacheMutex);
     return itemCache.size();
 }
 
 size_t MapCache::getTileCacheSize() {
-    std::lock_guard<std::mutex> lock(tileCacheMutex);
+    std::scoped_lock lock(tileCacheMutex);
     return tileCache.size();
 }
 

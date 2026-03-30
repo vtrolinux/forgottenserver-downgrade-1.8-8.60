@@ -65,7 +65,7 @@ void Dispatcher::threadMain()
 
         // Critical section: move tasks to the temporary list
         {
-            std::lock_guard<std::mutex> lockGuard(taskLock);
+            std::scoped_lock lockGuard(taskLock);
             if (!taskList.empty()) {
                 tmpTaskList.swap(taskList);
             }
@@ -120,7 +120,7 @@ void Dispatcher::threadMain()
     tmpTaskList.clear();
 
     {
-        std::lock_guard<std::mutex> lockGuard(taskLock);
+        std::scoped_lock lockGuard(taskLock);
         taskList.clear();
     }
 }
@@ -130,7 +130,7 @@ void Dispatcher::addTask(std::unique_ptr<Task> task)
 	bool do_signal = false;
 
 	{
-		std::lock_guard<std::mutex> lockGuard(taskLock);
+		std::scoped_lock lockGuard(taskLock);
 
 		if (getState() == THREAD_STATE_RUNNING) {
 			do_signal = taskList.empty();
@@ -150,7 +150,7 @@ void Dispatcher::shutdown()
     task->trackInStats = false; // sentinel must always be freed by threadMain
 
 	{
-		std::lock_guard<std::mutex> lockGuard(taskLock);
+		std::scoped_lock lockGuard(taskLock);
 		taskList.push_back(std::move(task));
 	}
 

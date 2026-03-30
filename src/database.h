@@ -122,6 +122,7 @@ private:
 
 	tfs::detail::Mysql_ptr handle = nullptr;
 	std::recursive_mutex databaseLock;
+	std::unique_lock<std::recursive_mutex> transactionLock;
 	uint64_t maxPacketSize = 1048576;
 	// Do not retry queries if we are in the middle of a transaction
 	bool retryQueries = true;
