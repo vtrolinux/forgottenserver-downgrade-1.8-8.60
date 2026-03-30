@@ -5187,30 +5187,39 @@ void Game::shutdown()
 		}
 	}
 
-	cleanup();
-
-	map.spawns.clear();
-	raids.clear();
-
-	// Release items pending in the decay queue AFTER map structures are
-	// cleared so that tile ownership of corpses/splashes is already gone
-	// before we decrement their reference counters.  g_decay.clear() calls
-	// ReleaseItem() on every pending item, pushing them into ToReleaseItems.
-	// The second cleanup() then calls decrementReferenceCounter() on each —
-	// the first cleanup() above ran before these items were enqueued and
-	// would have missed them.
-	g_decay.clear();
-	cleanup(); // flush items enqueued by g_decay.clear()
+	for (auto creature : ToReleaseCreatures) {
+		if (creature && Creature::isAlive(creature)) {
+			creature->releaseLuaReferences();
+		}
+	}
 
 	for (auto& checkCreatureList : checkCreatureLists) {
 		for (Creature* creature : checkCreatureList) {
-			creature->inCheckCreaturesVector = false;
-			creature->decrementReferenceCounter();
+			if (Creature::isAlive(creature)) {
+				creature->releaseLuaReferences();
+			}
+		}
+	}
+
+	g_luaEnvironment.shutdown();
+
+	for (auto& checkCreatureList : checkCreatureLists) {
+		for (Creature* creature : checkCreatureList) {
+			if (Creature::isAlive(creature)) {
+				creature->inCheckCreaturesVector = false;
+				creature->decrementReferenceCounter();
+			}
 		}
 		checkCreatureList.clear();
 	}
 
-	g_luaEnvironment.shutdown();
+	map.spawns.clear();
+	raids.clear();
+
+	cleanup();
+
+	g_decay.clear();
+	cleanup();
 
 	g_scheduler.shutdown();
 	g_databaseTasks.shutdown();
@@ -5232,6 +5241,9 @@ void Game::cleanup()
 {
 	// free memory
 	for (auto creature : ToReleaseCreatures) {
+		if (!creature || !Creature::isAlive(creature)) {
+			continue;
+		}
 		creature->decrementReferenceCounter();
 	}
 	ToReleaseCreatures.clear();

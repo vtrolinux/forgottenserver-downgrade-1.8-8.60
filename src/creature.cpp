@@ -17,10 +17,18 @@
 
 extern Game g_game;
 
-Creature::Creature() { onIdleStatus(); }
+std::unordered_set<const Creature*> Creature::liveCreatures;
+
+Creature::Creature()
+{
+	liveCreatures.insert(this);
+	onIdleStatus();
+}
 
 Creature::~Creature()
 {
+	liveCreatures.erase(this);
+
 	for (Creature* summon : summons) {
 		summon->setAttackedCreature(nullptr);
 		summon->removeMaster();

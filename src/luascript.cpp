@@ -282,12 +282,11 @@ bool LuaScriptInterface::reInitState()
 
 void LuaEnvironment::shutdown()
 {
-    // Force garbage collection before closing
     if (g_luaEnvironment.luaState) {
+        lua_gc(g_luaEnvironment.luaState, LUA_GCCOLLECT, 0);
         lua_gc(g_luaEnvironment.luaState, LUA_GCCOLLECT, 0);
     }
 
-    // Close the main Lua state
     g_luaEnvironment.closeState();
 }
 
@@ -769,6 +768,7 @@ void Lua::setCreatureMetatable(lua_State* L, int32_t index, const Creature* crea
 	}
 	lua_setmetatable(L, index - 1);
 	const_cast<Creature*>(creature)->incrementReferenceCounter();
+	const_cast<Creature*>(creature)->incrementLuaRefCount();
 }
 
 // Is

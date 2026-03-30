@@ -394,6 +394,7 @@ bool Spawn::spawnMonster(uint32_t spawnId, MonsterType* mType, const Position& p
 
 	// Insert succeeded: transfer ownership out of unique_ptr.
 	monster_ptr.release();
+	monster->incrementReferenceCounter(); // +1 ref for spawnedMap entry
 	monster->setDirection(dir);
 	monster->setSpawn(this);
 	monster->setMasterPos(finalPos);

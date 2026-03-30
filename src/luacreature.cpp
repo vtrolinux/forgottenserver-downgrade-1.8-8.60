@@ -1189,8 +1189,16 @@ int luaCreatureSetInstanceId(lua_State *L)
 int LuaScriptInterface::luaCreatureGC(lua_State* L)
 {
 	Creature** creaturePtr = getRawUserdata<Creature>(L, 1);
-	if (creaturePtr) {
+	if (creaturePtr && *creaturePtr) {
+		Creature* creature = *creaturePtr;
 		*creaturePtr = nullptr;
+
+		if (Creature::isAlive(creature)) {
+			if (creature->luaRefCount > 0) {
+				--creature->luaRefCount;
+				creature->decrementReferenceCounter();
+			}
+		}
 	}
 	return 0;
 }

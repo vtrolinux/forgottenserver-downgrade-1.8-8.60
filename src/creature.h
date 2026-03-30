@@ -12,6 +12,8 @@
 #include "position.h"
 #include "tile.h"
 
+#include <unordered_set>
+
 using ConditionList = std::list<Condition_ptr>;
 using CreatureEventList = std::list<CreatureEvent*>;
 
@@ -89,6 +91,8 @@ public:
 	Creature* getCreature() override final { return this; }
 	const Creature* getCreature() const override final { return this; }
 	int32_t getReferenceCounter() const { return referenceCounter; }
+
+	static bool isAlive(const Creature* c) { return liveCreatures.count(c) > 0; }
 	virtual Player* getPlayer() { return nullptr; }
 	virtual const Player* getPlayer() const { return nullptr; }
 	virtual Npc* getNpc() { return nullptr; }
@@ -354,6 +358,15 @@ public:
 		}
 	}
 
+	void incrementLuaRefCount() { ++luaRefCount; }
+	void releaseLuaReferences()
+	{
+		while (luaRefCount > 0) {
+			--luaRefCount;
+			decrementReferenceCounter();
+		}
+	}
+
 	virtual void setStorageValue(uint32_t key, std::optional<int64_t> value, bool isSpawn = false);
 	virtual std::optional<int64_t> getStorageValue(uint32_t key) const;
 	decltype(auto) getStorageMap() const { return storageMap; }
@@ -407,6 +420,7 @@ protected:
 
 	uint64_t lastStep = 0;
 	uint32_t referenceCounter = 0;
+	uint32_t luaRefCount = 0;
 	uint32_t id = 0;
 	uint32_t scriptEventsBitField = 0;
 	uint32_t eventWalk = 0;
@@ -471,6 +485,8 @@ protected:
 
 private:
 	std::unordered_map<uint32_t, int64_t> storageMap;
+
+	static std::unordered_set<const Creature*> liveCreatures;
 };
 
 #endif
