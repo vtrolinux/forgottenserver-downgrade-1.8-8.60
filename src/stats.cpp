@@ -70,7 +70,7 @@ void Stats::threadMain() {
 					(execution_time / 10000.) / static_cast<float>(DUMP_INTERVAL),
 					(dispatcher.waitTime / 10000.) / static_cast<float>(DUMP_INTERVAL),
 					100. - (((execution_time + dispatcher.waitTime) / 10000.) / static_cast<float>(DUMP_INTERVAL)),
-					playersOnline);
+					playersOnline.load());
 				if(dispatcher.waitTime > 0)
 					writeStats("dispatcher.log", dispatcher.stats, msg);
 				dispatcher.stats.clear();
