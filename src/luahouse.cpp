@@ -233,14 +233,15 @@ int luaHouseGetOwnerGuild(lua_State* L)
 
 int luaHouseSetOwnerGuid(lua_State* L)
 {
-	// house:setOwnerGuid(guid[, updateDatabase = true])
+	// house:setOwnerGuid(guid[, updateDatabase = true[, player]])
 	House* house = getUserdata<House>(L, 1);
 	if (house) {
 		uint32_t guid_guild = getInteger<uint32_t>(L, 2);
 		bool updateDatabase = getBoolean(L, 3, true);
+		Player* previousPlayer = lua_gettop(L) >= 4 ? getUserdata<Player>(L, 4) : nullptr;
 
 		if (house->getType() == HOUSE_TYPE_GUILDHALL && guid_guild == 0) {
-			house->setOwner(0, updateDatabase);
+			house->setOwner(0, updateDatabase, previousPlayer);
 			pushBoolean(L, true);
 			return 1;
 		}

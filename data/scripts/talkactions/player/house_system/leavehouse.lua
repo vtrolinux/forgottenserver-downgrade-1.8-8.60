@@ -1,5 +1,4 @@
 local talkaction = TalkAction("!leavehouse")
-
 function talkaction.onSay(player, words, param)
     local position = player:getPosition()
     local tile = Tile(position)
@@ -30,7 +29,7 @@ function talkaction.onSay(player, words, param)
             return false
         end
 
-        house:setOwnerGuid(0)
+        house:setOwnerGuid(0, true, player)
 
     elseif houseType == HOUSE_TYPE_GUILDHALL then
         local guild = player:getGuild()
@@ -57,7 +56,6 @@ function talkaction.onSay(player, words, param)
 
         local isLeader = player:isGuildLeader()
         local isVice = player:isGuildVice()
-
         if not (isLeader or isVice) then
             player:sendCancelMessage("Only Guild Leader or Vice-Leader of the owning guild can leave this guildhall.")
             position:sendMagicEffect(CONST_ME_POFF)
@@ -135,7 +133,7 @@ function talkaction.onSay(player, words, param)
         end
 
         validReceipt:remove(1)
-        house:setOwnerGuid(0)
+        house:setOwnerGuid(0, true, player)
 
     else
         player:sendCancelMessage("You cannot leave this property.")
@@ -148,6 +146,5 @@ function talkaction.onSay(player, words, param)
     position:sendMagicEffect(CONST_ME_POFF)
     return false
 end
-
 talkaction:register()
 

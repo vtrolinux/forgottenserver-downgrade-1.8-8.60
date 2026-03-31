@@ -279,39 +279,43 @@ bool House::transferToDepot() const
 		return false;
 	}
 
-	if (type == HOUSE_TYPE_NORMAL) {
-		Player* player = g_game.getPlayerByGUID(owner);
-		if (player) {
-			transferToDepot(player);
-		} else {
-			Player tmpPlayer(nullptr);
-			if (!IOLoginData::loadPlayerById(&tmpPlayer, owner)) {
-				return false;
-			}
+	Player* onlinePlayer = nullptr;
+	Player tmpPlayer(nullptr);
+	Player* targetPlayer = nullptr;
+	bool needsSave = false;
 
-			transferToDepot(&tmpPlayer);
-			IOLoginData::savePlayer(&tmpPlayer);
+	if (type == HOUSE_TYPE_NORMAL) {
+		onlinePlayer = g_game.getPlayerByGUID(owner);
+		if (onlinePlayer) {
+			targetPlayer = onlinePlayer;
+		} else if (IOLoginData::loadPlayerById(&tmpPlayer, owner)) {
+			targetPlayer = &tmpPlayer;
+			needsSave = true;
 		}
 	} else { // HOUSE_TYPE_GUILDHALL
 		auto guild = g_game.getGuild(owner);
 		if (!guild) {
 			guild = IOGuild::loadGuild(owner);
-			if (!guild) {
-				LOG_WARN(fmt::format("Warning: [Houses::transferToDepot] Failed to find guild associated to guildhall = {}. Guild = {}", id, owner));
-				return false;
+		}
+		if (guild) {
+			onlinePlayer = g_game.getPlayerByGUID(guild->getOwnerGUID());
+			if (onlinePlayer) {
+				targetPlayer = onlinePlayer;
+			} else if (IOLoginData::loadPlayerById(&tmpPlayer, guild->getOwnerGUID())) {
+				targetPlayer = &tmpPlayer;
+				needsSave = true;
 			}
 		}
-		Player* player = g_game.getPlayerByGUID(guild->getOwnerGUID());
-		if (player) {
-			transferToDepot(player);
-		} else {
-			Player tmpPlayer(nullptr);
-			if (!IOLoginData::loadPlayerById(&tmpPlayer, guild->getOwnerGUID())) {
-				return false;
-			}
-			transferToDepot(&tmpPlayer);
-			IOLoginData::savePlayer(&tmpPlayer);
-		}
+	}
+
+	if (!targetPlayer) {
+		LOG_WARN(fmt::format("[House::transferToDepot] Could not find owner for house {}. Items remain on tiles.", id));
+		return false;
+	}
+
+	transferToDepot(targetPlayer);
+	if (needsSave) {
+		IOLoginData::savePlayer(&tmpPlayer);
 	}
 	return true;
 }
