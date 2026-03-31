@@ -19,7 +19,7 @@ Connection_ptr ConnectionManager::createConnection(boost::asio::io_context& io_c
 	std::scoped_lock lockClass(connectionManagerLock);
 
 	if (connections.size() >= static_cast<size_t>(getInteger(ConfigManager::MAX_CONNECTIONS))) {
-		LOG_WARN(fmt::format("[ConnectionManager] Max connections ({}) reached. Rejecting new connection.", getInteger(ConfigManager::MAX_CONNECTIONS)));
+		LOG_NETWORK(fmt::format("Max connections ({}) reached. Rejecting new connection.", getInteger(ConfigManager::MAX_CONNECTIONS)));
 		return nullptr;
 	}
 
@@ -103,11 +103,13 @@ void ConnectionManager::trackIPConnection(uint32_t ip)
 
 void Connection::close(bool force)
 {
-	// Lock first — prevents double-close race condition during concurrent shutdown.
-	// Previously, releaseConnection was called outside the lock, allowing two threads
-	// to both pass the 'closed' check and corrupt ConnectionManager state.
-
 	std::scoped_lock lockClass(connectionLock);
+	closeLocked(force);
+}
+
+void Connection::closeLocked(bool force)
+{
+	// Must be called with connectionLock held.
 	if (closed) {
 		return;
 	}
@@ -136,7 +138,7 @@ void Connection::closeSocket()
 			socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
 			socket.close(error);
 		} catch (boost::system::system_error& e) {
-			LOG_ERROR(fmt::format("[Network error - Connection::closeSocket] {}", e.what()));
+			LOG_NETWORK(fmt::format("Error - Connection::closeSocket: {}", e.what()));
 		}
 	}
 }
@@ -168,8 +170,8 @@ void Connection::accept()
 			    thisPtr->parseHeader(error);
 		    });
 	} catch (boost::system::system_error& e) {
-		LOG_ERROR(fmt::format("[Network error - Connection::accept] {}", e.what()));
-		close(FORCE_CLOSE);
+		LOG_NETWORK(fmt::format("Error - Connection::accept: {}", e.what()));
+		closeLocked(FORCE_CLOSE);
 	}
 }
 
@@ -179,7 +181,7 @@ void Connection::parseHeader(const boost::system::error_code& error)
 	readTimer.cancel();
 
 	if (error) {
-		close(FORCE_CLOSE);
+		closeLocked(FORCE_CLOSE);
 		return;
 	} else if (closed) {
 		return;
@@ -187,8 +189,8 @@ void Connection::parseHeader(const boost::system::error_code& error)
 
 	uint32_t timePassed = std::max<uint32_t>(1, (time(nullptr) - timeConnected) + 1);
 	if ((++packetsSent / timePassed) > getInteger(ConfigManager::MAX_PACKETS_PER_SECOND)) {
-		LOG_ERROR(fmt::format("{} disconnected for exceeding packet per second limit.", convertIPToString(getIP())));
-		close();
+		LOG_NETWORK(fmt::format("{} disconnected for exceeding packet per second limit.", convertIPToString(getIPLocked())));
+		closeLocked(false);
 		return;
 	}
 
@@ -199,7 +201,7 @@ void Connection::parseHeader(const boost::system::error_code& error)
 
 	uint16_t size = msg.getLengthHeader();
 	if (size == 0 || size >= NETWORKMESSAGE_MAXSIZE - 16) {
-		close(FORCE_CLOSE);
+		closeLocked(FORCE_CLOSE);
 		return;
 	}
 
@@ -218,8 +220,8 @@ void Connection::parseHeader(const boost::system::error_code& error)
 			    thisPtr->parsePacket(error);
 		    });
 	} catch (boost::system::system_error& e) {
-		LOG_ERROR(fmt::format("[Network error - Connection::parseHeader] {}", e.what()));
-		close(FORCE_CLOSE);
+		LOG_NETWORK(fmt::format("Error - Connection::parseHeader: {}", e.what()));
+		closeLocked(FORCE_CLOSE);
 	}
 }
 
@@ -229,7 +231,7 @@ void Connection::parsePacket(const boost::system::error_code& error)
 	readTimer.cancel();
 
 	if (error) {
-		close(FORCE_CLOSE);
+		closeLocked(FORCE_CLOSE);
 		return;
 	} else if (closed) {
 		return;
@@ -253,13 +255,13 @@ void Connection::parsePacket(const boost::system::error_code& error)
 	if (!receivedFirst) {
 		// First message received
 		receivedFirst = true;
-		lastIp = getIP();
+		lastIp = getIPLocked();
 
 		if (!protocol) {
 			// Game protocol has already been created at this point
 			protocol = service_port->make_protocol(recvChecksum == checksum, msg, shared_from_this());
 			if (!protocol) {
-				close(FORCE_CLOSE);
+				closeLocked(FORCE_CLOSE);
 				return;
 			}
 		} else {
@@ -285,8 +287,8 @@ void Connection::parsePacket(const boost::system::error_code& error)
 			    thisPtr->parseHeader(error);
 		    });
 	} catch (boost::system::system_error& e) {
-		LOG_ERROR(fmt::format("[Network error - Connection::parsePacket] {}", e.what()));
-		close(FORCE_CLOSE);
+		LOG_NETWORK(fmt::format("Error - Connection::parsePacket: {}", e.what()));
+		closeLocked(FORCE_CLOSE);
 	}
 }
 
@@ -304,9 +306,9 @@ void Connection::send(const OutputMessage_ptr& msg)
 			boost::asio::post(socket.get_executor(),
 			                  [thisPtr = shared_from_this(), msg] { thisPtr->internalSend(msg); });
 		} catch (const boost::system::system_error& e) {
-			LOG_ERROR(fmt::format("[Network error - Connection::send] {}", e.what()));
+			LOG_NETWORK(fmt::format("Error - Connection::send: {}", e.what()));
 			messageQueue.clear();
-			close(FORCE_CLOSE);
+			closeLocked(FORCE_CLOSE);
 		}
 	}
 }
@@ -327,7 +329,7 @@ void Connection::internalSend(const OutputMessage_ptr& msg)
 			    thisPtr->onWriteOperation(error);
 		    });
 	} catch (boost::system::system_error& e) {
-		LOG_ERROR(fmt::format("[Network error - Connection::internalSend] {}", e.what()));
+		LOG_NETWORK(fmt::format("Error - Connection::internalSend: {}", e.what()));
 		close(FORCE_CLOSE);
 	}
 }
@@ -335,8 +337,12 @@ void Connection::internalSend(const OutputMessage_ptr& msg)
 uint32_t Connection::getIP()
 {
 	std::scoped_lock lockClass(connectionLock);
+	return getIPLocked();
+}
 
-	// IP-address is expressed in network byte order
+uint32_t Connection::getIPLocked()
+{
+	// Must be called with connectionLock held, or from a safe context.
 	boost::system::error_code error;
 	const boost::asio::ip::tcp::endpoint endpoint = socket.remote_endpoint(error);
 	if (error) {
@@ -354,7 +360,7 @@ void Connection::onWriteOperation(const boost::system::error_code& error)
 
 	if (error) {
 		messageQueue.clear();
-		close(FORCE_CLOSE);
+		closeLocked(FORCE_CLOSE);
 		return;
 	}
 

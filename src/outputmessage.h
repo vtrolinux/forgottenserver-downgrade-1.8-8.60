@@ -114,12 +114,14 @@ public:
 
 	static OutputMessage_ptr getOutputMessage();
 
+	static void prewarmPool(size_t count);
+
 	void addProtocolToAutosend(Protocol_ptr protocol);
 
 	void removeProtocolFromAutosend(const Protocol_ptr& protocol);
 
 private:
-	OutputMessagePool() = default;
+	OutputMessagePool() { bufferedProtocols.reserve(256); }
 
 	std::vector<Protocol_ptr> bufferedProtocols;
 };

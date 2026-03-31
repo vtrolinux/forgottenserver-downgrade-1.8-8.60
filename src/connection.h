@@ -6,6 +6,7 @@
 
 #include "networkmessage.h"
 
+#include <deque>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -65,10 +66,11 @@ public:
 	};
 
 	Connection(boost::asio::io_context& io_context, ConstServicePort_ptr service_port) :
-	    readTimer(io_context),
-	    writeTimer(io_context),
+	    strand(boost::asio::make_strand(io_context)),
+	    readTimer(strand),
+	    writeTimer(strand),
 	    service_port(std::move(service_port)),
-	    socket(io_context),
+	    socket(strand),
 	    timeConnected(time(nullptr))
 	{}
 	~Connection();
@@ -94,19 +96,22 @@ private:
 	static void handleTimeout(ConnectionWeak_ptr connectionWeak, const boost::system::error_code& error);
 
 	void closeSocket();
+	void closeLocked(bool force);
 	void internalSend(const OutputMessage_ptr& msg);
+	uint32_t getIPLocked();
 
 	boost::asio::ip::tcp::socket& getSocket() { return socket; }
 	friend class ServicePort;
 
 	NetworkMessage msg;
 
+	boost::asio::strand<boost::asio::io_context::executor_type> strand;
 	boost::asio::steady_timer readTimer;
 	boost::asio::steady_timer writeTimer;
 
 	std::recursive_mutex connectionLock;
 
-	std::list<OutputMessage_ptr> messageQueue;
+	std::deque<OutputMessage_ptr> messageQueue;
 
 	ConstServicePort_ptr service_port;
 	Protocol_ptr protocol;

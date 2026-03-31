@@ -105,15 +105,31 @@ ServiceManager::~ServiceManager() { stop(); }
 void ServiceManager::die()
 {
 	// Close all connections before stopping the io_context.
-	// Without this, Connection destructors run after io_context is destroyed,
+	// Without this, Connection destructors run after io_context is destroyed.
 	ConnectionManager::getInstance().closeAll();
 	io_context.stop();
+
+	// Wait for all I/O threads to finish (jthread join is automatic, but be explicit)
+	ioThreads.clear();
 }
 
 void ServiceManager::run()
 {
 	assert(!running);
 	running = true;
+
+	// Spawn additional io_context threads for parallel I/O (XTEA encrypt + async_write).
+	// The main thread also runs io_context.run(), so total = networkThreads.
+	int networkThreads = std::max(1, static_cast<int>(getInteger(ConfigManager::NETWORK_THREADS)));
+	int extraThreads = networkThreads - 1;
+
+	if (extraThreads > 0) {
+		ioThreads.reserve(extraThreads);
+		for (int i = 0; i < extraThreads; ++i) {
+			ioThreads.emplace_back([this]() { io_context.run(); });
+		}
+	}
+
 	io_context.run();
 }
 
@@ -129,7 +145,7 @@ void ServiceManager::stop()
 		try {
 			boost::asio::post(io_context, [servicePort = servicePortIt.second]() { servicePort->onStopServer(); });
 		} catch (boost::system::system_error& e) {
-			LOG_ERROR(fmt::format("[ServiceManager::stop] Network Error: {}", e.what()));
+			LOG_NETWORK(fmt::format("Error - ServiceManager::stop: {}", e.what()));
 		}
 	}
 
@@ -271,7 +287,7 @@ void ServicePort::open(uint16_t port)
 
 		accept();
 	} catch (boost::system::system_error& e) {
-		LOG_ERROR(fmt::format("[ServicePort::open] Error: {}", e.what()));
+		LOG_NETWORK(fmt::format("Error - ServicePort::open: {}", e.what()));
 
 		pendingStart = true;
 		g_scheduler.addEvent(createSchedulerTask(

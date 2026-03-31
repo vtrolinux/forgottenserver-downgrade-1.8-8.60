@@ -5,12 +5,13 @@
 #define FS_SERVER_H
 
 #include "connection.h"
-#include "connection.h"
 #include "signals.h"
 #include "logger.h"
 #include <fmt/format.h>
 
 #include <memory>
+#include <thread>
+#include <vector>
 
 class Protocol;
 
@@ -98,6 +99,7 @@ private:
 	boost::asio::io_context io_context;
 	Signals signals{io_context};
 	boost::asio::steady_timer death_timer{io_context};
+	std::vector<std::jthread> ioThreads;
 	bool running = false;
 };
 

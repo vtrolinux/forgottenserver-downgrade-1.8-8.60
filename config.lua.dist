@@ -84,10 +84,12 @@ maxPacketsPerSecond = 25
 -- Connection Limits Config
 -- NOTE: maxConnections: maximum total concurrent connections (0 = no limit)
 -- NOTE: maxConnectionsPerIP: maximum concurrent connections per IP (0 = no limit)
+-- NOTE: networkThreads: number of I/O threads for parallel XTEA encrypt + async_write (default: 2)
 -- NOTE: connectionRateLimitAllowed: how many connections allowed within the rate window before blocking
 -- NOTE: connectionRateLimitMS: minimum interval between connections from the same IP (in ms)
 maxConnections = 2000
 maxConnectionsPerIP = 10
+networkThreads = 2
 connectionRateLimitAllowed = 10
 connectionRateLimitMS = 500
 

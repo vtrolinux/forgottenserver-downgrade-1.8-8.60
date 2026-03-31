@@ -521,6 +521,7 @@ bool ConfigManager::load()
 	// Connection Limits
 	integers[Integer::MAX_CONNECTIONS] = getGlobalInteger(L, "maxConnections", 2000);
 	integers[Integer::MAX_CONNECTIONS_PER_IP] = getGlobalInteger(L, "maxConnectionsPerIP", 10);
+	integers[Integer::NETWORK_THREADS] = getGlobalInteger(L, "networkThreads", 2);
 	integers[Integer::CONNECTION_RATE_LIMIT_ALLOWED] = getGlobalInteger(L, "connectionRateLimitAllowed", 10);
 	integers[Integer::CONNECTION_RATE_LIMIT_MS] = getGlobalInteger(L, "connectionRateLimitMS", 500);
 

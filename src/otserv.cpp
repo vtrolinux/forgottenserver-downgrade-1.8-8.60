@@ -11,6 +11,7 @@
 #include "game.h"
 #include "imbuement.h"
 #include "logger.h"
+#include "outputmessage.h"
 #include "protocollogin.h"
 #include "protocoladmin.h"
 #include "protocolstatus.h"
@@ -276,6 +277,9 @@ void mainLoader(ServiceManager* services)
 	g_game.start(services);
 	g_game.setGameState(GAME_STATE_NORMAL);
 
+	// Pre-warm the OutputMessage pool to avoid operator new() on first connections
+	OutputMessagePool::prewarmPool(128);
+
 #ifdef STATS_ENABLED
 	g_stats.setEnabled(true);
 #endif
@@ -316,6 +320,12 @@ void startServer()
 			fmt::format(fg(fmt::color::lime_green), "{}", getInteger(ConfigManager::LOGIN_PORT)),
 			fmt::format(fg(fmt::color::lime_green), "{}", getInteger(ConfigManager::GAME_PORT)),
 			fmt::format(fg(fmt::color::lime_green), "{}", getString(ConfigManager::IP)));
+		{
+			int networkThreads = std::max(1, static_cast<int>(getInteger(ConfigManager::NETWORK_THREADS)));
+			if (networkThreads > 1) {
+				LOG_NETWORK(">> I/O threads: {}", networkThreads);
+			}
+		}
 		LOG_INFO("");
 		LOG_INFO(">> {} Server Online!", getString(ConfigManager::SERVER_NAME));
 	serviceManager.run();
