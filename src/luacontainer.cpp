@@ -167,8 +167,8 @@ int luaContainerAddItem(lua_State* L)
 		count = std::min<uint16_t>(count, it.stackSize);
 	}
 
-	Item* item = Item::CreateItem(itemId, count).release();
-	if (!item) {
+	auto itemPtr = Item::CreateItem(itemId, count);
+	if (!itemPtr) {
 		lua_pushnil(L);
 		return 1;
 	}
@@ -176,12 +176,12 @@ int luaContainerAddItem(lua_State* L)
 	int32_t index = getInteger<int32_t>(L, 4, INDEX_WHEREEVER);
 	uint32_t flags = getInteger<uint32_t>(L, 5, 0);
 
-	ReturnValue ret = g_game.internalAddItem(container, item, index, flags);
+	ReturnValue ret = g_game.internalAddItem(container, itemPtr.get(), index, flags);
 	if (ret == RETURNVALUE_NOERROR) {
+		Item* item = itemPtr.release();
 		pushUserdata<Item>(L, item);
 		setItemMetatable(L, -1, item);
 	} else {
-		delete item;
 		lua_pushnil(L);
 	}
 	return 1;

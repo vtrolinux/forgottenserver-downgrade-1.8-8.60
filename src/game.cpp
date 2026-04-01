@@ -1677,10 +1677,10 @@ ReturnValue Game::internalPlayerAddItem(Player* player, Item* item, bool dropOnM
 	uint32_t remainderCount = 0;
 	ReturnValue ret = internalAddItem(player, item, static_cast<int32_t>(slot), 0, false, remainderCount);
 	if (remainderCount != 0) {
-		Item* remainderItem = Item::CreateItem(item->getID(), static_cast<uint16_t>(remainderCount)).release();
-		ReturnValue remaindRet = internalAddItem(player->getTile(), remainderItem, INDEX_WHEREEVER, FLAG_NOLIMIT);
-		if (remaindRet != RETURNVALUE_NOERROR) {
-			ReleaseItem(remainderItem);
+		auto remainderItem = Item::CreateItem(item->getID(), static_cast<uint16_t>(remainderCount));
+		ReturnValue remaindRet = internalAddItem(player->getTile(), remainderItem.get(), INDEX_WHEREEVER, FLAG_NOLIMIT);
+		if (remaindRet == RETURNVALUE_NOERROR) {
+			remainderItem.release();
 		}
 	}
 

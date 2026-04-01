@@ -597,12 +597,12 @@ private:
 
 	std::unordered_map<uint32_t, LuaTimerEventDesc> timerEvents;
 	std::unordered_map<uint32_t, Combat_ptr> combatMap;
-	std::unordered_map<uint32_t, AreaCombat*> areaMap;
+	std::unordered_map<uint32_t, std::unique_ptr<AreaCombat>> areaMap;
 
 	std::unordered_map<LuaScriptInterface*, std::vector<uint32_t>> combatIdMap;
 	std::unordered_map<LuaScriptInterface*, std::vector<uint32_t>> areaIdMap;
 
-	LuaScriptInterface* testInterface = nullptr;
+	std::unique_ptr<LuaScriptInterface> testInterface;
 
 	uint32_t lastEventTimerId = 1;
 	uint32_t lastCombatId = 0;

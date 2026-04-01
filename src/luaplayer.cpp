@@ -1300,23 +1300,23 @@ int luaPlayerAddItem(lua_State* L)
 			subType -= stackCount;
 		}
 
-		Item* item = Item::CreateItem(itemId, static_cast<uint16_t>(stackCount)).release();
-		if (!item) {
+		auto itemPtr = Item::CreateItem(itemId, static_cast<uint16_t>(stackCount));
+		if (!itemPtr) {
 			if (!hasTable) {
 				lua_pushnil(L);
 			}
 			return 1;
 		}
 
-		ReturnValue ret = g_game.internalPlayerAddItem(player, item, canDropOnMap, slot);
+		ReturnValue ret = g_game.internalPlayerAddItem(player, itemPtr.get(), canDropOnMap, slot);
 		if (ret != RETURNVALUE_NOERROR) {
-			delete item;
 			if (!hasTable) {
 				lua_pushnil(L);
 			}
 			return 1;
 		}
 
+		Item* item = itemPtr.release();
 		if (hasTable) {
 			lua_pushinteger(L, i);
 			pushUserdata<Item>(L, item);

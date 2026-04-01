@@ -2703,8 +2703,8 @@ int LuaScriptInterface::luaDoPlayerAddItem(lua_State* L)
 			stackCount = it.stackSize;
 		}
 
-		Item* newItem = Item::CreateItem(itemId, stackCount).release();
-		if (!newItem) {
+		auto itemPtr = Item::CreateItem(itemId, stackCount);
+		if (!itemPtr) {
 			reportErrorFunc(L, getErrorDesc(LuaErrorCode::ITEM_NOT_FOUND));
 			Lua::pushBoolean(L, false);
 			return 1;
@@ -2714,13 +2714,13 @@ int LuaScriptInterface::luaDoPlayerAddItem(lua_State* L)
 			subType -= stackCount;
 		}
 
-		ReturnValue ret = g_game.internalPlayerAddItem(player, newItem, canDropOnMap);
+		ReturnValue ret = g_game.internalPlayerAddItem(player, itemPtr.get(), canDropOnMap);
 		if (ret != RETURNVALUE_NOERROR) {
-			delete newItem;
 			Lua::pushBoolean(L, false);
 			return 1;
 		}
 
+		Item* newItem = itemPtr.release();
 		if (--itemCount == 0) {
 			if (newItem->getParent()) {
 				uint32_t uid = getScriptEnv()->addThing(newItem);
@@ -3043,8 +3043,8 @@ int LuaScriptInterface::luaDoAddContainerItem(lua_State* L)
 
 	while (itemCount > 0) {
 		int32_t stackCount = std::min<int32_t>(subType, it.stackSize);
-		Item* newItem = Item::CreateItem(itemId, static_cast<uint16_t>(stackCount)).release();
-		if (!newItem) {
+		auto itemPtr = Item::CreateItem(itemId, static_cast<uint16_t>(stackCount));
+		if (!itemPtr) {
 			reportErrorFunc(L, getErrorDesc(LuaErrorCode::ITEM_NOT_FOUND));
 			Lua::pushBoolean(L, false);
 			return 1;
@@ -3054,13 +3054,13 @@ int LuaScriptInterface::luaDoAddContainerItem(lua_State* L)
 			subType -= stackCount;
 		}
 
-		ReturnValue ret = g_game.internalAddItem(container, newItem);
+		ReturnValue ret = g_game.internalAddItem(container, itemPtr.get());
 		if (ret != RETURNVALUE_NOERROR) {
-			delete newItem;
 			Lua::pushBoolean(L, false);
 			return 1;
 		}
 
+		Item* newItem = itemPtr.release();
 		if (--itemCount == 0) {
 			if (newItem->getParent()) {
 				lua_pushinteger(L, env->addThing(newItem));
@@ -3641,7 +3641,7 @@ LuaEnvironment::LuaEnvironment() : LuaScriptInterface("Main Interface") {}
 
 LuaEnvironment::~LuaEnvironment()
 {
-	delete testInterface;
+	testInterface.reset();
 	closeState();
 }
 
@@ -3711,10 +3711,10 @@ bool LuaEnvironment::closeState()
 LuaScriptInterface* LuaEnvironment::getTestInterface()
 {
 	if (!testInterface) {
-		testInterface = new LuaScriptInterface("Test Interface");
+		testInterface = std::make_unique<LuaScriptInterface>("Test Interface");
 		testInterface->initState();
 	}
-	return testInterface;
+	return testInterface.get();
 }
 
 Combat_ptr LuaEnvironment::getCombatObject(uint32_t id) const
@@ -3756,12 +3756,12 @@ AreaCombat* LuaEnvironment::getAreaObject(uint32_t id) const
 	if (it == areaMap.end()) {
 		return nullptr;
 	}
-	return it->second;
+	return it->second.get();
 }
 
 uint32_t LuaEnvironment::createAreaObject(LuaScriptInterface* interface)
 {
-	areaMap[++lastAreaId] = new AreaCombat;
+	areaMap[++lastAreaId] = std::make_unique<AreaCombat>();
 	areaIdMap[interface].push_back(lastAreaId);
 	return lastAreaId;
 }
@@ -3774,11 +3774,7 @@ void LuaEnvironment::clearAreaObjects(LuaScriptInterface* interface)
 	}
 
 	for (uint32_t id : it->second) {
-		auto itt = areaMap.find(id);
-		if (itt != areaMap.end()) {
-			delete itt->second;
-			areaMap.erase(itt);
-		}
+		areaMap.erase(id);
 	}
 	it->second.clear();
 }

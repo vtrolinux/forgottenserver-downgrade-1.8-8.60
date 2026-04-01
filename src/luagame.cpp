@@ -426,32 +426,32 @@ int luaGameCreateItem(lua_State* L)
 		count = std::min<uint16_t>(count, it.stackSize);
 	}
 
-	Item* item = Item::CreateItem(id, count).release();
-	if (!item) {
+	auto itemPtr = Item::CreateItem(id, count);
+	if (!itemPtr) {
 		lua_pushnil(L);
 		return 1;
 	}
 
 	uint32_t instanceId = getInteger<uint32_t>(L, 4, 0);
 	if (instanceId != 0) {
-		item->setInstanceID(instanceId);
+		itemPtr->setInstanceID(instanceId);
 	}
 
 	if (lua_gettop(L) >= 3) {
 		const Position& position = getPosition(L, 3);
 		Tile* tile = g_game.map.getTile(position);
 		if (!tile) {
-			delete item;
 			lua_pushnil(L);
 			return 1;
 		}
 
-		g_game.internalAddItem(tile, item, INDEX_WHEREEVER, FLAG_NOLIMIT);
+		g_game.internalAddItem(tile, itemPtr.get(), INDEX_WHEREEVER, FLAG_NOLIMIT);
 	} else {
-		LuaScriptInterface::getScriptEnv()->addTempItem(item);
-		item->setParent(VirtualCylinder::virtualCylinder);
+		LuaScriptInterface::getScriptEnv()->addTempItem(itemPtr.get());
+		itemPtr->setParent(VirtualCylinder::virtualCylinder);
 	}
 
+	Item* item = itemPtr.release();
 	pushUserdata<Item>(L, item);
 	setItemMetatable(L, -1, item);
 	return 1;
@@ -472,32 +472,32 @@ int luaGameCreateContainer(lua_State* L)
 		}
 	}
 
-	Container* container = Item::CreateItemAsContainer(id, size);
-	if (!container) {
+	auto containerPtr = Item::CreateItemAsContainer(id, size);
+	if (!containerPtr) {
 		lua_pushnil(L);
 		return 1;
 	}
 
 	uint32_t instanceId = getInteger<uint32_t>(L, 4, 0);
 	if (instanceId != 0) {
-		container->setInstanceID(instanceId);
+		containerPtr->setInstanceID(instanceId);
 	}
 
 	if (lua_gettop(L) >= 3) {
 		const Position& position = getPosition(L, 3);
 		Tile* tile = g_game.map.getTile(position);
 		if (!tile) {
-			delete container;
 			lua_pushnil(L);
 			return 1;
 		}
 
-		g_game.internalAddItem(tile, container, INDEX_WHEREEVER, FLAG_NOLIMIT);
+		g_game.internalAddItem(tile, containerPtr.get(), INDEX_WHEREEVER, FLAG_NOLIMIT);
 	} else {
-		LuaScriptInterface::getScriptEnv()->addTempItem(container);
-		container->setParent(VirtualCylinder::virtualCylinder);
+		LuaScriptInterface::getScriptEnv()->addTempItem(containerPtr.get());
+		containerPtr->setParent(VirtualCylinder::virtualCylinder);
 	}
 
+	Container* container = containerPtr.release();
 	pushUserdata<Container>(L, container);
 	setMetatable(L, -1, "Container");
 	return 1;

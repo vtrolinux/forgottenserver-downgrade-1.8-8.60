@@ -882,32 +882,32 @@ int NpcScriptInterface::luaDoSellItem(lua_State* L)
 	if (it.stackable) {
 		while (amount > 0) {
 			int32_t stackCount = std::min<int32_t>(amount, it.stackSize);
-			Item* item = Item::CreateItem(it.id, static_cast<uint16_t>(stackCount)).release();
-			if (item && actionId != 0) {
-				item->setActionId(static_cast<uint16_t>(actionId));
+			auto itemPtr = Item::CreateItem(it.id, static_cast<uint16_t>(stackCount));
+			if (itemPtr && actionId != 0) {
+				itemPtr->setActionId(static_cast<uint16_t>(actionId));
 			}
 
-			if (g_game.internalPlayerAddItem(player, item, canDropOnMap) != RETURNVALUE_NOERROR) {
-				delete item;
+			if (g_game.internalPlayerAddItem(player, itemPtr.get(), canDropOnMap) != RETURNVALUE_NOERROR) {
 				lua_pushinteger(L, sellCount);
 				return 1;
 			}
+			itemPtr.release();
 
 			amount -= stackCount;
 			sellCount += stackCount;
 		}
 	} else {
 		for (uint32_t i = 0; i < amount; ++i) {
-			Item* item = Item::CreateItem(it.id, static_cast<uint16_t>(subType)).release();
-			if (item && actionId != 0) {
-				item->setActionId(static_cast<uint16_t>(actionId));
+			auto itemPtr = Item::CreateItem(it.id, static_cast<uint16_t>(subType));
+			if (itemPtr && actionId != 0) {
+				itemPtr->setActionId(static_cast<uint16_t>(actionId));
 			}
 
-			if (g_game.internalPlayerAddItem(player, item, canDropOnMap) != RETURNVALUE_NOERROR) {
-				delete item;
+			if (g_game.internalPlayerAddItem(player, itemPtr.get(), canDropOnMap) != RETURNVALUE_NOERROR) {
 				lua_pushinteger(L, sellCount);
 				return 1;
 			}
+			itemPtr.release();
 
 			++sellCount;
 		}

@@ -643,20 +643,20 @@ int luaTileAddItem(lua_State* L)
 		subType = std::min<int32_t>(subType, it.stackSize);
 	}
 
-	Item* item = Item::CreateItem(itemId, static_cast<uint16_t>(subType)).release();
-	if (!item) {
+	auto itemPtr = Item::CreateItem(itemId, static_cast<uint16_t>(subType));
+	if (!itemPtr) {
 		lua_pushnil(L);
 		return 1;
 	}
 
 	uint32_t flags = getInteger<uint32_t>(L, 4, 0);
 
-	ReturnValue ret = g_game.internalAddItem(tile, item, INDEX_WHEREEVER, flags);
+	ReturnValue ret = g_game.internalAddItem(tile, itemPtr.get(), INDEX_WHEREEVER, flags);
 	if (ret == RETURNVALUE_NOERROR) {
+		Item* item = itemPtr.release();
 		pushUserdata<Item>(L, item);
 		setItemMetatable(L, -1, item);
 	} else {
-		delete item;
 		lua_pushnil(L);
 	}
 	return 1;

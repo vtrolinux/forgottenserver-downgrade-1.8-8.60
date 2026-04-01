@@ -502,7 +502,7 @@ public:
 	// Factory member to create item of right type based on type
 	[[nodiscard]] static std::unique_ptr<Item> CreateItem(const uint16_t type, uint16_t count = 0);
 	static void clearGlobalRegistry();
-	[[nodiscard]] static Container* CreateItemAsContainer(const uint16_t type, uint16_t size);
+	[[nodiscard]] static std::unique_ptr<Container> CreateItemAsContainer(const uint16_t type, uint16_t size);
 	[[nodiscard]] static std::unique_ptr<Item> CreateItem(PropStream& propStream);
 	static Items items;
 

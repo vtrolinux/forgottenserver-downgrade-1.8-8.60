@@ -607,17 +607,15 @@ void Combat::combatTileEffects(const SpectatorVec& spectators, Creature* caster,
 			}
 		}
 
-		Item* item = Item::CreateItem(itemId).release();
+		auto itemPtr = Item::CreateItem(itemId);
 		if (caster) {
-			item->setOwner(caster->getID());
-			item->setInstanceID(caster->getInstanceID());
+			itemPtr->setOwner(caster->getID());
+			itemPtr->setInstanceID(caster->getInstanceID());
 		}
 
-		ReturnValue ret = g_game.internalAddItem(tile, item);
+		ReturnValue ret = g_game.internalAddItem(tile, itemPtr.get());
 		if (ret == RETURNVALUE_NOERROR) {
-			g_game.startDecay(item);
-		} else {
-			delete item;
+			g_game.startDecay(itemPtr.release());
 		}
 	}
 

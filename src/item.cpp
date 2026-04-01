@@ -83,7 +83,7 @@ std::unique_ptr<Item> Item::CreateItem(const uint16_t type, uint16_t count /*= 0
 	return std::unique_ptr<Item>(newItem);
 }
 
-Container* Item::CreateItemAsContainer(const uint16_t type, uint16_t size)
+std::unique_ptr<Container> Item::CreateItemAsContainer(const uint16_t type, uint16_t size)
 {
 	const ItemType& it = Item::items[type];
 	if (it.id == 0 || it.group == ITEM_GROUP_DEPRECATED || it.stackable || it.useable || it.moveable || it.pickupable ||
@@ -91,7 +91,7 @@ Container* Item::CreateItemAsContainer(const uint16_t type, uint16_t size)
 		return nullptr;
 	}
 
-	Container* newItem = new Container(type, size);
+	auto newItem = std::make_unique<Container>(type, size);
 	newItem->incrementReferenceCounter();
 	return newItem;
 }
