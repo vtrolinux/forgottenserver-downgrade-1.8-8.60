@@ -1226,10 +1226,20 @@ void Player::onChangeZone(ZoneType_t zone)
 			uint32_t gain = ConfigManager::getInteger(ConfigManager::STAMINA_PZ_GAIN);
 			sendTextMessage(MESSAGE_STATUS_SMALL, fmt::format("You're in the protection zone. Every {} minutes, gain {} stamina.", delay, gain));
 		}
+		if (!group->access && isMounted()) {
+			dismount();
+			g_game.internalCreatureChangeOutfit(this, defaultOutfit);
+			wasMounted = true;
+		}
 	} else {
 		// Stop stamina regeneration when leaving protection zone
 		sendTextMessage(MESSAGE_STATUS_SMALL, "You are no longer refilling stamina, since you left a regeneration zone.");
 		staminaPzActive = false;
+
+		if (wasMounted) {
+			toggleMount(true);
+			wasMounted = false;
+		}
 	}
 
 	g_game.updateCreatureWalkthrough(this);
