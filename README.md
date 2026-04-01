@@ -185,7 +185,34 @@ Recommended usage with **vcpkg**. See [Wiki Guide](https://github.com/MillhioreB
 
 ---
 
-## 📦 Client Configuration (OTCv8)
+## � Website (MyAAC) — SHA256 Password Support
+
+> [!IMPORTANT]
+> This TFS 1.8 uses **SHA256 + salt** for password hashing instead of the traditional SHA1. The standard MyAAC will **not work** for creating accounts or logging in.
+
+You **must** use the modified MyAAC fork that supports SHA256:
+
+**Repository:** [https://github.com/Mateuzkl/myaac](https://github.com/Mateuzkl/myaac)
+
+```bash
+git clone https://github.com/Mateuzkl/myaac.git
+```
+
+### What was changed?
+
+- Account creation hashes passwords using `SHA256 + random salt` in the format: `$SHA256$<salt>$<hash>`
+- Login verification supports both **new SHA256** and **legacy SHA1** formats
+- **Transparent migration**: when a player logs in with an old SHA1 password, the server automatically upgrades it to SHA256+salt in the database
+
+### Why?
+
+SHA1 is considered **insecure** and deprecated for password storage. SHA256 with per-account random salt provides significantly better security against rainbow table and brute-force attacks.
+
+> If you use a different AAC (Znote, Gesior, etc.), you will need to adapt the password hashing functions to use the `$SHA256$<salt>$<hash>` format described above.
+
+---
+
+## �📦 Client Configuration (OTCv8)
 
 To fully utilize features like extended sprites and mounts, updates are required:
 
