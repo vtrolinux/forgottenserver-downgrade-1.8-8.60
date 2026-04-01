@@ -530,51 +530,58 @@ bool Spell::playerRuneSpellCheck(Player* player, const Position& toPos)
 
 void Spell::postCastSpell(Player* player, bool finishedCast /*= true*/, bool payCost /*= true*/) const
 {
-	if (finishedCast) {
-		if (!player->hasFlag(PlayerFlag_HasNoExhaustion)) {
-			int32_t momentumReduction = 0;
-			Item *helmet = player->getInventoryItem(CONST_SLOT_HEAD);
-			if (helmet && helmet->getTier() > 0) {
-				double momentumChance = helmet->getMomentumChance();
-				Item *boots = player->getInventoryItem(CONST_SLOT_FEET);
-				if (boots && boots->getTier() > 0) {
-					double ampChance = boots->getMomentumChance()* 0.02;
-					momentumChance *= (1.0 + ampChance);
-				}
-				if (momentumChance > 0 && (normal_random(1, 10000) / 100.0) < momentumChance) {
-					momentumReduction = 2000; // 2 second reduction
-				}
-			}
-			if (cooldown > 0) {
-				int32_t adjustedCooldown = std::max<int32_t>(1000, static_cast<int32_t>(cooldown) - momentumReduction);
-				auto condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLCOOLDOWN,
-				                                              adjustedCooldown, 0, false, spellId);
-				player->addCondition(std::move(condition));
-			}
+    if (finishedCast) {
+        if (!player->hasFlag(PlayerFlag_HasNoExhaustion)) {
+            int32_t momentumReduction = 0;
 
-			if (groupCooldown > 0) {
-				auto condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLGROUPCOOLDOWN,
-				                                              groupCooldown, 0, false, group);
-				player->addCondition(std::move(condition));
-			}
+            Item* helmet = player->getInventoryItem(CONST_SLOT_HEAD);
+            if (helmet && helmet->getTier() > 0) {
+                double momentumChance = helmet->getMomentumChance();
 
-			if (secondaryGroupCooldown > 0) {
-				auto condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLGROUPCOOLDOWN,
-				                                              secondaryGroupCooldown, 0, false, secondaryGroup);
-				player->addCondition(std::move(condition));
-			}
-		}
+                Item* boots = player->getInventoryItem(CONST_SLOT_FEET);
+                if (boots && boots->getTier() > 0) {
+                    double ampChance = boots->getMomentumChance() * 0.02;
+                    momentumChance *= (1.0 + ampChance);
+                }
 
-		if (aggressive) {
-			player->addInFightTicks();
-		}
-	}
+                if (momentumChance > 0 && (normal_random(1, 10000) / 100.0) < momentumChance) {
+                    momentumReduction = 2000;
+                    g_game.addMagicEffect(player->getPosition(), CONST_ME_HOURGLASS, player->getInstanceID());
+                }
+            }
 
-	if (payCost) {
+            if (cooldown > 0) {
+                int32_t adjustedCooldown = std::max<int32_t>(1000, static_cast<int32_t>(cooldown) - momentumReduction);
+                auto condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLCOOLDOWN,
+                                                            adjustedCooldown, 0, false, spellId);
+                player->addCondition(std::move(condition));
+            }
+
+            if (groupCooldown > 0) {
+                int32_t adjustedGroupCooldown = std::max<int32_t>(1000, static_cast<int32_t>(groupCooldown) - momentumReduction);
+                auto condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLGROUPCOOLDOWN,
+                                                            adjustedGroupCooldown, 0, false, group);
+                player->addCondition(std::move(condition));
+            }
+
+            if (secondaryGroupCooldown > 0) {
+                int32_t adjustedSecondaryGroupCooldown = std::max<int32_t>(1000, static_cast<int32_t>(secondaryGroupCooldown) - momentumReduction);
+                auto condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLGROUPCOOLDOWN,
+                                                            adjustedSecondaryGroupCooldown, 0, false, secondaryGroup);
+                player->addCondition(std::move(condition));
+            }
+        }
+
+        if (aggressive) {
+            player->addInFightTicks();
+        }
+    }
+
+    if (payCost) { 
 		Spell::postCastSpell(player, getManaCost(player), getSoulCost());
 	}
 
-	if (harmony) {
+    if (harmony) {
 		player->setHarmony(0);
 	}
 }

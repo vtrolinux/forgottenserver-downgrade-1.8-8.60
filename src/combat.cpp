@@ -909,6 +909,25 @@ void Combat::doTargetCombat(Creature* caster, Creature* target, CombatDamage& da
 					damage.critical = true;
 				}
 			}
+
+			if (!damage.fatal && damage.primary.type != COMBAT_HEALING && damage.origin != ORIGIN_CONDITION) {
+				Item* weapon = casterPlayer->getWeapon();
+				if (weapon && weapon->getTier() > 0) {
+					double fatalChance = weapon->getFatalChance();
+					Item* boots = casterPlayer->getInventoryItem(CONST_SLOT_FEET);
+					if (boots && boots->getTier() > 0) {
+						double ampChance = boots->getMomentumChance() * 0.02;
+						fatalChance *= (1.0 + ampChance);
+					}
+					if (fatalChance > 0 && (normal_random(1, 10000) / 100.0) < fatalChance) {
+						int32_t fatalPrimary = std::round(damage.primary.value * 0.5);
+						int32_t fatalSecondary = std::round(damage.secondary.value * 0.5);
+						damage.primary.value += fatalPrimary;
+						damage.secondary.value += fatalSecondary;
+						damage.fatal = true;
+					}
+				}
+			}
 		}
 
 		success = g_game.combatChangeHealth(caster, target, damage);
