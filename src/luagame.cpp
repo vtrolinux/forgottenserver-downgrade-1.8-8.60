@@ -408,7 +408,7 @@ int luaGameGetItemAttributeByName(lua_State* L)
 
 int luaGameCreateItem(lua_State* L)
 {
-	// Game.createItem(itemId[, count[, position]])
+	// Game.createItem(itemId[, count[, position[, instanceId]]])
 	uint16_t count = getInteger<uint16_t>(L, 2, 1);
 	uint16_t id;
 	if (isInteger(L, 1)) {
@@ -430,6 +430,11 @@ int luaGameCreateItem(lua_State* L)
 	if (!item) {
 		lua_pushnil(L);
 		return 1;
+	}
+
+	uint32_t instanceId = getInteger<uint32_t>(L, 4, 0);
+	if (instanceId != 0) {
+		item->setInstanceID(instanceId);
 	}
 
 	if (lua_gettop(L) >= 3) {
@@ -454,7 +459,7 @@ int luaGameCreateItem(lua_State* L)
 
 int luaGameCreateContainer(lua_State* L)
 {
-	// Game.createContainer(itemId, size[, position])
+	// Game.createContainer(itemId, size[, position[, instanceId]])
 	uint16_t size = getInteger<uint16_t>(L, 2);
 	uint16_t id;
 	if (isInteger(L, 1)) {
@@ -471,6 +476,11 @@ int luaGameCreateContainer(lua_State* L)
 	if (!container) {
 		lua_pushnil(L);
 		return 1;
+	}
+
+	uint32_t instanceId = getInteger<uint32_t>(L, 4, 0);
+	if (instanceId != 0) {
+		container->setInstanceID(instanceId);
 	}
 
 	if (lua_gettop(L) >= 3) {
