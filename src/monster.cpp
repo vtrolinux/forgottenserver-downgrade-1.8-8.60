@@ -1868,13 +1868,8 @@ void Monster::death(Creature*)
 						lootItem->setIntAttr(ITEM_ATTRIBUTE_DATE, currentTime);
 						lootItem->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
 					}
-					// internalAddThing sets parent but does NOT increment refcount.
-					// The container destructor calls decrementReferenceCounter() for each item,
-					// so we must NOT decrement here — doing so frees the item immediately and
-					// leaves the container with a dangling pointer.
 					Item* rawLoot = lootItem.release();
 					rewardContainer->internalAddThing(rawLoot);
-					rawLoot->decrementReferenceCounter();
 					hasLoot = true;
 				} else if (!lootBlock.unique) {
 					// Normal loot distribution for non-unique items
@@ -1888,10 +1883,8 @@ void Monster::death(Creature*)
 							lootItem->setIntAttr(ITEM_ATTRIBUTE_DATE, currentTime);
 							lootItem->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
 						}
-						// Same ownership rule: container owns the item, do NOT decrement here.
 						Item* rawLoot = lootItem.release();
 						rewardContainer->internalAddThing(rawLoot);
-						rawLoot->decrementReferenceCounter();
 						hasLoot = true;
 					}
 				}
@@ -1906,8 +1899,8 @@ void Monster::death(Creature*)
 						}
 						lootString += (*lootIt)->getNameDescription();
 					}
-					// internalAddThing does NOT increment refcount, so we must NOT decrement
-					// the creator's ref afterward — the reward chest destructor will do it.
+					// internalAddThing increments refcount. Decrement creator's ref so
+					// the reward chest becomes the sole owner.
 					player->getRewardChest().internalAddThing(rewardContainer);
 					rewardContainer->decrementReferenceCounter();
 					player->sendTextMessage(MESSAGE_STATUS_DEFAULT,
