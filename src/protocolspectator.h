@@ -827,6 +827,8 @@ class ProtocolSpectator {
         bool update_status = false;
         bool debugAssertSent = false;
         bool isOTCv8 = false;
+        bool isMehah = false;
+	    bool isOTC = false;
         std::string cast_password = "";
         std::string cast_description = "";
 

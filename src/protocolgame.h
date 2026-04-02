@@ -310,6 +310,8 @@ private:
 	}
 
 	bool isOTCv8 = false;
+	bool isMehah = false;
+	bool isOTC = false;
 	bool debugAssertSent = false;
 	bool acceptPackets = false;
 
