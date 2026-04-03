@@ -2734,7 +2734,12 @@ void ProtocolGame::sendOutfitWindow()
 		protocolOutfits.emplace_back("Gamemaster", 75, 0);
 	}
 
-	size_t maxProtocolOutfits = isOTC ? 255 : 65535;
+	size_t maxProtocolOutfits = static_cast<size_t>(getInteger(ConfigManager::MAX_PROTOCOL_OUTFITS));
+	if (isOTC) {
+		maxProtocolOutfits = std::min<size_t>(maxProtocolOutfits, std::numeric_limits<uint8_t>::max());
+	} else {
+		maxProtocolOutfits = std::min<size_t>(maxProtocolOutfits, std::numeric_limits<uint16_t>::max());
+	}
 
 	for (const Outfit* outfit : outfits) {
 		uint8_t addons;
