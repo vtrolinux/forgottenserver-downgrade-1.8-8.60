@@ -1,7 +1,6 @@
 // Copyright 2023 The Forgotten Server Authors. All rights reserved.
 // Use of this source code is governed by the GPL-2.0 License that can be found in the LICENSE file.
 
-
 #include "otpch.h"
 
 #include "luascript.h"
@@ -30,10 +29,6 @@
 #include "logger.h"
 #include <fmt/format.h>
 #include "globalevent.h"
-
-extern GlobalEvents* g_globalEvents;
-
-#include <boost/range/adaptor/reversed.hpp>
 
 extern Game g_game;
 extern Vocations g_vocations;
@@ -294,10 +289,11 @@ bool LuaScriptInterface::reInitState()
 void LuaEnvironment::shutdown()
 {
     if (g_luaEnvironment.luaState) {
-        lua_gc(g_luaEnvironment.luaState, LUA_GCCOLLECT, 0);
-        lua_gc(g_luaEnvironment.luaState, LUA_GCCOLLECT, 0);
+		lua_gc(g_luaEnvironment.luaState, LUA_GCCOLLECT, 0);
+		lua_gc(g_luaEnvironment.luaState, LUA_GCCOLLECT, 0);
     }
 
+	// Close the main Lua state
     g_luaEnvironment.closeState();
 }
 
@@ -2034,10 +2030,10 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(FLUID_TEA);
 	registerEnum(FLUID_MEAD);
 
-	registerEnum(GUILDEMBLEM_NONE)
-	registerEnum(GUILDEMBLEM_ALLY)
-	registerEnum(GUILDEMBLEM_ENEMY)
-	registerEnum(GUILDEMBLEM_NEUTRAL)
+	registerEnum(GUILDEMBLEM_NONE);
+	registerEnum(GUILDEMBLEM_ALLY);
+	registerEnum(GUILDEMBLEM_ENEMY);
+	registerEnum(GUILDEMBLEM_NEUTRAL);
 
 	registerEnum(TALKTYPE_SAY);
 	registerEnum(TALKTYPE_WHISPER);
