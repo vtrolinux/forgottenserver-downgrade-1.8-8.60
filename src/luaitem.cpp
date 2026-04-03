@@ -495,7 +495,7 @@ int luaItemRemoveAttribute(lua_State* L)
 	if (isInteger(L, 2)) {
 		attribute = getInteger<itemAttrTypes>(L, 2);
 	} else if (isString(L, 2)) {
-		attribute = stringToItemAttribute(getString(L, 2));
+		attribute = stringToItemAttribute(getStringView(L, 2));
 	} else {
 		attribute = ITEM_ATTRIBUTE_NONE;
 	}
