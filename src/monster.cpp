@@ -838,9 +838,6 @@ void Monster::updateIdleStatus()
 void Monster::onAddCondition(ConditionType_t)
 {
 	updateIdleStatus();
-	if (isMapLoaded) {
-		updateMapCache();
-	}
 }
 
 void Monster::onEndCondition(ConditionType_t type)
@@ -850,9 +847,6 @@ void Monster::onEndCondition(ConditionType_t type)
 	}
 
 	updateIdleStatus();
-	if (isMapLoaded) {
-		updateMapCache();
-	}
 }
 
 void Monster::onThink(uint32_t interval)

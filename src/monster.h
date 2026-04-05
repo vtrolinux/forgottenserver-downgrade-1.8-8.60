@@ -156,8 +156,6 @@ public:
 	void removeTarget(Creature* creature);
 
 private:
-	bool useCacheMap() const override { return !randomStepping; }
-
 	CreatureHashSet friendList;
 	CreatureList targetList;
 
