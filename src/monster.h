@@ -77,6 +77,14 @@ public:
 	bool isBoss() const { return isRewardBoss(); }
 	bool canSee(const Position& pos) const override;
 	bool canSeeInvisibility() const override { return isImmune(CONDITION_INVISIBLE); }
+
+	// Influenced creature system
+	bool isInfluenced() const { return influenced; }
+	void setInfluenced(bool v);
+	uint8_t getInfluencedLevel() const { return influencedLevel; }
+	void setInfluencedLevel(uint8_t level) { influencedLevel = level; }
+	Skulls_t getSkull() const override;
+
 	uint32_t getManaCost() const { return mType->info.manaCost; }
 	void setSpawn(Spawn* spawn) { this->spawn = spawn; }
 	bool canWalkOnFieldType(CombatType_t combatType) const;
@@ -178,7 +186,9 @@ private:
 	bool isMasterInRange = false;
 	bool randomStepping = false;
 	bool walkingToSpawn = false;
+	bool influenced = false;
 	uint8_t idleCheckCounter = 0;
+	uint8_t influencedLevel = 0;
 
 	void onCreatureEnter(Creature* creature);
 	void onCreatureLeave(Creature* creature);

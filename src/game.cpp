@@ -5389,7 +5389,13 @@ void Game::updateCreatureEmblem(Creature* creature)
 
 void Game::updateCreatureSkull(const Creature* creature)
 {
-	if (getWorldType() != WORLD_TYPE_PVP) {
+	// Allow influenced monsters to show skull in any world type
+	bool isInfluencedMonster = false;
+	if (const Monster* monster = creature->getMonster()) {
+		isInfluencedMonster = monster->isInfluenced();
+	}
+
+	if (!isInfluencedMonster && getWorldType() != WORLD_TYPE_PVP) {
 		return;
 	}
 

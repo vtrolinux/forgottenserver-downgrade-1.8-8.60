@@ -2009,6 +2009,9 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(SKULL_RED);
 	registerEnum(SKULL_BLACK);
 
+	registerEnum(FORGE_DUST_STORAGE);
+	registerEnum(FORGE_DUST_LIMIT_STORAGE);
+
 	registerEnum(FLUID_NONE);
 	registerEnum(FLUID_WATER);
 	registerEnum(FLUID_BLOOD);

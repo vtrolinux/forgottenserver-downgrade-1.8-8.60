@@ -10,8 +10,8 @@ local FORGE_ITEM_IDS = {
 }
 
 local FORGE_STORAGE = {
-    dust = 10000,
-    dustLimit = 10001,
+    dust = PlayerStorageKeys.forgeDust,
+    dustLimit = PlayerStorageKeys.forgeDustLimit,
 }
 
 local FORGE_POSITIONS = {
@@ -276,11 +276,11 @@ function forgeTalk.onSay(player, words, param)
     param = param:lower():trim()
 
     if param == "info" then
-        player:sendTextMessage(MESSAGE_EVENT_ORANGE,
-            string.format("[Forge] Dust: %d/%d | Silver: %d | Exalted Core: %d",
-                player:getForgeDust(), player:getForgeDustLimit(),
-                player:getItemCount(FORGE_ITEM_IDS.silver),
-                player:getItemCount(FORGE_ITEM_IDS.exaltedCore)))
+        player:popupFYI(string.format(
+            "[Forge]\n\nDust: %d/%d\nSilver: %d\nExalted Core: %d",
+            player:getForgeDust(), player:getForgeDustLimit(),
+            player:getItemCount(FORGE_ITEM_IDS.silver),
+            player:getItemCount(FORGE_ITEM_IDS.exaltedCore)))
         return false
     end
 
@@ -289,15 +289,14 @@ function forgeTalk.onSay(player, words, param)
         local dust = player:getForgeDust()
         local batches = math.floor(dust / 60)
         if batches == 0 then
-            player:sendTextMessage(MESSAGE_EVENT_ORANGE, "[Forge] You need at least 60 Dust to convert.")
+            player:popupFYI("[Forge]\n\nVocê precisa de pelo menos 60 Dust para converter.")
             return false
         end
         local dustUsed = batches * 60
         local silverGained = batches * 3
         player:removeForgeDust(dustUsed)
         player:addItem(FORGE_ITEM_IDS.silver, silverGained)
-        player:sendTextMessage(MESSAGE_EVENT_ORANGE,
-            string.format("[Forge] Converted %d Dust into %d Silver.", dustUsed, silverGained))
+        player:popupFYI(string.format("[Forge]\n\nConvertido %d Dust em %d Silver.", dustUsed, silverGained))
         return false
     end
 
@@ -306,17 +305,16 @@ function forgeTalk.onSay(player, words, param)
         local silver = player:getItemCount(FORGE_ITEM_IDS.silver)
         local cores = math.floor(silver / 50)
         if cores == 0 then
-            player:sendTextMessage(MESSAGE_EVENT_ORANGE, "[Forge] You need at least 50 Silver to convert.")
+            player:popupFYI("[Forge]\n\nVocê precisa de pelo menos 50 Silver para converter.")
             return false
         end
         player:removeItem(FORGE_ITEM_IDS.silver, cores * 50)
         player:addItem(FORGE_ITEM_IDS.exaltedCore, cores)
-        player:sendTextMessage(MESSAGE_EVENT_ORANGE,
-            string.format("[Forge] Converted %d Silver into %d Exalted Core(s).", cores * 50, cores))
+        player:popupFYI(string.format("[Forge]\n\nConvertido %d Silver em %d Exalted Core(s).", cores * 50, cores))
         return false
     end
 
-    player:sendTextMessage(MESSAGE_EVENT_ORANGE, "[Forge] Commands: /forge info | /forge dust | /forge silver")
+    player:popupFYI("[Forge]\n\nComandos:\n/forge info\n/forge dust\n/forge silver")
     return false
 end
 forgeTalk:separator(" ")

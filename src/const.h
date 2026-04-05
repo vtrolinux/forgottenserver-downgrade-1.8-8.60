@@ -808,4 +808,8 @@ enum GuildLevel_t : uint8_t
 	GUILDLEVEL_LEADER = 3,
 };
 
+// Forge storage constants
+inline constexpr int32_t FORGE_DUST_STORAGE = 10000;
+inline constexpr int32_t FORGE_DUST_LIMIT_STORAGE = 10001;
+
 #endif

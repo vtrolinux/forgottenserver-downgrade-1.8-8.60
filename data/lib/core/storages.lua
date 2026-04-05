@@ -24,6 +24,13 @@ PlayerStorageKeys = {
     rewardExercise = 90705,
     guildBroadcastCooldown = 50000,
     guildLeaderChatCooldown = 50001,
+
+    -- Forge system
+    forgeDust = 10000,
+    forgeDustLimit = 10001,
+
+    -- Influenced creatures
+    influencedSpawnTime = 10050,
 }
 
 

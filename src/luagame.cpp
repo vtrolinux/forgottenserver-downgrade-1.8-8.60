@@ -887,6 +887,22 @@ int luaGameGetInstanceArea(lua_State* L)
 	lua_setfield(L, -2, "toPos");
 	return 1;
 }
+
+int luaGameGetInfluencedCreatures(lua_State* L)
+{
+	// Game.getInfluencedCreatures()
+	lua_createtable(L, 0, 0);
+	int index = 0;
+	for (const auto& [id, monster] : g_game.getMonsters()) {
+		if (monster && monster->isInfluenced()) {
+			pushUserdata<Monster>(L, monster);
+			setCreatureMetatable(L, -1, monster);
+			lua_rawseti(L, -2, ++index);
+		}
+	}
+	return 1;
+}
+
 } // namespace
 
 void LuaScriptInterface::registerGame()
@@ -959,4 +975,6 @@ void LuaScriptInterface::registerGame()
 	registerMethod("Game", "registerInstanceArea", luaGameRegisterInstanceArea);
 	registerMethod("Game", "unregisterInstanceArea", luaGameUnregisterInstanceArea);
 	registerMethod("Game", "getInstanceArea", luaGameGetInstanceArea);
+
+	registerMethod("Game", "getInfluencedCreatures", luaGameGetInfluencedCreatures);
 }

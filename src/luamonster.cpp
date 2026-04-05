@@ -423,6 +423,57 @@ int luaMonsterWalkToSpawn(lua_State* L)
 	}
 	return 1;
 }
+
+int luaMonsterIsInfluenced(lua_State* L)
+{
+	// monster:isInfluenced()
+	const Monster* monster = getUserdata<const Monster>(L, 1);
+	if (monster) {
+		pushBoolean(L, monster->isInfluenced());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaMonsterSetInfluenced(lua_State* L)
+{
+	// monster:setInfluenced(bool)
+	Monster* monster = getUserdata<Monster>(L, 1);
+	if (monster) {
+		monster->setInfluenced(getBoolean(L, 2));
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaMonsterGetInfluencedLevel(lua_State* L)
+{
+	// monster:getInfluencedLevel()
+	const Monster* monster = getUserdata<const Monster>(L, 1);
+	if (monster) {
+		lua_pushinteger(L, monster->getInfluencedLevel());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaMonsterSetInfluencedLevel(lua_State* L)
+{
+	// monster:setInfluencedLevel(level)
+	Monster* monster = getUserdata<Monster>(L, 1);
+	if (monster) {
+		monster->setInfluencedLevel(getInteger<uint8_t>(L, 2));
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 } // namespace
 
 void LuaScriptInterface::registerMonster()
@@ -465,4 +516,9 @@ void LuaScriptInterface::registerMonster()
 
 	registerMethod("Monster", "isWalkingToSpawn", luaMonsterIsWalkingToSpawn);
 	registerMethod("Monster", "walkToSpawn", luaMonsterWalkToSpawn);
+
+	registerMethod("Monster", "isInfluenced", luaMonsterIsInfluenced);
+	registerMethod("Monster", "setInfluenced", luaMonsterSetInfluenced);
+	registerMethod("Monster", "getInfluencedLevel", luaMonsterGetInfluencedLevel);
+	registerMethod("Monster", "setInfluencedLevel", luaMonsterSetInfluencedLevel);
 }

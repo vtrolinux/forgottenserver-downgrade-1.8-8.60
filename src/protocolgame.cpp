@@ -10,6 +10,7 @@
 #include "game.h"
 #include "iologindata.h"
 #include "instance_utils.h"
+#include "monster.h"
 #include "outputmessage.h"
 #include "player.h"
 #include "protocolgame.h"
@@ -1675,7 +1676,13 @@ void ProtocolGame::sendCreatureShield(const Creature* creature)
 
 void ProtocolGame::sendCreatureSkull(const Creature* creature)
 {
-	if (g_game.getWorldType() != WORLD_TYPE_PVP) {
+	// Allow influenced monsters to show skull in any world type
+	bool isInfluencedMonster = false;
+	if (const Monster* monster = creature->getMonster()) {
+		isInfluencedMonster = monster->isInfluenced();
+	}
+
+	if (!isInfluencedMonster && g_game.getWorldType() != WORLD_TYPE_PVP) {
 		return;
 	}
 

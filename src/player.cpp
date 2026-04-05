@@ -4197,7 +4197,18 @@ void Player::doReset() // reset system
 
 Skulls_t Player::getSkullClient(const Creature* creature) const
 {
-	if (!creature || g_game.getWorldType() != WORLD_TYPE_PVP) {
+	if (!creature) {
+		return SKULL_NONE;
+	}
+
+	// Influenced monsters always show green skull regardless of world type
+	if (const Monster* monster = creature->getMonster()) {
+		if (monster->isInfluenced()) {
+			return SKULL_GREEN;
+		}
+	}
+
+	if (g_game.getWorldType() != WORLD_TYPE_PVP) {
 		return SKULL_NONE;
 	}
 

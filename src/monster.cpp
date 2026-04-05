@@ -32,6 +32,20 @@ std::unique_ptr<Monster> Monster::createMonster(const std::string& name)
 	return std::make_unique<Monster>(mType);
 }
 
+Skulls_t Monster::getSkull() const
+{
+	if (influenced) {
+		return SKULL_GREEN;
+	}
+	return Creature::getSkull();
+}
+
+void Monster::setInfluenced(bool v)
+{
+	influenced = v;
+	g_game.updateCreatureSkull(this);
+}
+
 Monster::Monster(MonsterType* mType) : Creature(), nameDescription(mType->nameDescription), mType(mType)
 {
 	defaultOutfit = mType->info.outfit;
@@ -1994,6 +2008,15 @@ bool Monster::getCombatValues(int32_t& min, int32_t& max)
 
 	min = minCombatValue;
 	max = maxCombatValue;
+
+	// Influenced creature damage multiplier
+	if (influenced && influencedLevel >= 1 && influencedLevel <= 5) {
+		static constexpr double dmgMult[] = {0.0, 1.35, 1.45, 1.55, 1.65, 1.75};
+		double mult = dmgMult[influencedLevel];
+		min = static_cast<int32_t>(min * mult);
+		max = static_cast<int32_t>(max * mult);
+	}
+
 	return true;
 }
 
