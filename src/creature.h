@@ -12,6 +12,8 @@
 #include "position.h"
 #include "tile.h"
 
+#include <memory>
+
 using ConditionList = std::list<Condition_ptr>;
 using CreatureEventList = std::list<CreatureEvent*>;
 
@@ -74,7 +76,7 @@ public:
 // Defines the Base class for all creatures and base functions which
 // every creature has
 
-class Creature : virtual public Thing
+class Creature : virtual public Thing, public std::enable_shared_from_this<Creature>
 {
 protected:
 	Creature();
@@ -109,8 +111,8 @@ public:
 	{
 		isInternalRemoved = true;
 		removedTime = OTSYS_TIME();
-		attackedCreature = nullptr;
-		followCreature = nullptr;
+		attackedCreature.reset();
+		followCreature.reset();
 	}
 	int64_t getRemovedTime() const { return removedTime; }
 
@@ -196,7 +198,7 @@ public:
 	virtual void onWalkComplete() {}
 
 	// follow functions
-	Creature* getFollowCreature() const { return followCreature; }
+	Creature* getFollowCreature() const { return followCreature.lock().get(); }
 	virtual bool setFollowCreature(Creature* creature);
 
 	// follow events
@@ -204,7 +206,7 @@ public:
 	virtual void onFollowCreatureComplete(const Creature*) {}
 
 	// combat functions
-	Creature* getAttackedCreature() const { return attackedCreature; }
+	Creature* getAttackedCreature() const { return attackedCreature.lock().get(); }
 	virtual bool setAttackedCreature(Creature* creature);
 	virtual BlockType_t blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
 	                             bool checkDefense = false, bool checkArmor = false, bool field = false,
@@ -214,14 +216,14 @@ public:
 
 	void removeMaster()
 	{
-		if (master) {
-			master = nullptr;
+		if (auto m = master.lock()) {
+			master.reset();
 			decrementReferenceCounter();
 		}
 	}
 
-	bool isSummon() const { return master != nullptr; }
-	Creature* getMaster() const { return master; }
+	bool isSummon() const { return !master.expired(); }
+	Creature* getMaster() const { return master.lock().get(); }
 
 	const std::list<Creature*>& getSummons() const { return summons; }
 
@@ -400,9 +402,9 @@ protected:
 	std::vector<Direction> listWalkDir;
 
 	Tile* tile = nullptr;
-	Creature* attackedCreature = nullptr;
-	Creature* master = nullptr;
-	Creature* followCreature = nullptr;
+	std::weak_ptr<Creature> attackedCreature;
+	std::weak_ptr<Creature> master;
+	std::weak_ptr<Creature> followCreature;
 
 	uint64_t lastStep = 0;
 	uint32_t referenceCounter = 0;
@@ -411,7 +413,6 @@ protected:
 	uint32_t scriptEventsBitField = 0;
 	uint32_t eventWalk = 0;
 	uint32_t walkUpdateTicks = 0;
-	uint32_t lastHitCreatureId = 0;
 	uint32_t blockCount = 0;
 	uint32_t blockTicks = 0;
 	uint32_t lastStepCost = 1;
@@ -442,6 +443,8 @@ protected:
 	bool cancelNextWalk = false;
 	bool hasFollowPath = false;
 	bool forceUpdateFollowPath = false;
+
+	std::weak_ptr<Creature> lastAttacker;
 	bool hiddenHealth = false;
 	bool canUseDefense = true;
 	bool movementBlocked = false;

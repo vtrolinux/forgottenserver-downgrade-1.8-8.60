@@ -24,7 +24,8 @@ int32_t luaPartyCreate(lua_State* L)
 
 	Party* party = player->getParty();
 	if (!party) {
-		party = new Party(player);
+		auto partyPtr = Party::create(player);
+		party = partyPtr.get();
 		g_game.updatePlayerShield(player);
 		player->sendCreatureSkull(player);
 		pushUserdata<Party>(L, party);

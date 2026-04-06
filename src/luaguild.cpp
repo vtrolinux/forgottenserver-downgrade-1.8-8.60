@@ -214,6 +214,18 @@ int luaGuildGetHouseId(lua_State* L)
 	}
 	return 1;
 }
+int luaGuildDelete(lua_State* L)
+{
+	if (!isType<Guild>(L, 1)) {
+		return 0;
+	}
+
+	auto& guild = getSharedPtr<Guild>(L, 1);
+	if (guild) {
+		guild.reset();
+	}
+	return 0;
+}
 } // namespace
 
 void LuaScriptInterface::registerGuild()
@@ -221,6 +233,7 @@ void LuaScriptInterface::registerGuild()
 	// Guild
 	registerClass("Guild", "", luaGuildCreate);
 	registerMetaMethod("Guild", "__eq", LuaScriptInterface::luaUserdataCompare);
+	registerMetaMethod("Guild", "__gc", luaGuildDelete);
 
 	registerMethod("Guild", "getId", luaGuildGetId);
 	registerMethod("Guild", "getName", luaGuildGetName);

@@ -580,6 +580,8 @@ private:
 	std::unordered_map<uint32_t, Npc*> npcs;
 	std::unordered_map<uint32_t, Monster*> monsters;
 	std::unordered_map<uint32_t, InstanceArea> instanceAreas;
+	
+	std::unordered_map<uint32_t, std::shared_ptr<Creature>> creatureSharedRefs;
 
 	// list of items that are in trading state, mapped to the player
 	std::unordered_map<Item*, uint32_t> tradeItems;

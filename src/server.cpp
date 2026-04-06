@@ -104,8 +104,9 @@ ServiceManager::~ServiceManager() { stop(); }
 
 void ServiceManager::die()
 {
-	// Close all connections before stopping the io_context.
-	// Without this, Connection destructors run after io_context is destroyed.
+	// Release protocols before closing connections — the dispatcher is already
+	// shut down so closeLocked's dispatched release() would be lost.
+	ConnectionManager::getInstance().releaseAllProtocols();
 	ConnectionManager::getInstance().closeAll();
 	io_context.stop();
 }

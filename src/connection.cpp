@@ -64,6 +64,18 @@ void ConnectionManager::closeAll()
 	ipConnectionCount.clear();
 }
 
+void ConnectionManager::releaseAllProtocols()
+{
+	std::scoped_lock lockClass(connectionManagerLock);
+
+	for (const auto& connection : connections) {
+		if (connection->protocol) {
+			connection->protocol->release();
+			connection->protocol.reset();
+		}
+	}
+}
+
 bool ConnectionManager::isMaxConnectionsReached()
 {
 	std::scoped_lock lockClass(connectionManagerLock);

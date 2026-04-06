@@ -12,12 +12,13 @@
 
 extern Game g_game;
 
-Party::Party(Player* leader) : leader(leader) { leader->setParty(this); }
+Party::Party(Player* leader) : leader(leader) {}
 
 std::shared_ptr<Party> Party::create(Player* leader)
 {
 	auto party = std::shared_ptr<Party>(new Party(leader));
 	party->self = party;
+	leader->setParty(party.get());
 	return party;
 }
 

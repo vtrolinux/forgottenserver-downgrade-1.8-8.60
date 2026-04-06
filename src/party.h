@@ -20,7 +20,7 @@ enum SharedExpStatus_t : uint8_t {
 	SHAREDEXP_EMPTYPARTY
 };
 
-class Party
+class Party : public std::enable_shared_from_this<Party>
 {
 public:
 	static std::shared_ptr<Party> create(Player* leader);

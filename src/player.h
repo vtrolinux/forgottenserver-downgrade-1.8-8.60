@@ -230,8 +230,8 @@ public:
 
 	bool hasSecureMode() const { return secureMode; }
 
-	void setParty(Party* party) { this->party = party; }
-	Party* getParty() const { return party; }
+	void setParty(Party* party) { this->party = party ? party->shared_from_this() : std::shared_ptr<Party>(); }
+	Party* getParty() const { return party.lock().get(); }
 	PartyShields_t getPartyShield(const Player* player) const;
 	bool isInviting(const Player* player) const;
 	bool isPartner(const Player* player) const;
@@ -472,25 +472,20 @@ public:
 	Item* getTradeItem() { return tradeItem; }
 
 	// shop functions
-	void setShopOwner(Npc* owner, int32_t onBuy, int32_t onSell)
-	{
-		shopOwner = owner;
-		purchaseCallback = onBuy;
-		saleCallback = onSell;
-	}
+	void setShopOwner(Npc* owner, int32_t onBuy, int32_t onSell);
 
 	Npc* getShopOwner(int32_t& onBuy, int32_t& onSell)
 	{
 		onBuy = purchaseCallback;
 		onSell = saleCallback;
-		return shopOwner;
+		return shopOwner.lock().get();
 	}
 
 	const Npc* getShopOwner(int32_t& onBuy, int32_t& onSell) const
 	{
 		onBuy = purchaseCallback;
 		onSell = saleCallback;
-		return shopOwner;
+		return shopOwner.lock().get();
 	}
 
 	// V.I.P. functions
@@ -1306,8 +1301,8 @@ private:
 	Item* inventory[CONST_SLOT_LAST + 1] = {};
 	Item* writeItem = nullptr;
 	House* editHouse = nullptr;
-	Npc* shopOwner = nullptr;
-	Party* party = nullptr;
+	std::weak_ptr<Npc> shopOwner;
+	std::weak_ptr<Party> party;
 	Player* tradePartner = nullptr;
 	std::unique_ptr<SchedulerTask> walkTask;
 	Town* town = nullptr;

@@ -34,6 +34,7 @@ public:
 	Connection_ptr createConnection(boost::asio::io_context& io_context, ConstServicePort_ptr servicePort);
 	void releaseConnection(const Connection_ptr& connection);
 	void closeAll();
+	void releaseAllProtocols();
 
 	// Connection limit checks
 	bool isMaxConnectionsReached();

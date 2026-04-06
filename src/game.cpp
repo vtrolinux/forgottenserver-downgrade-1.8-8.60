@@ -557,6 +557,9 @@ bool Game::internalPlaceCreature(Creature* creature, const Position& pos, bool e
 	creature->incrementReferenceCounter();
 	creature->setID();
 	creature->addList();
+
+	creatureSharedRefs[creature->getID()] = std::shared_ptr<Creature>(creature, [](Creature*) {});
+
 	return true;
 }
 
@@ -663,6 +666,10 @@ bool Game::removeCreature(Creature* creature, bool isLogout /* = true*/)
 		}
 		removeCreature(summon);
 	}
+
+	// Drop the shared_ptr anchor – all outstanding weak_ptrs now expire.
+	creatureSharedRefs.erase(creature->getID());
+
 	return true;
 }
 
@@ -5231,6 +5238,19 @@ void Game::shutdown()
 	LOG_INFO("Shutting down...");
 
 	{
+		std::vector<Player*> toRemove;
+		toRemove.reserve(players.size());
+		for (auto& [id, player] : players) {
+			toRemove.push_back(player);
+		}
+		for (Player* player : toRemove) {
+			if (!player->isRemoved()) {
+				removeCreature(player, true);
+			}
+		}
+	}
+
+	{
 		std::vector<Monster*> toRemove;
 		toRemove.reserve(monsters.size());
 		for (auto& [id, monster] : monsters) {
@@ -5287,6 +5307,7 @@ void Game::shutdown()
 
 	map.spawns.clear();
 	raids.clear();
+	guilds.clear();
 
 	cleanup();
 
@@ -5305,7 +5326,7 @@ void Game::shutdown()
 		serviceManager->stop();
 	}
 
-	ConnectionManager::getInstance().closeAll();
+	creatureSharedRefs.clear();
 
 	Item::clearGlobalRegistry();
 

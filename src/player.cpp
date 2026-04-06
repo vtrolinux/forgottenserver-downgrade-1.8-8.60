@@ -16,6 +16,7 @@
 #include "inbox.h"
 #include "monster.h"
 #include "movement.h"
+#include "npc.h"
 #include "rewardchest.h"
 #include "scriptmanager.h"
 #include "scheduler.h"
@@ -175,7 +176,7 @@ std::string Player::getDescription(int32_t lookDistance) const
 		}
 	}
 
-	if (party) {
+	if (auto p = party.lock()) {
 		if (lookDistance == -1) {
 			s << " Your party has ";
 		} else if (sex == PLAYERSEX_FEMALE) {
@@ -184,14 +185,14 @@ std::string Player::getDescription(int32_t lookDistance) const
 			s << " He is in a party with ";
 		}
 
-		size_t memberCount = party->getMemberCount() + 1;
+		size_t memberCount = p->getMemberCount() + 1;
 		if (memberCount == 1) {
 			s << "1 member and ";
 		} else {
 			s << memberCount << " members and ";
 		}
 
-		size_t invitationCount = party->getInvitationCount();
+		size_t invitationCount = p->getInvitationCount();
 		if (invitationCount == 1) {
 			s << "1 pending invitation.";
 		} else {
@@ -713,7 +714,9 @@ uint16_t Player::getContainerIndex(uint8_t cid) const
 
 bool Player::canOpenCorpse(uint32_t ownerId) const
 {
-	return getID() == ownerId || (party && party->canOpenCorpse(ownerId));
+	if (getID() == ownerId) return true;
+	auto p = party.lock();
+	return p && p->canOpenCorpse(ownerId);
 }
 
 uint16_t Player::getLookCorpse() const
@@ -920,7 +923,7 @@ void Player::sendPing()
 	}
 
 	int64_t noPongTime = timeNow - lastPong;
-	if ((hasLostConnection || noPongTime >= 7000) && attackedCreature && attackedCreature->getPlayer()) {
+	if (auto ac = attackedCreature.lock(); (hasLostConnection || noPongTime >= 7000) && ac && ac->getPlayer()) {
 		setAttackedCreature(nullptr);
 	}
 
@@ -1207,7 +1210,7 @@ void Player::onFollowCreatureDisappear(bool isLogout)
 void Player::onChangeZone(ZoneType_t zone)
 {
 	if (zone == ZONE_PROTECTION) {
-		if (attackedCreature && !hasFlag(PlayerFlag_IgnoreProtectionZone)) {
+		if (!attackedCreature.expired() && !hasFlag(PlayerFlag_IgnoreProtectionZone)) {
 			setAttackedCreature(nullptr);
 			onAttackedCreatureDisappear(false);
 		}
@@ -1251,7 +1254,7 @@ void Player::onAttackedCreatureChangeZone(ZoneType_t zone)
 			onAttackedCreatureDisappear(false);
 		}
 	} else if (zone == ZONE_NOPVP) {
-		if (attackedCreature->getPlayer()) {
+		if (auto ac = attackedCreature.lock(); ac && ac->getPlayer()) {
 			if (!hasFlag(PlayerFlag_IgnoreProtectionZone)) {
 				setAttackedCreature(nullptr);
 				onAttackedCreatureDisappear(false);
@@ -1260,7 +1263,7 @@ void Player::onAttackedCreatureChangeZone(ZoneType_t zone)
 	} else if (zone == ZONE_NORMAL) {
 		// attackedCreature can leave a pvp zone if not pzlocked
 		if (g_game.getWorldType() == WORLD_TYPE_NO_PVP) {
-			if (attackedCreature->getPlayer()) {
+			if (auto ac = attackedCreature.lock(); ac && ac->getPlayer()) {
 				setAttackedCreature(nullptr);
 				onAttackedCreatureDisappear(false);
 			}
@@ -1398,14 +1401,15 @@ void Player::onRemoveCreature(Creature* creature, bool isLogout)
 
 		clearPartyInvitations();
 
-		if (party) {
-			party->leaveParty(this, true);
+		if (auto p = party.lock()) {
+			p->leaveParty(this, true);
 		}
 
 		g_chat->removeUserFromAllChannels(*this);
 
 		if (guild) {
 			guild->removeMember(this);
+			guild.reset();
 		}
 
 		IOLoginData::removeOnlineStatus(guid);
@@ -1429,6 +1433,13 @@ void Player::openShopWindow(const std::list<ShopInfo>& shop)
 	shopItemList = shop;
 	sendShop();
 	sendSaleItemList();
+}
+
+void Player::setShopOwner(Npc* owner, int32_t onBuy, int32_t onSell)
+{
+	shopOwner = owner ? std::dynamic_pointer_cast<Npc>(owner->shared_from_this()) : std::shared_ptr<Npc>();
+	purchaseCallback = onBuy;
+	saleCallback = onSell;
 }
 
 bool Player::closeShopWindow(bool sendCloseShopWindow /*= true*/)
@@ -1471,7 +1482,7 @@ void Player::onCreatureMove(Creature* creature, const Tile* newTile, const Posit
 {
 	Creature::onCreatureMove(creature, newTile, newPos, oldTile, oldPos, teleport);
 
-	if (hasFollowPath && (creature == followCreature || (creature == this && followCreature))) {
+	if (hasFollowPath && (creature == followCreature.lock().get() || (creature == this && !followCreature.expired()))) {
 		isUpdatingPath = false;
 		g_dispatcher.addTask([id = getID()]() { g_game.updateCreatureWalk(id); });
 	}
@@ -1491,8 +1502,8 @@ void Player::onCreatureMove(Creature* creature, const Tile* newTile, const Posit
 		}
 	}
 
-	if (party) {
-		party->updateSharedExperience();
+	if (auto p = party.lock()) {
+		p->updateSharedExperience();
 	}
 
 	if (teleport || oldPos.z != newPos.z) {
@@ -1944,8 +1955,8 @@ void Player::addExperience(Creature* source, uint64_t exp, bool sendText /* = fa
 			g_game.updateCreatureWalkthrough(this);
 		}
 
-		if (party) {
-			party->updateSharedExperience();
+		if (auto p = party.lock()) {
+			p->updateSharedExperience();
 		}
 
 		g_creatureEvents->playerAdvance(this, SKILL_LEVEL, prevLevel, level);
@@ -2025,8 +2036,8 @@ void Player::removeExperience(uint64_t exp, bool sendText /* = false*/)
 			g_game.updateCreatureWalkthrough(this);
 		}
 
-		if (party) {
-			party->updateSharedExperience();
+		if (auto p = party.lock()) {
+			p->updateSharedExperience();
 		}
 
 		sendTextMessage(MESSAGE_EVENT_ADVANCE,
@@ -2943,7 +2954,7 @@ Cylinder* Player::queryDestination(int32_t& index, const Thing& thing, Item** de
 		for (uint32_t slotIndex = CONST_SLOT_FIRST; slotIndex <= CONST_SLOT_LAST; ++slotIndex) {
 			Item* inventoryItem = inventory[slotIndex];
 			if (inventoryItem) {
-				if (inventoryItem == tradeItem) {
+			if (inventoryItem == tradeItem) {
 					continue;
 				}
 
@@ -3319,7 +3330,7 @@ void Player::postAddNotification(Thing* thing, const Cylinder* oldParent, int32_
 			onSendContainer(container);
 		}
 
-		if (shopOwner && requireListUpdate) {
+		if (!shopOwner.expired() && requireListUpdate) {
 			updateSaleShopList(item);
 		}
 	} else if (const Creature* creature = thing->getCreature()) {
@@ -3406,7 +3417,7 @@ void Player::postRemoveNotification(Thing* thing, const Cylinder* newParent, int
 			}
 		}
 
-		if (shopOwner && requireListUpdate) {
+		if (!shopOwner.expired() && requireListUpdate) {
 			updateSaleShopList(item);
 		}
 	}
@@ -3498,11 +3509,11 @@ bool Player::setAttackedCreature(Creature* creature)
 	}
 
 	if (chaseMode && creature) {
-		if (followCreature != creature) {
+		if (followCreature.lock().get() != creature) {
 			// chase opponent
 			setFollowCreature(creature);
 		}
-	} else if (followCreature) {
+	} else if (!followCreature.expired()) {
 		setFollowCreature(nullptr);
 	}
 
@@ -3524,7 +3535,7 @@ void Player::goToFollowCreature()
 
 		Creature::goToFollowCreature();
 
-		if (followCreature && !hasFollowPath) {
+		if (!followCreature.expired() && !hasFollowPath) {
 			lastFailedFollow = OTSYS_TIME();
 		}
 	}
@@ -3555,16 +3566,17 @@ void Player::doAttacking(uint32_t)
 		bool classicSpeed = getBoolean(ConfigManager::CLASSIC_ATTACK_SPEED);
 		bool allowAutoAttackWithoutExhaustion = getBoolean(ConfigManager::ALLOW_AUTO_ATTACK_WITHOUT_EXHAUSTION);
 
+		auto ac = attackedCreature.lock();
 		if (weapon) {
 			if (!weapon->interruptSwing()) {
-				result = weapon->useWeapon(this, tool, attackedCreature);
+				result = weapon->useWeapon(this, tool, ac.get());
 			} else if (!classicSpeed && !allowAutoAttackWithoutExhaustion && !canDoAction()) {
 				delay = getNextActionTime();
 			} else {
-				result = weapon->useWeapon(this, tool, attackedCreature);
+				result = weapon->useWeapon(this, tool, ac.get());
 			}
 		} else {
-			result = Weapon::useFist(this, attackedCreature);
+			result = Weapon::useFist(this, ac.get());
 		}
 
 		auto task = createSchedulerTask(std::max<uint32_t>(SCHEDULER_MINTICKS, delay),
@@ -3584,7 +3596,7 @@ void Player::doAttacking(uint32_t)
 
 void Player::maintainAttackFlow()
 {
-	if (attackedCreature && !hasCondition(CONDITION_PACIFIED)) {
+	if (!attackedCreature.expired() && !hasCondition(CONDITION_PACIFIED)) {
 		if (!canDoAction() && !getBoolean(ConfigManager::ALLOW_AUTO_ATTACK_WITHOUT_EXHAUSTION)) {
 			return;
 		}
@@ -3625,11 +3637,11 @@ void Player::setChaseMode(bool mode)
 
 	if (prevChaseMode != chaseMode) {
 		if (chaseMode) {
-			if (!followCreature && attackedCreature) {
+			if (followCreature.expired() && !attackedCreature.expired()) {
 				// chase opponent
-				setFollowCreature(attackedCreature);
+				setFollowCreature(attackedCreature.lock().get());
 			}
-		} else if (attackedCreature) {
+		} else if (!attackedCreature.expired()) {
 			setFollowCreature(nullptr);
 			cancelNextWalk = true;
 		}
@@ -3872,8 +3884,8 @@ void Player::onIdleStatus()
 {
 	Creature::onIdleStatus();
 
-	if (party) {
-		party->clearPlayerPoints(this);
+	if (auto p = party.lock()) {
+		p->clearPlayerPoints(this);
 	}
 }
 
@@ -3890,11 +3902,11 @@ void Player::onAttackedCreatureDrainHealth(Creature* target, int32_t points)
 	Creature::onAttackedCreatureDrainHealth(target, points);
 
 	if (target) {
-		if (party && !Combat::isPlayerCombat(target)) {
+		if (auto p = party.lock(); p && !Combat::isPlayerCombat(target)) {
 			Monster* tmpMonster = target->getMonster();
 			if (tmpMonster && tmpMonster->isHostile()) {
 				// We have fulfilled a requirement for shared experience
-				party->updatePlayerTicks(this, points);
+				p->updatePlayerTicks(this, points);
 			}
 		}
 	}
@@ -3902,7 +3914,7 @@ void Player::onAttackedCreatureDrainHealth(Creature* target, int32_t points)
 
 void Player::onTargetCreatureGainHealth(Creature* target, int32_t points)
 {
-	if (target && party) {
+	if (target && !party.expired()) {
 		Player* tmpPlayer = nullptr;
 
 		if (target->getPlayer()) {
@@ -3914,7 +3926,7 @@ void Player::onTargetCreatureGainHealth(Creature* target, int32_t points)
 		}
 
 		if (isPartner(tmpPlayer)) {
-			party->updatePlayerTicks(this, points);
+			party.lock()->updatePlayerTicks(this, points);
 		}
 	}
 }
@@ -3977,9 +3989,9 @@ void Player::onGainExperience(uint64_t gainExp, Creature* target)
 		return;
 	}
 
-	if (target && !target->getPlayer() && party && party->isSharedExperienceActive() &&
-	    party->isSharedExperienceEnabled()) {
-		party->shareExperience(gainExp, target);
+	if (auto p = party.lock(); target && !target->getPlayer() && p && p->isSharedExperienceActive() &&
+	    p->isSharedExperienceEnabled()) {
+		p->shareExperience(gainExp, target);
 		// We will get a share of the experience through the sharing mechanism
 		return;
 	}
@@ -4221,7 +4233,7 @@ Skulls_t Player::getSkullClient(const Creature* creature) const
 		return SKULL_YELLOW;
 	}
 
-	if (party && party == player->party) {
+	if (auto p = party.lock(); p && p == player->party.lock()) {
 		return SKULL_GREEN;
 	}
 	return Creature::getSkullClient(creature);
@@ -4396,14 +4408,14 @@ PartyShields_t Player::getPartyShield(const Player* player) const
 		return SHIELD_NONE;
 	}
 
-	if (party) {
-		if (party->getLeader() == player) {
-			if (party->isSharedExperienceActive()) {
-				if (party->isSharedExperienceEnabled()) {
+	if (auto p = party.lock()) {
+		if (p->getLeader() == player) {
+			if (p->isSharedExperienceActive()) {
+				if (p->isSharedExperienceEnabled()) {
 					return SHIELD_YELLOW_SHAREDEXP;
 				}
 
-				if (party->canUseSharedExperience(player)) {
+				if (p->canUseSharedExperience(player)) {
 					return SHIELD_YELLOW_NOSHAREDEXP;
 				}
 
@@ -4413,13 +4425,13 @@ PartyShields_t Player::getPartyShield(const Player* player) const
 			return SHIELD_YELLOW;
 		}
 
-		if (player->party == party) {
-			if (party->isSharedExperienceActive()) {
-				if (party->isSharedExperienceEnabled()) {
+		if (player->party.lock() == p) {
+			if (p->isSharedExperienceActive()) {
+				if (p->isSharedExperienceEnabled()) {
 					return SHIELD_BLUE_SHAREDEXP;
 				}
 
-				if (party->canUseSharedExperience(player)) {
+				if (p->canUseSharedExperience(player)) {
 					return SHIELD_BLUE_NOSHAREDEXP;
 				}
 
@@ -4443,18 +4455,19 @@ PartyShields_t Player::getPartyShield(const Player* player) const
 
 bool Player::isInviting(const Player* player) const
 {
-	if (!player || !party || party->getLeader() != this) {
+	auto p = party.lock();
+	if (!player || !p || p->getLeader() != this) {
 		return false;
 	}
-	return party->isPlayerInvited(player);
+	return p->isPlayerInvited(player);
 }
 
 bool Player::isPartner(const Player* player) const
 {
-	if (!player || !party || player == this) {
+	if (!player || party.expired() || player == this) {
 		return false;
 	}
-	return party == player->party;
+	return party.lock() == player->party.lock();
 }
 
 bool Player::isGuildMate(const Player* player) const

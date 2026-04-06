@@ -64,6 +64,7 @@ protected:
 
 private:
 	friend class Connection;
+	friend class ConnectionManager;
 
 	OutputMessage_ptr outputBuffer;
 
