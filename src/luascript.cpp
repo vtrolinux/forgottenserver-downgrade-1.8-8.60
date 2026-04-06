@@ -762,8 +762,6 @@ void Lua::setItemMetatable(lua_State* L, int32_t index, const Item* item)
 		luaL_getmetatable(L, "Item");
 	}
 	lua_setmetatable(L, index - 1);
-	const_cast<Item*>(item)->incrementReferenceCounter();
-	const_cast<Item*>(item)->incrementLuaRefCount();
 }
 
 void Lua::setCreatureMetatable(lua_State* L, int32_t index, const Creature* creature)

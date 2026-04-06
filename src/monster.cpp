@@ -201,8 +201,8 @@ void Monster::onRemoveCreature(Creature* creature, bool isLogout)
 	}
 
 	if (creature == this) {
-		if (spawn) {
-			spawn->startSpawnCheck();
+		if (auto sp = spawn.lock()) {
+			sp->startSpawnCheck();
 		}
 
 		setIdle(true);
@@ -805,7 +805,7 @@ void Monster::updateIdleStatus()
 {
 	bool idle = false;
 	if (!isSummon() && targetList.empty()) {
-		if (spawn && !position.isInRange(masterPos, 1, 1)) {
+		if (!spawn.expired() && !position.isInRange(masterPos, 1, 1)) {
 			// OPTIMIZATION: Throttle getSpectators check to every 5th call
 			// to avoid expensive spectator scans on every single think cycle.
 			if (++idleCheckCounter % 5 == 0) {
@@ -1239,7 +1239,7 @@ void Monster::onThinkYell(uint32_t interval)
 
 bool Monster::walkToSpawn()
 {
-	if (walkingToSpawn || !spawn || !targetList.empty()) {
+	if (walkingToSpawn || spawn.expired() || !targetList.empty()) {
 		return false;
 	}
 
@@ -1974,7 +1974,7 @@ Item* Monster::getCorpse(Creature* lastHitCreature, Creature* mostDamageCreature
 
 bool Monster::isInSpawnRange(const Position& pos) const
 {
-	if (!spawn) {
+	if (spawn.expired()) {
 		return true;
 	}
 

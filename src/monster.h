@@ -86,7 +86,7 @@ public:
 	Skulls_t getSkull() const override;
 
 	uint32_t getManaCost() const { return mType->info.manaCost; }
-	void setSpawn(Spawn* spawn) { this->spawn = spawn; }
+	void setSpawn(std::shared_ptr<Spawn> newSpawn) { spawn = newSpawn; }
 	bool canWalkOnFieldType(CombatType_t combatType) const;
 
 	void onAttackedCreatureDisappear(bool isLogout) override;
@@ -163,7 +163,7 @@ private:
 	std::string nameDescription;
 
 	MonsterType* mType;
-	Spawn* spawn = nullptr;
+	std::weak_ptr<Spawn> spawn;
 
 	int64_t lastMeleeAttack = 0;
 

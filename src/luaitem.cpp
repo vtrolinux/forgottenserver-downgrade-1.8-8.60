@@ -1004,9 +1004,7 @@ int LuaScriptInterface::luaItemGC(lua_State* L)
 {
 	Item** itemPtr = getRawUserdata<Item>(L, 1);
 	if (itemPtr && *itemPtr) {
-		Item* item = *itemPtr;
 		*itemPtr = nullptr;
-		item->decrementLuaRefCount();
 	}
 	return 0;
 }

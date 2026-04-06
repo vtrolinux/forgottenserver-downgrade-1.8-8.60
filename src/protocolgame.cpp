@@ -3390,7 +3390,9 @@ void ProtocolGame::parseSwitchCast(uint8_t direction)
 				player->client->removeSpectator(getThis());
 				player->client->sendCastMessage(spectator_name, spectator_name + " has left the cast.", TALKTYPE_CHANNEL_O);
 				knownCreatureSet.clear();
+				player->decrementReferenceCounter();
 				player = newCaster;
+				player->incrementReferenceCounter();
 				player->client->addSpectator(getThis());
 				sendAddCreature(player, player->getPosition(), 0, CONST_ME_NONE);
 				syncOpenContainers();
@@ -3422,7 +3424,9 @@ void ProtocolGame::parseSwitchCast(uint8_t direction)
 	player->client->removeSpectator(getThis());
 	player->client->sendCastMessage(spectator_name, spectator_name + " has left the cast.", TALKTYPE_CHANNEL_O);
 	knownCreatureSet.clear();
+	player->decrementReferenceCounter();
 	player = newCaster;
+	player->incrementReferenceCounter();
 	player->client->addSpectator(getThis());
 	sendAddCreature(player, player->getPosition(), 0, CONST_ME_NONE);
 	syncOpenContainers();

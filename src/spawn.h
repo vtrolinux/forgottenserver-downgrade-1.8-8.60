@@ -21,7 +21,7 @@ struct spawnBlock_t
 	Direction direction;
 };
 
-class Spawn
+class Spawn : public std::enable_shared_from_this<Spawn>
 {
 public:
 	Spawn(Position pos, int32_t radius) : centerPos(std::move(pos)), radius(radius) {}
@@ -85,7 +85,7 @@ public:
 
 	bool isStarted() const { return started; }
 
-	std::forward_list<std::unique_ptr<Spawn>>& getSpawnList() { return spawnList; }
+	std::forward_list<std::shared_ptr<Spawn>>& getSpawnList() { return spawnList; }
 
 	size_t getNpcCount() const { return std::distance(npcList.begin(), npcList.end()); }
 	size_t getMonsterCount() const {
@@ -98,7 +98,7 @@ public:
 
 private:
 	std::forward_list<std::unique_ptr<Npc>> npcList;
-	std::forward_list<std::unique_ptr<Spawn>> spawnList;
+	std::forward_list<std::shared_ptr<Spawn>> spawnList;
 	std::vector<Npc*> activeNpcs;
 	std::string filename;
 	bool loaded = false;

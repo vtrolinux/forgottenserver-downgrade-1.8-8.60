@@ -66,7 +66,7 @@ bool Spawns::loadFromXml(std::string_view filename)
 			continue;
 		}
 
-		spawnList.push_front(std::make_unique<Spawn>(centerPos, radius));
+		spawnList.push_front(std::make_shared<Spawn>(centerPos, radius));
 		Spawn& spawn = *spawnList.front();
 
 		for (auto& childNode : spawnNode.children()) {
@@ -396,7 +396,7 @@ bool Spawn::spawnMonster(uint32_t spawnId, MonsterType* mType, const Position& p
 	monster_ptr.release();
 	monster->incrementReferenceCounter(); // +1 ref for spawnedMap entry
 	monster->setDirection(dir);
-	monster->setSpawn(this);
+	monster->setSpawn(shared_from_this());
 	monster->setMasterPos(finalPos);
 
 	spawnMap[spawnId].lastSpawn = OTSYS_TIME();
