@@ -11,8 +11,8 @@ class Creature;
 class Game;
 class Spawn;
 
-using CreatureHashSet = std::unordered_set<Creature*>;
-using CreatureList = std::vector<Creature*>;
+using CreatureWeakHashSet = std::set<std::weak_ptr<Creature>, std::owner_less<std::weak_ptr<Creature>>>;
+using CreatureWeakList = std::vector<std::weak_ptr<Creature>>;
 
 enum TargetSearchType_t
 {
@@ -120,8 +120,8 @@ public:
 	bool searchTarget(TargetSearchType_t searchType = TARGETSEARCH_DEFAULT);
 	bool selectTarget(Creature* creature);
 
-	const CreatureList& getTargetList() const { return targetList; }
-	const CreatureHashSet& getFriendList() const { return friendList; }
+	const CreatureWeakList& getTargetList() const { return targetList; }
+	const CreatureWeakHashSet& getFriendList() const { return friendList; }
 
 	bool isTarget(const Creature* creature) const;
 	bool isFleeing() const
@@ -156,8 +156,8 @@ public:
 	void removeTarget(Creature* creature);
 
 private:
-	CreatureHashSet friendList;
-	CreatureList targetList;
+	CreatureWeakHashSet friendList;
+	CreatureWeakList targetList;
 
 	std::string name;
 	std::string nameDescription;

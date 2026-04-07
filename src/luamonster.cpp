@@ -272,9 +272,11 @@ int luaMonsterGetFriendList(lua_State* L)
 	lua_createtable(L, friendList.size(), 0);
 
 	int index = 0;
-	for (Creature* creature : friendList) {
-		pushUserdata<Creature>(L, creature);
-		setCreatureMetatable(L, -1, creature);
+	for (const auto& weakRef : friendList) {
+		auto creature = weakRef.lock();
+		if (!creature) continue;
+		pushUserdata<Creature>(L, creature.get());
+		setCreatureMetatable(L, -1, creature.get());
 		lua_rawseti(L, -2, ++index);
 	}
 	return 1;
@@ -348,9 +350,11 @@ int luaMonsterGetTargetList(lua_State* L)
 	lua_createtable(L, targetList.size(), 0);
 
 	int index = 0;
-	for (Creature* creature : targetList) {
-		pushUserdata<Creature>(L, creature);
-		setCreatureMetatable(L, -1, creature);
+	for (const auto& weakRef : targetList) {
+		auto creature = weakRef.lock();
+		if (!creature) continue;
+		pushUserdata<Creature>(L, creature.get());
+		setCreatureMetatable(L, -1, creature.get());
 		lua_rawseti(L, -2, ++index);
 	}
 	return 1;

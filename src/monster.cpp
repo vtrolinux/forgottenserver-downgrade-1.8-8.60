@@ -349,9 +349,9 @@ void Monster::onCreatureSay(Creature* creature, SpeakClasses type, std::string_v
 void Monster::addFriend(Creature* creature)
 {
 	assert(creature != this);
-	auto result = friendList.insert(creature);
-	if (result.second) {
-		creature->incrementReferenceCounter();
+	auto weakRef = g_game.getCreatureWeakRef(creature);
+	if (!weakRef.expired()) {
+		friendList.insert(std::move(weakRef));
 	}
 }
 
@@ -413,9 +413,9 @@ bool Monster::setType(MonsterType* newType, bool restoreHealth)
 
 void Monster::removeFriend(Creature* creature)
 {
-	auto it = friendList.find(creature);
+	auto weakRef = g_game.getCreatureWeakRef(creature);
+	auto it = friendList.find(weakRef);
 	if (it != friendList.end()) {
-		creature->decrementReferenceCounter();
 		friendList.erase(it);
 	}
 }
@@ -423,22 +423,28 @@ void Monster::removeFriend(Creature* creature)
 void Monster::addTarget(Creature* creature, bool pushFront /* = false*/)
 {
 	assert(creature != this);
-	if (std::find(targetList.begin(), targetList.end(), creature) == targetList.end()) {
-		creature->incrementReferenceCounter();
-		if (pushFront) {
-			targetList.insert(targetList.begin(), creature);
-		} else {
-			targetList.push_back(creature);
-		}
+	auto weakRef = g_game.getCreatureWeakRef(creature);
+	if (weakRef.expired()) return;
+
+	// Check if already present
+	for (const auto& w : targetList) {
+		if (w.lock().get() == creature) return;
+	}
+
+	if (pushFront) {
+		targetList.insert(targetList.begin(), std::move(weakRef));
+	} else {
+		targetList.push_back(std::move(weakRef));
 	}
 }
 
 void Monster::removeTarget(Creature* creature)
 {
-	auto it = std::find(targetList.begin(), targetList.end(), creature);
-	if (it != targetList.end()) {
-		creature->decrementReferenceCounter();
-		targetList.erase(it);
+	for (auto it = targetList.begin(); it != targetList.end(); ++it) {
+		if (it->lock().get() == creature) {
+			targetList.erase(it);
+			return;
+		}
 	}
 }
 
@@ -446,9 +452,8 @@ void Monster::updateTargetList()
 {
 	auto friendIterator = friendList.begin();
 	while (friendIterator != friendList.end()) {
-		Creature* creature = *friendIterator;
-		if (creature->isDead() || !canSee(creature->getPosition())) {
-			creature->decrementReferenceCounter();
+		auto creature = friendIterator->lock();
+		if (!creature || creature->isDead() || !canSee(creature->getPosition())) {
 			friendIterator = friendList.erase(friendIterator);
 		} else {
 			++friendIterator;
@@ -457,9 +462,8 @@ void Monster::updateTargetList()
 
 	auto targetIterator = targetList.begin();
 	while (targetIterator != targetList.end()) {
-		Creature* creature = *targetIterator;
-		if (creature->isDead() || !canSee(creature->getPosition()) || creature->getZone() == ZONE_PROTECTION) {
-			creature->decrementReferenceCounter();
+		auto creature = targetIterator->lock();
+		if (!creature || creature->isDead() || !canSee(creature->getPosition()) || creature->getZone() == ZONE_PROTECTION) {
 			targetIterator = targetList.erase(targetIterator);
 		} else {
 			++targetIterator;
@@ -477,17 +481,11 @@ void Monster::updateTargetList()
 
 void Monster::clearTargetList()
 {
-	for (Creature* creature : targetList) {
-		creature->decrementReferenceCounter();
-	}
 	targetList.clear();
 }
 
 void Monster::clearFriendList()
 {
-	for (Creature* creature : friendList) {
-		creature->decrementReferenceCounter();
-	}
 	friendList.clear();
 }
 
@@ -604,14 +602,15 @@ bool Monster::searchTarget(TargetSearchType_t searchType /*= TARGETSEARCH_DEFAUL
 	resultList.reserve(targetList.size());
 	const Position& myPos = getPosition();
 
-	for (Creature* creature : targetList) {
+	for (const auto& weakRef : targetList) {
+		auto creature = weakRef.lock();
 		if (!creature || creature->isRemoved() || !creature->getTile()) {
 			continue;
 		}
 
-		if (followCreature.lock().get() != creature && isTarget(creature)) {
-			if (searchType == TARGETSEARCH_RANDOM || canUseAttack(myPos, creature)) {
-				resultList.push_back(creature);
+		if (followCreature.lock().get() != creature.get() && isTarget(creature.get())) {
+			if (searchType == TARGETSEARCH_RANDOM || canUseAttack(myPos, creature.get())) {
+				resultList.push_back(creature.get());
 			}
 		}
 	}
@@ -641,18 +640,19 @@ bool Monster::searchTarget(TargetSearchType_t searchType /*= TARGETSEARCH_DEFAUL
 				}
 			} else {
 				int32_t minRange = std::numeric_limits<int32_t>::max();
-				for (Creature* creature : targetList) {
+				for (const auto& weakRef : targetList) {
+					auto creature = weakRef.lock();
 					if (!creature || creature->isRemoved() || !creature->getTile()) {
 						continue;
 					}
 
-					if (!isTarget(creature)) {
+					if (!isTarget(creature.get())) {
 						continue;
 					}
 
 					const Position& pos = creature->getPosition();
 					if (int32_t distance = myPos.getDistanceX(pos) + myPos.getDistanceY(pos); distance < minRange) {
-						target = creature;
+						target = creature.get();
 						minRange = distance;
 					}
 				}
@@ -681,12 +681,13 @@ bool Monster::searchTarget(TargetSearchType_t searchType /*= TARGETSEARCH_DEFAUL
 	}
 
 	// lets just pick the first target in the list
-	for (Creature* target : targetList) {
+	for (const auto& weakRef : targetList) {
+		auto target = weakRef.lock();
 		if (!target || target->isRemoved() || !target->getTile()) {
 			continue;
 		}
 
-		if (followCreature.lock().get() != target && isTarget(target) && selectTarget(target)) {
+		if (followCreature.lock().get() != target.get() && isTarget(target.get()) && selectTarget(target.get())) {
 			return true;
 		}
 	}
@@ -696,17 +697,18 @@ bool Monster::searchTarget(TargetSearchType_t searchType /*= TARGETSEARCH_DEFAUL
 void Monster::onFollowCreatureComplete(const Creature* creature)
 {
 	if (creature) {
-		auto it = std::find(targetList.begin(), targetList.end(), creature);
-		if (it != targetList.end()) {
-			Creature* target = (*it);
-			targetList.erase(it);
+		for (auto it = targetList.begin(); it != targetList.end(); ++it) {
+			if (it->lock().get() == creature) {
+				auto weakRef = std::move(*it);
+				targetList.erase(it);
 
-			if (hasFollowPath) {
-				targetList.insert(targetList.begin(), target);
-			} else if (!isSummon()) {
-				targetList.push_back(target);
-			} else {
-				target->decrementReferenceCounter();
+				if (hasFollowPath) {
+					targetList.insert(targetList.begin(), std::move(weakRef));
+				} else if (!isSummon()) {
+					targetList.push_back(std::move(weakRef));
+				}
+				// if summon and !hasFollowPath: just drop — weak_ptr expires naturally
+				break;
 			}
 		}
 	}
@@ -769,7 +771,8 @@ bool Monster::selectTarget(Creature* creature)
 		}
 	}
 
-	auto it = std::find(targetList.begin(), targetList.end(), creature);
+	auto it = std::find_if(targetList.begin(), targetList.end(),
+		[creature](const std::weak_ptr<Creature>& w) { return w.lock().get() == creature; });
 	if (it == targetList.end()) {
 		// Target not found in our target list.
 		return false;
