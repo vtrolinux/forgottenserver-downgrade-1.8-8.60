@@ -2,6 +2,8 @@ local talk = TalkAction("!reset")
 
 function talk.onSay(player, words, param)
 	if not configManager.getBoolean(RESET_SYSTEM_ENABLED) then
+		player:sendCancelMessage("The reset system is currently disabled.")
+		player:getPosition():sendMagicEffect(CONST_ME_POFF)
 		return false
 	end
 
@@ -14,19 +16,11 @@ function talk.onSay(player, words, param)
 
 	player:doReset()
 
-	local currentExp = player:getExperience()
-	local targetExp = Game.getExperienceForLevel(8)
-	if currentExp > targetExp then
-		player:removeExperience(currentExp - targetExp)
-	end
-
 	local town = player:getTown()
 	if town then
 		player:teleportTo(town:getTemplePosition())
 	end
-	
-	player:setHealth(player:getMaxHealth())
-	player:setMana(player:getMaxMana())
+
 	player:getPosition():sendMagicEffect(CONST_ME_TELEPORT)
 
 	local reduction = player:getResetExpReduction()

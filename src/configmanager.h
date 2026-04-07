@@ -57,6 +57,7 @@ enum Boolean
 	PACKET_COMPRESSION,	
 	DLL_CHECK_KICK,
 	RESET_SYSTEM_ENABLED, // reset system
+	RESET_SKILLS, // reset skills/magic on reset
 	NPCS_USING_BANK_MONEY,
 	STAMINA_TRAINER,
 	STAMINA_PZ,

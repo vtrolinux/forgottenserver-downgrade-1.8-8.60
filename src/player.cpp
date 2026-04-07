@@ -4199,6 +4199,26 @@ void Player::doReset() // reset system
 	uint32_t bonusReset = reset * getInteger(ConfigManager::RESET_STATBONUS);
 	capacity += bonusReset;
 
+	// Reset to level 8 stats
+	experience = Player::getExpForLevel(8);
+	level = 8;
+	levelPercent = 0;
+
+	if (getBoolean(ConfigManager::RESET_SKILLS)) {
+		magLevel = 0;
+		magLevelPercent = 0;
+		manaSpent = 0;
+
+		for (int i = SKILL_FIRST; i <= SKILL_LAST; ++i) {
+			skills[i].level = 10;
+			skills[i].tries = 0;
+			skills[i].percent = 0;
+		}
+	}
+
+	health = getMaxHealth();
+	mana = getMaxMana();
+
 	// Persist immediately
 	Database::getInstance().executeQuery(
 		fmt::format("UPDATE `players` SET `reset` = {:d} WHERE `id` = {:d}", reset, getGUID()));
