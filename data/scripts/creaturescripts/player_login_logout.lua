@@ -68,6 +68,8 @@ function loginMessage.onLogin(player)
         player:sendTextMessage(MESSAGE_STATUS_CONSOLE_RED, "[Token] You are LOCKED! Type !token <password> to unlock.")
     end
 
+    player:sendTextMessage(MESSAGE_STATUS_DEFAULT, "[Mount] Use Ctrl+M to mount or dismount your mount.")
+
     return true
 end
 loginMessage:register()
