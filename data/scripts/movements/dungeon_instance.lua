@@ -87,7 +87,7 @@ local function expelAllPlayers(instanceId, message)
             if message then
                 spec:sendTextMessage(MESSAGE_EVENT_ORANGE, message)
             end
-            spec:setInstanceId(0)
+            spec:setInstanceIdRaw(0)
             spec:teleportTo(EXIT_DEST)
             EXIT_DEST:sendMagicEffect(CONST_ME_TELEPORT)
         end
@@ -107,7 +107,7 @@ local function removePlayerFromInstance(player)
     local instanceId = player:getInstanceId()
     if instanceId == 0 then return end
 
-    player:setInstanceId(0)
+    player:setInstanceIdRaw(0)
 
     local data = dungeonInstances[instanceId]
     if not data then
@@ -197,7 +197,7 @@ function entryMovement.onStepIn(creature, item, position, fromPosition)
 
     local playerTracking = {}
     for _, p in ipairs(participants) do
-        p:setInstanceId(instanceId)
+        p:setInstanceIdRaw(instanceId)
         playerTracking[p:getGuid()] = true
 
         local dest = p:getClosestFreePosition(PLAYER_DEST, false)
@@ -338,7 +338,7 @@ function loginEvent.onLogin(player)
 
     local pos = player:getPosition()
     if isInsideDungeonArea(pos) then
-        player:setInstanceId(0)
+        player:setInstanceIdRaw(0)
         local temple = player:getTown():getTemplePosition()
         player:teleportTo(temple)
         temple:sendMagicEffect(CONST_ME_TELEPORT)

@@ -84,7 +84,7 @@ local function cleanupPlayerInstance(player)
 
     cleanupInstanceCreatures(instanceId)
     Game.unregisterInstanceArea(instanceId)
-    player:setInstanceId(0)
+    player:setInstanceIdRaw(0)
 end
 
 local leverAction = Action()
@@ -146,7 +146,7 @@ function leverAction.onUse(player, item, fromPosition, target, toPosition, isHot
     Game.registerInstanceArea(instanceId, INSTANCE_FROM, INSTANCE_TO)
 
     for _, p in ipairs(playersOnTiles) do
-        p:setInstanceId(instanceId)
+        p:setInstanceIdRaw(instanceId)
 
         local dest = p:getClosestFreePosition(PLAYER_DEST, false)
         if dest.x == 0 then dest = PLAYER_DEST end
@@ -233,7 +233,7 @@ function loginEvent.onLogin(player)
 
     local pos = player:getPosition()
     if isInsideInstanceArea(pos) then
-        player:setInstanceId(0)
+        player:setInstanceIdRaw(0)
         local temple = player:getTown():getTemplePosition()
         player:teleportTo(temple)
         temple:sendMagicEffect(CONST_ME_TELEPORT)

@@ -13,8 +13,13 @@ function talkaction.onSay(player, words, param)
 	if newPosition.x == 0 then
 		player:sendCancelMessage("You can not teleport " .. creature:getName() .. ".")
 		return false
-	elseif creature:teleportTo(newPosition) then
-		creature:setInstanceId(player:getInstanceId())
+	end
+
+	local gmInstanceId = player:getInstanceId()
+	if creature:getInstanceId() ~= gmInstanceId then
+		creature:setInstanceIdRaw(gmInstanceId)
+	end
+	if creature:teleportTo(newPosition) then
 		if not creature:isInGhostMode() then
 			oldPosition:sendMagicEffect(CONST_ME_POFF)
 			newPosition:sendMagicEffect(CONST_ME_TELEPORT)

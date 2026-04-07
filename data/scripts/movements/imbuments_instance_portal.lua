@@ -120,7 +120,7 @@ local function cleanupInstance(player)
     cleanupInstanceContent(instanceId)
     Game.unregisterInstanceArea(instanceId)
 
-    player:setInstanceId(0)
+    player:setInstanceIdRaw(0)
     returnPositions[player:getGuid()] = nil
 end
 
@@ -139,7 +139,7 @@ function entryMovement.onStepIn(creature, item, position, fromPosition)
     local instanceId = instanceCounter
 
     returnPositions[player:getGuid()] = fromPosition
-    player:setInstanceId(instanceId)
+    player:setInstanceIdRaw(instanceId)
     Game.registerInstanceArea(instanceId, INSTANCE_FROM, INSTANCE_TO)
 
     createInstanceContent(instanceId)
@@ -201,7 +201,7 @@ function loginEvent.onLogin(player)
 
     local pos = player:getPosition()
     if isInsideInstanceArea(pos) then
-        player:setInstanceId(0)
+        player:setInstanceIdRaw(0)
         local temple = player:getTown():getTemplePosition()
         player:teleportTo(temple)
         temple:sendMagicEffect(CONST_ME_TELEPORT)

@@ -1181,6 +1181,48 @@ int luaCreatureSetInstanceId(lua_State *L)
 	lua_pushboolean(L, true);
 	return 1;
 }
+
+int luaCreatureSetInstanceIdRaw(lua_State *L)
+{
+	// creature:setInstanceIdRaw(id)
+	// Same as setInstanceId but WITHOUT refreshWorldView.
+	// Use when a teleportTo() follows immediately (avoids double map refresh).
+	Creature *creature = getUserdata<Creature>(L, 1);
+	if (!creature) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	uint32_t instanceId = getInteger<uint32_t>(L, 2);
+
+	SpectatorVec oldSpectators;
+	g_game.map.getSpectators(oldSpectators, creature->getPosition(), true, true);
+	for (Creature *spectator : oldSpectators) {
+		Player *p = spectator->getPlayer();
+		if (p && p != creature && p->canSeeCreature(creature)) {
+			int32_t stackpos = creature->getTile()->getClientIndexOfCreature(p, creature);
+			if (stackpos != -1) {
+				p->sendRemoveTileThing(creature->getPosition(), stackpos);
+			}
+		}
+	}
+
+	creature->setInstanceID(instanceId);
+
+	SpectatorVec newSpectators;
+	g_game.map.getSpectators(newSpectators, creature->getPosition(), true, true);
+	for (Creature *spectator : newSpectators) {
+		Player *p = spectator->getPlayer();
+		if (p && p != creature && p->canSeeCreature(creature)) {
+			p->sendCreatureAppear(creature, creature->getPosition());
+		}
+	}
+
+	// NO refreshWorldView here — caller is responsible (typically via teleportTo).
+
+	lua_pushboolean(L, true);
+	return 1;
+}
 } // namespace
 
 int LuaScriptInterface::luaCreatureGC(lua_State* L)
@@ -1297,4 +1339,5 @@ void LuaScriptInterface::registerCreature()
 
 	registerMethod("Creature", "getInstanceId", luaCreatureGetInstanceId);
 	registerMethod("Creature", "setInstanceId", luaCreatureSetInstanceId);
+	registerMethod("Creature", "setInstanceIdRaw", luaCreatureSetInstanceIdRaw);
 }

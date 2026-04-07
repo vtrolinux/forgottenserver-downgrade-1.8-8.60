@@ -2,12 +2,16 @@ local talkaction = TalkAction("/goto")
 
 function talkaction.onSay(player, words, param)
 	local target = Creature(param)
-	if target then
-		player:teleportTo(target:getPosition())
-		player:setInstanceId(target:getInstanceId())
-	else
+	if not target then
 		player:sendCancelMessage("Creature not found.")
+		return false
 	end
+
+	local targetInstanceId = target:getInstanceId()
+	if player:getInstanceId() ~= targetInstanceId then
+		player:setInstanceIdRaw(targetInstanceId)
+	end
+	player:teleportTo(target:getPosition())
 	return false
 end
 

@@ -2,12 +2,17 @@ local talkaction = TalkAction("/town")
 
 function talkaction.onSay(player, words, param)
 	local town = Town(param) or Town(tonumber(param))
-	if town then
-		player:teleportTo(town:getTemplePosition())
-		player:setInstanceId(0)
-	else
+	if not town then
 		player:sendCancelMessage("Town not found.")
+		return false
 	end
+
+	-- Reset instance BEFORE teleporting so the move packet
+	-- is built in world context (single refresh, no stale creatures).
+	if player:getInstanceId() ~= 0 then
+		player:setInstanceIdRaw(0)
+	end
+	player:teleportTo(town:getTemplePosition())
 	return false
 end
 
