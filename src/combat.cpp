@@ -97,7 +97,7 @@ CombatDamage Combat::getCombatDamage(Creature* creature, Creature* target) const
 	return damage;
 }
 
-void Combat::setArea(AreaCombat* area) { this->area.reset(area); }
+void Combat::setArea(std::unique_ptr<AreaCombat> area) { this->area = std::move(area); }
 
 CombatType_t Combat::ConditionToDamageType(ConditionType_t type)
 {

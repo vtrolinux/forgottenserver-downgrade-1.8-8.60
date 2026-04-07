@@ -142,7 +142,7 @@ int luaCombatSetArea(lua_State* L)
 		return 1;
 	}
 
-	combat->setArea(new AreaCombat(*area));
+	combat->setArea(std::make_unique<AreaCombat>(*area));
 	pushBoolean(L, true);
 	return 1;
 }
