@@ -2010,9 +2010,8 @@ void Player::removeExperience(uint64_t exp, bool sendText /* = false*/)
 		if (!spectators.empty()) {
 			message.type = MESSAGE_STATUS_DEFAULT;
 			message.text = getName() + " lost " + expString;
-			for (Creature* spectator : spectators) {
-				assert(dynamic_cast<Player*>(spectator) != nullptr);
-				static_cast<Player*>(spectator)->sendTextMessage(message);
+			for (const auto& spectator : spectators) {
+				static_cast<Player*>(spectator.get())->sendTextMessage(message);
 			}
 		}
 	}

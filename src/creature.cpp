@@ -27,6 +27,9 @@ Creature::~Creature()
 {
 	liveCreatures.erase(this);
 
+	attackedCreature.reset();
+	followCreature.reset();
+
 	for (const auto& summon : summons) {
 		summon->setAttackedCreature(nullptr);
 		summon->removeMaster();
@@ -474,7 +477,7 @@ CreatureVector Creature::getKillers() const
 	for (const auto& it : damageMap) {
 		Creature* attacker = g_game.getCreatureByID(it.first);
 		if (attacker && attacker != this && timeNow - it.second.ticks <= inFightTicks) {
-			killers.push_back(attacker);
+			killers.push_back(attacker->shared_from_this());
 		}
 	}
 	return killers;
@@ -1013,9 +1016,8 @@ void Creature::onGainExperience(uint64_t gainExp, Creature* target)
 	TextMessage textMessage(MESSAGE_STATUS_DEFAULT,
 	                        fmt::format("{:s} gained {:d} {:s}.", ucfirst(getNameDescription()), gainExp,
 	                                    gainExp != 1 ? " experience points" : " experience point"));
-	for (Creature* spectator : spectators) {
-		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendTextMessage(textMessage);
+	for (const auto& spectator : spectators) {
+		static_cast<Player*>(spectator.get())->sendTextMessage(textMessage);
 	}
 
 	g_game.addAnimatedText(spectators, std::to_string(gainExp), position, TEXTCOLOR_WHITE);

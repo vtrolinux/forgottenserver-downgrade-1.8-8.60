@@ -2179,9 +2179,8 @@ int luaPlayerSetGhostMode(lua_State* L)
 
 	SpectatorVec spectators;
 	g_game.map.getSpectators(spectators, position, true, true);
-	for (Creature* spectator : spectators) {
-		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		Player* tmpPlayer = static_cast<Player*>(spectator);
+	for (const auto& spectator : spectators.players()) {
+		Player* tmpPlayer = static_cast<Player*>(spectator.get());
 		if (tmpPlayer != player && !tmpPlayer->isAccessPlayer()) {
 			if (enabled) {
 				tmpPlayer->sendRemoveTileThing(position, tile->getClientIndexOfCreature(tmpPlayer, player));

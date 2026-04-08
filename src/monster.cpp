@@ -402,10 +402,8 @@ bool Monster::setType(MonsterType* newType, bool restoreHealth)
 	// Reload creature on spectators
 	SpectatorVec spectators;
 	g_game.map.getSpectators(spectators, getPosition(), true, true);
-	for (Creature* spectator : spectators) {
-		if (Player* player = spectator->getPlayer()) {
-			player->sendUpdateTileCreature(this);
-		}
+	for (const auto& spectator : spectators.players()) {
+		static_cast<Player*>(spectator.get())->sendUpdateTileCreature(this);
 	}
 
 	return true;
@@ -474,8 +472,8 @@ void Monster::updateTargetList()
 	// OPTIMIZATION: Use multifloor=true (like upstream) to reduce spectator count
 	g_game.map.getSpectators(spectators, position, true);
 	spectators.erase(this);
-	for (Creature* spectator : spectators) {
-		onCreatureFound(spectator);
+	for (const auto& spectator : spectators) {
+		onCreatureFound(spectator.get());
 	}
 }
 
@@ -812,24 +810,14 @@ void Monster::updateIdleStatus()
 			// OPTIMIZATION: Throttle getSpectators check to every 5th call
 			// to avoid expensive spectator scans on every single think cycle.
 			if (++idleCheckCounter % 5 == 0) {
-				bool playersNearby = false;
 				SpectatorVec spectators;
 				g_game.map.getSpectators(spectators, position, false, true);
-				for (Creature *spectator : spectators) {
-					if (spectator->getPlayer()) {
-						playersNearby = true;
-						break;
-					}
+				if (spectators.players().empty()) {
+					idle = true;
+					walkingToSpawn = false;
+					listWalkDir.clear();
 				}
-			
-			if (!playersNearby) {
-			    idle = true;
-			    walkingToSpawn = false; 
-			    listWalkDir.clear();
-			} else {
-			    idle = false;
 			}
-		}
 		} else {
 			idle = std::find_if(conditions.begin(), conditions.end(),
 			                    [](const auto& condition) { return condition->isAggressive(); }) == conditions.end();

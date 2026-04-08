@@ -18,7 +18,7 @@ class QTreeLeafNode;
 class BedItem;
 class HouseTile;
 
-using CreatureVector = std::vector<Creature*>;
+using CreatureVector = std::vector<std::shared_ptr<Creature>>;
 using ItemVector = std::vector<Item*>;
 
 inline constexpr int32_t MAX_STACKPOS_THINGS = 10;

@@ -1118,9 +1118,8 @@ int luaCreatureSendCreatureSquare(lua_State* L)
 			g_game.map.getSpectators(spectators, creature->getPosition(), false, true);
 		}
 
-		for (Creature* spectator : spectators) {
-			assert(dynamic_cast<Player*>(spectator) != nullptr);
-			static_cast<Player*>(spectator)->sendCreatureSquare(creature, getInteger<SquareColor_t>(L, 2));
+		for (const auto& spectator : spectators) {
+			static_cast<Player*>(spectator.get())->sendCreatureSquare(creature, getInteger<SquareColor_t>(L, 2));
 		}
 	} else {
 		lua_pushnil(L);
@@ -1153,9 +1152,9 @@ int luaCreatureSetInstanceId(lua_State *L)
 
 	SpectatorVec oldSpectators;
 	g_game.map.getSpectators(oldSpectators, creature->getPosition(), true, true);
-	for (Creature *spectator : oldSpectators) {
-		Player *p = spectator->getPlayer();
-		if (p && p != creature && p->canSeeCreature(creature)) {
+	for (const auto& spectator : oldSpectators.players()) {
+		Player *p = static_cast<Player*>(spectator.get());
+		if (p != creature && p->canSeeCreature(creature)) {
 			int32_t stackpos = creature->getTile()->getClientIndexOfCreature(p, creature);
 			if (stackpos != -1) {
 				p->sendRemoveTileThing(creature->getPosition(), stackpos);
@@ -1167,9 +1166,9 @@ int luaCreatureSetInstanceId(lua_State *L)
 
 	SpectatorVec newSpectators;
 	g_game.map.getSpectators(newSpectators, creature->getPosition(), true, true);
-	for (Creature *spectator : newSpectators) {
-		Player *p = spectator->getPlayer();
-		if (p && p != creature && p->canSeeCreature(creature)) {
+	for (const auto& spectator : newSpectators.players()) {
+		Player *p = static_cast<Player*>(spectator.get());
+		if (p != creature && p->canSeeCreature(creature)) {
 			p->sendCreatureAppear(creature, creature->getPosition());
 		}
 	}
@@ -1197,9 +1196,9 @@ int luaCreatureSetInstanceIdRaw(lua_State *L)
 
 	SpectatorVec oldSpectators;
 	g_game.map.getSpectators(oldSpectators, creature->getPosition(), true, true);
-	for (Creature *spectator : oldSpectators) {
-		Player *p = spectator->getPlayer();
-		if (p && p != creature && p->canSeeCreature(creature)) {
+	for (const auto& spectator : oldSpectators.players()) {
+		Player *p = static_cast<Player*>(spectator.get());
+		if (p != creature && p->canSeeCreature(creature)) {
 			int32_t stackpos = creature->getTile()->getClientIndexOfCreature(p, creature);
 			if (stackpos != -1) {
 				p->sendRemoveTileThing(creature->getPosition(), stackpos);
@@ -1211,9 +1210,9 @@ int luaCreatureSetInstanceIdRaw(lua_State *L)
 
 	SpectatorVec newSpectators;
 	g_game.map.getSpectators(newSpectators, creature->getPosition(), true, true);
-	for (Creature *spectator : newSpectators) {
-		Player *p = spectator->getPlayer();
-		if (p && p != creature && p->canSeeCreature(creature)) {
+	for (const auto& spectator : newSpectators.players()) {
+		Player *p = static_cast<Player*>(spectator.get());
+		if (p != creature && p->canSeeCreature(creature)) {
 			p->sendCreatureAppear(creature, creature->getPosition());
 		}
 	}
@@ -1233,10 +1232,7 @@ int LuaScriptInterface::luaCreatureGC(lua_State* L)
 		*creaturePtr = nullptr;
 
 		if (Creature::isAlive(creature)) {
-			if (creature->luaRefCount > 0) {
-				--creature->luaRefCount;
-				creature->decrementReferenceCounter();
-			}
+			creature->releaseLuaReferences();
 		}
 	}
 	return 0;

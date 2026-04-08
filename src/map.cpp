@@ -177,7 +177,7 @@ void Map::removeTile(uint16_t x, uint16_t y, uint8_t z)
 				if (Player* player = (*creatures)[i]->getPlayer()) {
 					g_game.internalTeleport(player, player->getTown()->getTemplePosition(), false, FLAG_NOLIMIT);
 				} else {
-					g_game.removeCreature((*creatures)[i]);
+					g_game.removeCreature((*creatures)[i].get());
 				}
 			}
 		}
@@ -286,16 +286,16 @@ void Map::moveCreature(Creature& creature, Tile& newTile, bool forceTeleport /* 
 	getSpectators(spectators, oldPos, true);
 	getSpectators(newPosSpectators, newPos, true);
 	spectators.addSpectators(newPosSpectators);
+	spectators.partitionByType();
 
 	std::vector<int32_t> oldStackPosVector;
 	oldStackPosVector.reserve(spectators.size());
-	for (Creature* spectator : spectators) {
-		if (Player* tmpPlayer = spectator->getPlayer()) {
-			if (tmpPlayer->canSeeCreature(&creature)) {
-				oldStackPosVector.push_back(oldTile.getClientIndexOfCreature(tmpPlayer, &creature));
-			} else {
-				oldStackPosVector.push_back(-1);
-			}
+	for (const auto& spectator : spectators.players()) {
+		Player* tmpPlayer = static_cast<Player*>(spectator.get());
+		if (tmpPlayer->canSeeCreature(&creature)) {
+			oldStackPosVector.push_back(oldTile.getClientIndexOfCreature(tmpPlayer, &creature));
+		} else {
+			oldStackPosVector.push_back(-1);
 		}
 	}
 
@@ -330,19 +330,18 @@ void Map::moveCreature(Creature& creature, Tile& newTile, bool forceTeleport /* 
 
 	// send to client
 	size_t i = 0;
-	for (Creature* spectator : spectators) {
-		if (Player* tmpPlayer = spectator->getPlayer()) {
-			// Use the correct stackpos
-			int32_t oldStackPos = oldStackPosVector[i++];
-			if (oldStackPos != -1) {
-				tmpPlayer->sendCreatureMove(&creature, newPos, newTile.getClientIndexOfCreature(tmpPlayer, &creature),
-				                            oldPos, oldStackPos, teleport);
-			}
+	for (const auto& spectator : spectators.players()) {
+		Player* tmpPlayer = static_cast<Player*>(spectator.get());
+		// Use the correct stackpos
+		int32_t oldStackPos = oldStackPosVector[i++];
+		if (oldStackPos != -1) {
+			tmpPlayer->sendCreatureMove(&creature, newPos, newTile.getClientIndexOfCreature(tmpPlayer, &creature),
+			                            oldPos, oldStackPos, teleport);
 		}
 	}
 
 	// event method
-	for (Creature* spectator : spectators) {
+	for (const auto& spectator : spectators) {
 		spectator->onCreatureMove(&creature, &newTile, newPos, &oldTile, oldPos, teleport);
 	}
 
@@ -382,7 +381,7 @@ void Map::getSpectatorsInternal(SpectatorVec& spectators, const Position& center
 		for (int_fast32_t nx = startx1; nx <= endx2; nx += FLOOR_SIZE) {
 			if (leafE) {
 				const CreatureVector& node_list = (onlyPlayers ? leafE->player_list : leafE->creature_list);
-				for (Creature* creature : node_list) {
+				for (const auto& creature : node_list) {
 					if (!creature || creature->isRemoved()) {
 						continue;
 					}
@@ -467,6 +466,7 @@ void Map::getSpectators(SpectatorVec& spectators, const Position& centerPos, boo
 			if (*hasCacheOpt) {
 				if (!spectators.empty()) {
 					spectators.addSpectators(*cacheOpt);
+					spectators.partitionByType();
 				} else {
 					spectators = *cacheOpt;
 				}
@@ -495,6 +495,8 @@ void Map::getSpectators(SpectatorVec& spectators, const Position& centerPos, boo
 
 	getSpectatorsInternal(spectators, centerPos, minRangeX, maxRangeX, minRangeY, maxRangeY, minRangeZ, maxRangeZ,
 	                      onlyPlayers, onlyMonsters, onlyNpcs);
+
+	spectators.partitionByType();
 
 	if (cacheResult) {
 		auto [iter, inserted] = spectatorsCache.try_emplace(centerPos);
@@ -1193,22 +1195,24 @@ Floor* QTreeLeafNode::createFloor(uint32_t z)
 
 void QTreeLeafNode::addCreature(Creature* c)
 {
-	creature_list.push_back(c);
+	creature_list.push_back(c->shared_from_this());
 
 	if (c->getPlayer()) {
-		player_list.push_back(c);
+		player_list.push_back(c->shared_from_this());
 	}
 }
 
 void QTreeLeafNode::removeCreature(Creature* c)
 {
-	auto iter = std::find(creature_list.begin(), creature_list.end(), c);
+	auto iter = std::find_if(creature_list.begin(), creature_list.end(),
+		[c](const auto& sp) { return sp.get() == c; });
 	assert(iter != creature_list.end());
 	*iter = creature_list.back();
 	creature_list.pop_back();
 
 	if (c->getPlayer()) {
-		iter = std::find(player_list.begin(), player_list.end(), c);
+		iter = std::find_if(player_list.begin(), player_list.end(),
+			[c](const auto& sp) { return sp.get() == c; });
 		assert(iter != player_list.end());
 		*iter = player_list.back();
 		player_list.pop_back();

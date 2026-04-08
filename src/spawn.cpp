@@ -282,9 +282,8 @@ bool Spawn::findPlayer(const Position& pos)
 {
 	SpectatorVec spectators;
 	g_game.map.getSpectators(spectators, pos, false, true);
-	for (Creature* spectator : spectators) {
-		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		if (!static_cast<Player*>(spectator)->hasFlag(PlayerFlag_IgnoredByMonsters)) {
+	for (const auto& spectator : spectators.players()) {
+		if (!static_cast<Player*>(spectator.get())->hasFlag(PlayerFlag_IgnoredByMonsters)) {
 			return true;
 		}
 	}

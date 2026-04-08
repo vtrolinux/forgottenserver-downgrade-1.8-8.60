@@ -939,7 +939,7 @@ void ProtocolGame::GetTileDescription(const Tile* tile, NetworkMessage& msg)
 	if (creatures) {
 		bool playerAdded = false;
 		for (auto it = creatures->rbegin(), end = creatures->rend(); it != end; ++it) {
-			const Creature* creature = (*it);
+			const Creature* creature = it->get();
 
 			if (!player->canSeeCreature(creature)) {
 				continue;

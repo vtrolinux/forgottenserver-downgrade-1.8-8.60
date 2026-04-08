@@ -520,9 +520,9 @@ int luaTileGetCreatures(lua_State* L)
 	lua_createtable(L, creatureVector->size(), 0);
 
 	int index = 0;
-	for (Creature* creature : *creatureVector) {
-		pushUserdata<Creature>(L, creature);
-		setCreatureMetatable(L, -1, creature);
+	for (const auto& creature : *creatureVector) {
+		pushUserdata<Creature>(L, creature.get());
+		setCreatureMetatable(L, -1, creature.get());
 		lua_rawseti(L, -2, ++index);
 	}
 	return 1;

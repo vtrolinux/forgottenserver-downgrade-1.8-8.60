@@ -91,9 +91,8 @@ void Npc::reload()
 
 	SpectatorVec players;
 	g_game.map.getSpectators(players, getPosition(), true, true);
-	for (const auto& player : players) {
-		assert(dynamic_cast<Player*>(player) != nullptr);
-		spectators.insert(std::static_pointer_cast<Player>(g_game.getCreatureSharedRef(player)));
+	for (const auto& player : players.players()) {
+		spectators.insert(std::static_pointer_cast<Player>(player));
 	}
 
 	const bool hasSpectators = !spectators.empty();
@@ -236,9 +235,8 @@ void Npc::onCreatureAppear(Creature* creature, bool isLogin)
 	if (creature == this) {
 		SpectatorVec players;
 		g_game.map.getSpectators(players, getPosition(), true, true);
-		for (const auto& player : players) {
-			assert(dynamic_cast<Player*>(player) != nullptr);
-			spectators.insert(std::static_pointer_cast<Player>(g_game.getCreatureSharedRef(player)));
+		for (const auto& player : players.players()) {
+			spectators.insert(std::static_pointer_cast<Player>(player));
 		}
 
 		const bool hasSpectators = !spectators.empty();

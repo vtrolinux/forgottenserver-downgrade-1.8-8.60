@@ -156,15 +156,13 @@ void Container::onAddContainerItem(Item* item) const
 	g_game.map.getSpectators(spectators, getPosition(), false, true, 1, 1, 1, 1);
 
 	// send to client
-	for (Creature* spectator : spectators) {
-		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendAddContainerItem(this, item);
+	for (const auto& spectator : spectators.players()) {
+		static_cast<Player*>(spectator.get())->sendAddContainerItem(this, item);
 	}
 
 	// event methods
-	for (Creature* spectator : spectators) {
-		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->onAddContainerItem(item);
+	for (const auto& spectator : spectators.players()) {
+		static_cast<Player*>(spectator.get())->onAddContainerItem(item);
 	}
 }
 
@@ -174,15 +172,13 @@ void Container::onUpdateContainerItem(uint32_t index, Item* oldItem, Item* newIt
 	g_game.map.getSpectators(spectators, getPosition(), false, true, 1, 1, 1, 1);
 
 	// send to client
-	for (Creature* spectator : spectators) {
-		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendUpdateContainerItem(this, static_cast<uint16_t>(index), newItem);
+	for (const auto& spectator : spectators.players()) {
+		static_cast<Player*>(spectator.get())->sendUpdateContainerItem(this, static_cast<uint16_t>(index), newItem);
 	}
 
 	// event methods
-	for (Creature* spectator : spectators) {
-		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->onUpdateContainerItem(this, oldItem, newItem);
+	for (const auto& spectator : spectators.players()) {
+		static_cast<Player*>(spectator.get())->onUpdateContainerItem(this, oldItem, newItem);
 	}
 }
 
@@ -192,15 +188,13 @@ void Container::onRemoveContainerItem(uint32_t index, Item* item) const
 	g_game.map.getSpectators(spectators, getPosition(), false, true, 1, 1, 1, 1);
 
 	// send change to client
-	for (Creature* spectator : spectators) {
-		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->sendRemoveContainerItem(this, static_cast<uint16_t>(index));
+	for (const auto& spectator : spectators.players()) {
+		static_cast<Player*>(spectator.get())->sendRemoveContainerItem(this, static_cast<uint16_t>(index));
 	}
 
 	// event methods
-	for (Creature* spectator : spectators) {
-		assert(dynamic_cast<Player*>(spectator) != nullptr);
-		static_cast<Player*>(spectator)->onRemoveContainerItem(this, item);
+	for (const auto& spectator : spectators.players()) {
+		static_cast<Player*>(spectator.get())->onRemoveContainerItem(this, item);
 	}
 }
 

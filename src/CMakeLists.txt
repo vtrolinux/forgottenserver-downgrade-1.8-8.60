@@ -104,6 +104,7 @@ set(tfs_SRC
 	${CMAKE_CURRENT_LIST_DIR}/server.cpp
 	${CMAKE_CURRENT_LIST_DIR}/signals.cpp
 	${CMAKE_CURRENT_LIST_DIR}/spawn.cpp
+	${CMAKE_CURRENT_LIST_DIR}/spectators.cpp
 	${CMAKE_CURRENT_LIST_DIR}/spells.cpp
 	${CMAKE_CURRENT_LIST_DIR}/stats.cpp
 	${CMAKE_CURRENT_LIST_DIR}/talkaction.cpp

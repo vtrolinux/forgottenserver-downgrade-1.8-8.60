@@ -430,11 +430,11 @@ uint32_t MoveEvent::AddItemField(Item* item, Item*, const Position&)
 		Tile* tile = item->getTile();
 		if (CreatureVector* creatures = tile->getCreatures()) {
 			uint32_t fieldInstance = item->getInstanceID();
-			for (Creature* creature : *creatures) {
+			for (const auto& creature : *creatures) {
 				if (creature->getInstanceID() != fieldInstance) {
 					continue;
 				}
-				field->onStepInField(creature);
+				field->onStepInField(creature.get());
 			}
 		}
 		return 1;

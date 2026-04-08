@@ -33,9 +33,8 @@ inline SpectatorVec filterByInstance(const SpectatorVec &spectators,
                                      uint32_t instanceId)
 {
     SpectatorVec filtered;
-    for (Creature *spectator : spectators) {
-        const Player *p = spectator->getPlayer();
-        if (p && p->compareInstance(instanceId)) {
+    for (const auto& spectator : spectators.players()) {
+        if (static_cast<const Player*>(spectator.get())->compareInstance(instanceId)) {
             filtered.emplace_back(spectator);
         }
     }
@@ -51,9 +50,9 @@ inline void sendMagicEffectToInstance(const SpectatorVec &spectators,
                                       const Position &pos, uint8_t effect,
                                       uint32_t instanceId)
 {
-    for (Creature *spectator : spectators) {
-        Player *p = spectator->getPlayer();
-        if (p && p->compareInstance(instanceId)) {
+    for (const auto& spectator : spectators.players()) {
+        Player *p = static_cast<Player*>(spectator.get());
+        if (p->compareInstance(instanceId)) {
             p->sendMagicEffect(pos, effect);
         }
     }
@@ -67,9 +66,9 @@ inline void sendDistanceEffectToInstance(const SpectatorVec &spectators,
                                          const Position &to, uint8_t effect,
                                          uint32_t instanceId)
 {
-    for (Creature *spectator : spectators) {
-        Player *p = spectator->getPlayer();
-        if (p && p->compareInstance(instanceId)) {
+    for (const auto& spectator : spectators.players()) {
+        Player *p = static_cast<Player*>(spectator.get());
+        if (p->compareInstance(instanceId)) {
             p->sendDistanceShoot(from, to, effect);
         }
     }

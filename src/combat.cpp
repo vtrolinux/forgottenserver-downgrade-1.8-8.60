@@ -626,11 +626,10 @@ void Combat::combatTileEffects(const SpectatorVec& spectators, Creature* caster,
 	if (params.impactEffect != CONST_ME_NONE) {
 		if (caster) {
 			SpectatorVec filtered;
-			for (Creature *s : spectators) {
-				if (Player *p = s->getPlayer()) {
-					if (p->compareInstance(caster->getInstanceID())) {
-						filtered.emplace_back(s);
-					}
+			for (const auto& s : spectators.players()) {
+				Player *p = static_cast<Player*>(s.get());
+				if (p->compareInstance(caster->getInstanceID())) {
+					filtered.emplace_back(s);
 				}
 			}
 			Game::addMagicEffect(filtered, tile->getPosition(), params.impactEffect);
@@ -684,12 +683,12 @@ void Combat::addDistanceEffect(Creature* caster, const Position& fromPos, const 
 			g_game.map.getSpectators(spectators, fromPos, true, true);
 			g_game.map.getSpectators(toPosSpectators, toPos, true, true);
 			spectators.addSpectators(toPosSpectators);
+			spectators.partitionByType();
 			SpectatorVec filtered;
-			for (Creature *s : spectators) {
-				if (Player *p = s->getPlayer()) {
-					if (p->compareInstance(caster->getInstanceID())) {
-						filtered.emplace_back(s);
-					}
+			for (const auto& s : spectators.players()) {
+				Player *p = static_cast<Player*>(s.get());
+				if (p->compareInstance(caster->getInstanceID())) {
+					filtered.emplace_back(s);
 				}
 			}
 			g_game.addDistanceEffect(filtered, fromPos, toPos, effect);
@@ -711,11 +710,10 @@ void Combat::doCombat(Creature* caster, Creature* target) const
 			SpectatorVec spectators;
 			g_game.map.getSpectators(spectators, target->getPosition(), true, true);
 			SpectatorVec filtered;
-			for (Creature *s : spectators) {
-				if (Player *p = s->getPlayer()) {
-					if (p->compareInstance(target->getInstanceID())) {
-						filtered.emplace_back(s);
-					}
+			for (const auto& s : spectators.players()) {
+				Player *p = static_cast<Player*>(s.get());
+				if (p->compareInstance(target->getInstanceID())) {
+					filtered.emplace_back(s);
 				}
 			}
 			Game::addMagicEffect(filtered, target->getPosition(), params.impactEffect);
@@ -801,21 +799,21 @@ void Combat::doCombat(Creature* caster, const Position& position) const
 
 			if (CreatureVector* creatures = tile->getCreatures()) {
 				const Creature* topCreature = tile->getTopCreature();
-				for (Creature* creature : *creatures) {
+				for (const auto& creature : *creatures) {
 					if (params.targetCasterOrTopMost) {
 						if (caster && caster->getTile() == tile) {
-							if (creature != caster) {
+							if (creature.get() != caster) {
 								continue;
 							}
-						} else if (creature != topCreature) {
+						} else if (creature.get() != topCreature) {
 							continue;
 						}
 					}
 
 					if (!params.aggressive ||
-					    (caster != creature && Combat::canDoCombat(caster, creature) == RETURNVALUE_NOERROR)) {
+					    (caster != creature.get() && Combat::canDoCombat(caster, creature.get()) == RETURNVALUE_NOERROR)) {
 						for (const auto& condition : params.conditionList) {
-							if (caster == creature || !creature->isImmune(condition->getType())) {
+							if (caster == creature.get() || !creature->isImmune(condition->getType())) {
 								auto conditionCopy = condition->clone();
 								if (caster) {
 									conditionCopy->setParam(CONDITION_PARAM_OWNER, caster->getID());
@@ -834,7 +832,7 @@ void Combat::doCombat(Creature* caster, const Position& position) const
 					}
 
 					if (params.targetCallback) {
-						params.targetCallback->onTargetCombat(caster, creature);
+						params.targetCallback->onTargetCombat(caster, creature.get());
 					}
 
 					if (params.targetCasterOrTopMost) {
@@ -1109,7 +1107,7 @@ void Combat::doAreaCombat(Creature* caster, const Position& position, const Area
 
 	postCombatEffects(caster, position, params);
 
-	std::vector<Creature*> toDamageCreatures;
+	std::vector<std::shared_ptr<Creature>> toDamageCreatures;
 	toDamageCreatures.reserve(100);
 
 	for (Tile* tile : tiles) {
@@ -1121,19 +1119,19 @@ void Combat::doAreaCombat(Creature* caster, const Position& position, const Area
 
 		if (CreatureVector* creatures = tile->getCreatures()) {
 			const Creature* topCreature = tile->getTopCreature();
-			for (Creature* creature : *creatures) {
+			for (const auto& creature : *creatures) {
 				if (params.targetCasterOrTopMost) {
 					if (caster && caster->getTile() == tile) {
-						if (creature != caster) {
+						if (creature.get() != caster) {
 							continue;
 						}
-					} else if (creature != topCreature) {
+					} else if (creature.get() != topCreature) {
 						continue;
 					}
 				}
 
 				if (!params.aggressive ||
-				    (caster != creature && Combat::canDoCombat(caster, creature) == RETURNVALUE_NOERROR)) {
+				    (caster != creature.get() && Combat::canDoCombat(caster, creature.get()) == RETURNVALUE_NOERROR)) {
 					toDamageCreatures.push_back(creature);
 
 					if (params.targetCasterOrTopMost) {
@@ -1148,7 +1146,7 @@ void Combat::doAreaCombat(Creature* caster, const Position& position, const Area
 	leechCombat.origin = ORIGIN_NONE;
 	leechCombat.leeched = true;
 
-	for (Creature* creature : toDamageCreatures) {
+	for (const auto& creature : toDamageCreatures) {
 		CombatDamage damageCopy = damage; // we cannot avoid copying here, because we don't know if it's player combat
 		                                  // or not, so we can't modify the initial damage.
 		bool playerCombatReduced = false;
@@ -1173,19 +1171,19 @@ void Combat::doAreaCombat(Creature* caster, const Position& position, const Area
 
 		bool success = false;
 		if (damageCopy.primary.type != COMBAT_MANADRAIN) {
-			if (g_game.combatBlockHit(damageCopy, caster, creature, params.blockedByShield, params.blockedByArmor,
+			if (g_game.combatBlockHit(damageCopy, caster, creature.get(), params.blockedByShield, params.blockedByArmor,
 			                          params.itemId != 0, params.ignoreResistances)) {
 				continue;
 			}
-			success = g_game.combatChangeHealth(caster, creature, damageCopy);
+			success = g_game.combatChangeHealth(caster, creature.get(), damageCopy);
 		} else {
-			success = g_game.combatChangeMana(caster, creature, damageCopy);
+			success = g_game.combatChangeMana(caster, creature.get(), damageCopy);
 		}
 
 		if (success) {
 			if (damage.blockType == BLOCK_NONE || damage.blockType == BLOCK_ARMOR) {
 				for (const auto& condition : params.conditionList) {
-					if (caster == creature || !creature->isImmune(condition->getType())) {
+					if (caster == creature.get() || !creature->isImmune(condition->getType())) {
 						auto conditionCopy = condition->clone();
 						if (caster) {
 							conditionCopy->setParam(CONDITION_PARAM_OWNER, caster->getID());
@@ -1236,7 +1234,7 @@ void Combat::doAreaCombat(Creature* caster, const Position& position, const Area
 		}
 
 		if (params.targetCallback) {
-			params.targetCallback->onTargetCombat(caster, creature);
+			params.targetCallback->onTargetCombat(caster, creature.get());
 		}
 	}
 }

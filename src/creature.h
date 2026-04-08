@@ -363,8 +363,9 @@ public:
 	void incrementLuaRefCount() { ++luaRefCount; }
 	void releaseLuaReferences()
 	{
-		while (luaRefCount > 0) {
-			--luaRefCount;
+		int refs = luaRefCount;
+		luaRefCount = 0;
+		for (int i = 0; i < refs; ++i) {
 			decrementReferenceCounter();
 		}
 	}
