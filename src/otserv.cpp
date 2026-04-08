@@ -85,6 +85,10 @@ void mainLoader(ServiceManager* services)
 
 	// check if config.lua or config.lua.dist exist
 	auto configFile = getString(ConfigManager::CONFIG_FILE);
+	if (configFile.empty()) {
+		configFile = "config.lua";
+		ConfigManager::setString(ConfigManager::CONFIG_FILE, configFile);
+	}
 	std::ifstream c_test(fmt::format("./{}", configFile));
 	if (!c_test.is_open()) {
 		std::ifstream config_lua_dist("./config.lua.dist");

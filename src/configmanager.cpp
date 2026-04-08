@@ -233,7 +233,9 @@ bool ConfigManager::load()
 
 	luaL_openlibs(L);
 
-	strings[CONFIG_FILE] = "config.lua";
+	if (strings[CONFIG_FILE].empty()) {
+		strings[CONFIG_FILE] = "config.lua";
+	}
 	if (luaL_dofile(L, getString(String::CONFIG_FILE).data())) {
 		g_logger().error("{}", lua_tostring(L, -1));
 		lua_close(L);
