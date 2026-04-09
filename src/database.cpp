@@ -43,19 +43,12 @@ static tfs::detail::Mysql_ptr connectToDatabase(const bool retryIfError)
 		}
 
 		// Disable SSL enforcement and verification
-#if defined(_WIN32)
 		{
 			bool ssl_enforce = false;
 			bool ssl_verify = false;
 			mysql_options(handle.get(), MYSQL_OPT_SSL_ENFORCE, &ssl_enforce);
 			mysql_options(handle.get(), MYSQL_OPT_SSL_VERIFY_SERVER_CERT, &ssl_verify);
 		}
-#else
-		{
-			unsigned int ssl_mode = SSL_MODE_DISABLED;
-			mysql_options(handle.get(), MYSQL_OPT_SSL_MODE, &ssl_mode);
-		}
-#endif
 
 		// connects to database
 		if (!mysql_real_connect(handle.get(), getString(ConfigManager::MYSQL_HOST).data(),
