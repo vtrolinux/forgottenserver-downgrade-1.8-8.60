@@ -229,6 +229,7 @@ public:
 
 	virtual int32_t getArmor() const { return 0; }
 	virtual int32_t getDefense() const { return 0; }
+	virtual float getMitigation() const { return 0.0f; }
 	virtual float getAttackFactor() const { return 1.0f; }
 	virtual float getDefenseFactor() const { return 1.0f; }
 

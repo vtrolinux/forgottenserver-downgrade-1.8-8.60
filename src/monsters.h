@@ -141,6 +141,7 @@ class MonsterType
 		int32_t changeTargetChance = 0;
 		int32_t defense = 0;
 		int32_t armor = 0;
+		float mitigation = 0.0f;
 
 		bool canPushItems = false;
 		bool canPushCreatures = false;

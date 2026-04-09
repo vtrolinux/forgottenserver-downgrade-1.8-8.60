@@ -768,6 +768,15 @@ BlockType_t Creature::blockHit(Creature* attacker, CombatType_t combatType, int3
 	}
 
 	if (combatType != COMBAT_HEALING) {
+		float mitigation = getMitigation();
+		if (mitigation > 0.0f) {
+			damage -= std::round(damage * (mitigation / 100.0f));
+			if (damage <= 0) {
+				damage = 0;
+				blockType = BLOCK_ARMOR;
+			}
+		}
+
 		onAttacked();
 	}
 	return blockType;

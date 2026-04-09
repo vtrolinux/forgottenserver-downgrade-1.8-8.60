@@ -67,6 +67,7 @@ public:
 	RaceType_t getRace() const override { return mType->info.race; }
 	int32_t getArmor() const override { return mType->info.armor; }
 	int32_t getDefense() const override { return mType->info.defense; }
+	float getMitigation() const override { return mType->info.mitigation; }
 	bool isPushable() const override { return mType->info.pushable && baseSpeed != 0; }
 	bool isAttackable() const override { return mType->info.isAttackable; }
 

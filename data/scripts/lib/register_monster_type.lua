@@ -338,6 +338,7 @@ registerMonsterType.defenses = function(mtype, mask)
 	if type(mask.defenses) == "table" then
 		if mask.defenses.defense then mtype:defense(mask.defenses.defense) end
 		if mask.defenses.armor then mtype:armor(mask.defenses.armor) end
+		if mask.defenses.mitigation then mtype:mitigation(mask.defenses.mitigation) end
 		for _, defense in pairs(mask.defenses) do
 			if type(defense) == "table" then
 				local spell <close> = AbilityTableToSpell(defense)

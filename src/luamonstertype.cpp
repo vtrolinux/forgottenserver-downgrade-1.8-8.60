@@ -922,6 +922,23 @@ int luaMonsterTypeDefense(lua_State* L)
 	return 1;
 }
 
+int luaMonsterTypeMitigation(lua_State* L)
+{
+	// get: monsterType:mitigation() set: monsterType:mitigation(mitigation)
+	MonsterType* monsterType = getUserdata<MonsterType>(L, 1);
+	if (monsterType) {
+		if (lua_gettop(L) == 1) {
+			lua_pushnumber(L, monsterType->info.mitigation);
+		} else {
+			monsterType->info.mitigation = getNumber<float>(L, 2);
+			pushBoolean(L, true);
+		}
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 int luaMonsterTypeOutfit(lua_State* L)
 {
 	// get: monsterType:outfit() set: monsterType:outfit(outfit)
@@ -1217,6 +1234,7 @@ void LuaScriptInterface::registerMonsterType()
 
 	registerMethod("MonsterType", "armor", luaMonsterTypeArmor);
 	registerMethod("MonsterType", "defense", luaMonsterTypeDefense);
+	registerMethod("MonsterType", "mitigation", luaMonsterTypeMitigation);
 	registerMethod("MonsterType", "outfit", luaMonsterTypeOutfit);
 	registerMethod("MonsterType", "race", luaMonsterTypeRace);
 	registerMethod("MonsterType", "corpseId", luaMonsterTypeCorpseId);
