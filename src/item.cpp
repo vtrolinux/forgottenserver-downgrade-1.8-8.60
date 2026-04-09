@@ -233,13 +233,13 @@ bool Item::equals(const Item* otherItem) const
 	for (const auto& attribute : attributeList) {
 		if (ItemAttributes::isStrAttrType(attribute.type)) {
 			for (const auto& otherAttribute : otherAttributeList) {
-				if (attribute.type == otherAttribute.type && *attribute.value.string != *otherAttribute.value.string) {
+				if (attribute.type == otherAttribute.type && std::get<std::string>(attribute.value) != std::get<std::string>(otherAttribute.value)) {
 					return false;
 				}
 			}
 		} else {
 			for (const auto& otherAttribute : otherAttributeList) {
-				if (attribute.type == otherAttribute.type && attribute.value.integer != otherAttribute.value.integer) {
+				if (attribute.type == otherAttribute.type && std::get<int64_t>(attribute.value) != std::get<int64_t>(otherAttribute.value)) {
 					return false;
 				}
 			}
@@ -1252,7 +1252,7 @@ std::string_view ItemAttributes::getStrAttr(itemAttrTypes type) const
 	if (!attr) {
 		return "";
 	}
-	return {attr->value.string->data(), attr->value.string->size()};
+	return std::get<std::string>(attr->value);
 }
 
 void ItemAttributes::setStrAttr(itemAttrTypes type, std::string_view value)
@@ -1266,8 +1266,7 @@ void ItemAttributes::setStrAttr(itemAttrTypes type, std::string_view value)
 	}
 
 	Attribute& attr = getAttr(type);
-	delete attr.value.string;
-	attr.value.string = new std::string(value);
+	attr.value.emplace<std::string>(value);
 }
 
 void ItemAttributes::removeAttribute(itemAttrTypes type)
@@ -1302,7 +1301,7 @@ int64_t ItemAttributes::getIntAttr(itemAttrTypes type) const
 	if (!attr) {
 		return 0;
 	}
-	return attr->value.integer;
+	return std::get<int64_t>(attr->value);
 }
 
 void ItemAttributes::setIntAttr(itemAttrTypes type, int64_t value)
@@ -1315,7 +1314,7 @@ void ItemAttributes::setIntAttr(itemAttrTypes type, int64_t value)
 		value = 100;
 	}
 
-	getAttr(type).value.integer = value;
+	getAttr(type).value.emplace<int64_t>(value);
 }
 
 void ItemAttributes::increaseIntAttr(itemAttrTypes type, int64_t value) { setIntAttr(type, getIntAttr(type) + value); }
