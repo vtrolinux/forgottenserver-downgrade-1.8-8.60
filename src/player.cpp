@@ -5237,7 +5237,7 @@ void Player::addItemImbuements(Item* item) {
 					setVarSkill(SKILL_FISHING, static_cast<int32_t>(imbue->value));
 					break;
 				case ImbuementType::IMBUEMENT_TYPE_MAGIC_LEVEL:
-					setVarSkill(SKILL_MAGLEVEL, static_cast<int32_t>(imbue->value));
+					setVarStats(STAT_MAGICPOINTS, static_cast<int32_t>(imbue->value));
 					break;
 				default:
 					break;
@@ -5313,7 +5313,7 @@ void Player::removeItemImbuements(Item* item) {
 					setVarSkill(SKILL_FISHING, -static_cast<int32_t>(imbue->value));
 					break;
 				case ImbuementType::IMBUEMENT_TYPE_MAGIC_LEVEL:
-					setVarSkill(SKILL_MAGLEVEL, -static_cast<int32_t>(imbue->value));
+					setVarStats(STAT_MAGICPOINTS, -static_cast<int32_t>(imbue->value));
 					break;
 				default:
 					break;
@@ -5388,7 +5388,7 @@ void Player::removeImbuementEffect(std::shared_ptr<Imbuement> imbue) {
 			setVarSkill(SKILL_FISHING, -static_cast<int32_t>(imbue->value));
 			break;
 		case ImbuementType::IMBUEMENT_TYPE_MAGIC_LEVEL:
-			setVarSkill(SKILL_MAGLEVEL, -static_cast<int32_t>(imbue->value));
+			setVarStats(STAT_MAGICPOINTS, -static_cast<int32_t>(imbue->value));
 			break;
 		default:
 			break;
@@ -5461,7 +5461,7 @@ void Player::addImbuementEffect(std::shared_ptr<Imbuement> imbue) {
 			setVarSkill(SKILL_FISHING, static_cast<int32_t>(imbue->value));
 			break;
 		case ImbuementType::IMBUEMENT_TYPE_MAGIC_LEVEL:
-			setVarSkill(SKILL_MAGLEVEL, static_cast<int32_t>(imbue->value));
+			setVarStats(STAT_MAGICPOINTS, static_cast<int32_t>(imbue->value));
 			break;
 		default:
 			break;
