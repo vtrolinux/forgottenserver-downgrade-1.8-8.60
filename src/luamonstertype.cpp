@@ -104,15 +104,15 @@ int luaMonsterTypeIsSummonable(lua_State* L)
 	return 1;
 }
 
-int luaMonsterTypeIsIgnoringSpawnBlock(lua_State* L)
+int luaMonsterTypeIsBlockable(lua_State* L)
 {
-	// get: monsterType:isIgnoringSpawnBlock() set: monsterType:isIgnoringSpawnBlock(bool)
+	// get: monsterType:isBlockable() set: monsterType:isBlockable(bool)
 	MonsterType* monsterType = getUserdata<MonsterType>(L, 1);
 	if (monsterType) {
 		if (lua_gettop(L) == 1) {
-			pushBoolean(L, monsterType->info.isIgnoringSpawnBlock);
+			pushBoolean(L, monsterType->info.isBlockable);
 		} else {
-			monsterType->info.isIgnoringSpawnBlock = getBoolean(L, 2);
+			monsterType->info.isBlockable = getBoolean(L, 2);
 			pushBoolean(L, true);
 		}
 	} else {
@@ -1202,7 +1202,7 @@ void LuaScriptInterface::registerMonsterType()
 	registerMethod("MonsterType", "isChallengeable", luaMonsterTypeIsChallengeable);
 	registerMethod("MonsterType", "isConvinceable", luaMonsterTypeIsConvinceable);
 	registerMethod("MonsterType", "isSummonable", luaMonsterTypeIsSummonable);
-	registerMethod("MonsterType", "isIgnoringSpawnBlock", luaMonsterTypeIsIgnoringSpawnBlock);
+	registerMethod("MonsterType", "isBlockable", luaMonsterTypeIsBlockable);
 	registerMethod("MonsterType", "isIllusionable", luaMonsterTypeIsIllusionable);
 	registerMethod("MonsterType", "isHostile", luaMonsterTypeIsHostile);
 	registerMethod("MonsterType", "isPushable", luaMonsterTypeIsPushable);

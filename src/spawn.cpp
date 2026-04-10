@@ -297,7 +297,7 @@ bool Spawn::spawnMonster(uint32_t spawnId, const spawnBlock_t& sb, bool startup 
 
 	const auto spawnFunc = [&](bool roll) {
 		for (const auto& pair : sb.mTypes) {
-			if (isBlocked && !pair.first->info.isIgnoringSpawnBlock) {
+			if (isBlocked && pair.first->info.isBlockable) {
 				++blockedMonsters;
 				continue;
 			}
@@ -307,7 +307,7 @@ bool Spawn::spawnMonster(uint32_t spawnId, const spawnBlock_t& sb, bool startup 
 			}
 
 			if (pair.second >= normal_random(1, 100) &&
-			    spawnMonster(spawnId, pair.first, sb.pos, sb.direction, startup)) {
+				spawnMonster(spawnId, pair.first, sb.pos, sb.direction, startup)) {
 				return true;
 			}
 		}
@@ -482,7 +482,7 @@ void Spawn::scheduleSpawn(uint32_t spawnId, uint32_t interval, bool blocked)
 		if (playerBlocking) {
 			bool anyIgnoresBlock = false;
 			for (const auto &pair : sb.mTypes) {
-				if (pair.first->info.isIgnoringSpawnBlock) {
+				if (!pair.first->info.isBlockable) {
 					anyIgnoresBlock = true;
 					break;
 				}
