@@ -301,17 +301,8 @@ void Monster::onCreatureMove(Creature* creature, const Tile* newTile, const Posi
 
 					int32_t offset_x = followPosition.getDistanceX(position);
 					int32_t offset_y = followPosition.getDistanceY(position);
-					if ((offset_x > 1 || offset_y > 1) && mType->info.changeTargetChance > 0) {
-						Direction dir = getDirectionTo(position, followPosition);
-						const Position& checkPosition = getNextPosition(dir, position);
-
-						Tile* tile = g_game.map.getTile(checkPosition);
-						if (tile) {
-							Creature* topCreature = tile->getTopCreature();
-							if (topCreature && fc.get() != topCreature && isOpponent(topCreature)) {
-								selectTarget(topCreature);
-							}
-						}
+					if (offset_x > 1 || offset_y > 1) {
+						selectBlockerTarget();
 					}
 				}
 			} else if (isOpponent(creature)) {
@@ -762,6 +753,45 @@ bool Monster::searchTarget(TargetSearchType_t searchType /*= TARGETSEARCH_DEFAUL
 			return true;
 		}
 	}
+	return false;
+}
+
+bool Monster::selectBlockerTarget()
+{
+	if (isRemoved() || isDead() || isSummon() || challengeFocusDuration > 0) {
+		return false;
+	}
+
+	auto fc = followCreature.lock();
+	if (!fc) {
+		return false;
+	}
+
+	const Position& myPos = getPosition();
+	const Position& targetPos = fc->getPosition();
+
+	if (myPos.z != targetPos.z || !canSee(targetPos)) {
+		return false;
+	}
+
+	// Only for monsters that want to be close (melee)
+	if (mType->info.targetDistance > 1) {
+		return false;
+	}
+
+	Direction dir = getDirectionTo(myPos, targetPos);
+	Position nextPos = getNextPosition(dir, myPos);
+
+	Tile* tile = g_game.map.getTile(nextPos);
+	if (!tile) {
+		return false;
+	}
+
+	Creature* blocker = tile->getTopCreature();
+	if (blocker && blocker != fc.get() && isOpponent(blocker)) {
+		return selectTarget(blocker);
+	}
+
 	return false;
 }
 
@@ -1454,6 +1484,10 @@ bool Monster::getNextStep(Direction& direction, uint32_t& flags)
 			if (result) {
 				flags |= FLAG_PATHFINDING;
 			} else {
+				if (selectBlockerTarget()) {
+					return false;
+				}
+
 				if (ignoreFieldDamage) {
 					ignoreFieldDamage = false;
 				}
