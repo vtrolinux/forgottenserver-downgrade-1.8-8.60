@@ -2508,6 +2508,7 @@ void LuaScriptInterface::registerFunctions()
 	registerModalWindow();
 	registerMonster();
 	registerNpc();
+	registerNpcType();
 	registerGuild();
 	registerGroup();
 	registerVocation();
@@ -2603,6 +2604,7 @@ void LuaScriptInterface::registerClass(const std::string& className, const std::
 	    {"ItemType", LuaData_ItemType},
 	    {"ModalWindow", LuaData_ModalWindow},
 	    {"MonsterType", LuaData_MonsterType},
+		{"NpcType", LuaData_NpcType},
 	    {"NetworkMessage", LuaData_NetworkMessage},
 	    {"Party", LuaData_Party},
 	    {"Vocation", LuaData_Vocation},

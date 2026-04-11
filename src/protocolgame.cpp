@@ -3232,8 +3232,8 @@ void ProtocolGame::AddShopItem(NetworkMessage& msg, const ShopInfo& item)
 
 	msg.addString(item.realName);
 	msg.add<uint32_t>(it.weight);
-	msg.add<uint32_t>(std::max<uint32_t>(item.buyPrice, 0));
-	msg.add<uint32_t>(std::max<uint32_t>(item.sellPrice, 0));
+	msg.add<uint32_t>(static_cast<uint32_t>(std::max<int64_t>(item.buyPrice, 0)));
+	msg.add<uint32_t>(static_cast<uint32_t>(std::max<int64_t>(item.sellPrice, 0)));
 }
 
 void ProtocolGame::parseExtendedOpcode(NetworkMessage& msg)

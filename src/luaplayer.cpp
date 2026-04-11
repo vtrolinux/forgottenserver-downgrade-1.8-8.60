@@ -673,7 +673,7 @@ int luaPlayerAddSpecialSkill(lua_State* L)
 
 int luaPlayerGetItemCount(lua_State* L)
 {
-	// player:getItemCount(itemId[, subType = -1])
+	// player:getItemCount(itemId[, subType = -1[, ignoreEquipped = false]])
 	const Player* player = getUserdata<const Player>(L, 1);
 	if (!player) {
 		lua_pushnil(L);
@@ -692,7 +692,8 @@ int luaPlayerGetItemCount(lua_State* L)
 	}
 
 	int32_t subType = getInteger<int32_t>(L, 3, -1);
-	lua_pushinteger(L, player->getItemTypeCount(itemId, subType));
+	bool ignoreEquipped = getBoolean(L, 4, false);
+	lua_pushinteger(L, player->getItemTypeCount(itemId, subType, ignoreEquipped));
 	return 1;
 }
 

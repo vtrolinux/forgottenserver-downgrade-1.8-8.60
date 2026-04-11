@@ -207,6 +207,13 @@ void mainLoader(ServiceManager* services)
 		return;
 	}
 
+
+	LOG_INFO(">> Loading lua npcs");
+	if (!Npcs::loadScripts(false)) {
+		startupErrorMessage("Failed to load lua npcs");
+		return;
+	}
+
 	LOG_INFO(fmt::format(">> Loading monsters... [\033[1;33m{}\033[0m]", g_monsters.monsters.size()));
 
 	LOG_INFO(">> Loading outfits");

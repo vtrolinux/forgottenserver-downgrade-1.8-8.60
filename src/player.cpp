@@ -3202,7 +3202,7 @@ size_t Player::getFirstIndex() const { return CONST_SLOT_FIRST; }
 
 size_t Player::getLastIndex() const { return CONST_SLOT_LAST + 1; }
 
-uint32_t Player::getItemTypeCount(uint16_t itemId, int32_t subType /*= -1*/) const
+uint32_t Player::getItemTypeCount(uint16_t itemId, int32_t subType /*= -1*/, bool ignoreEquipped /*= false*/) const
 {
 	uint32_t count = 0;
 	for (int32_t i = CONST_SLOT_FIRST; i <= CONST_SLOT_LAST; i++) {
@@ -3211,7 +3211,7 @@ uint32_t Player::getItemTypeCount(uint16_t itemId, int32_t subType /*= -1*/) con
 			continue;
 		}
 
-		if (item->getID() == itemId) {
+		if (!ignoreEquipped && item->getID() == itemId) {
 			count += Item::countByType(item, subType);
 		}
 
@@ -3474,7 +3474,7 @@ bool Player::hasShopItemForSale(uint32_t itemId, uint8_t subType) const
 {
 	const ItemType& itemType = Item::items[itemId];
 	return std::any_of(shopItemList.begin(), shopItemList.end(), [&](const ShopInfo& shopInfo) {
-		return shopInfo.itemId == itemId && shopInfo.buyPrice != 0 &&
+		return shopInfo.itemId == itemId && shopInfo.buyPrice > 0 &&
 		       (!itemType.isFluidContainer() || shopInfo.subType == subType);
 	});
 }

@@ -4,17 +4,18 @@
 #ifndef FS_NPC_H
 #define FS_NPC_H
 
+#include <string>
+#include <map>
+#include <memory>
+#include <vector>
+#include <cstdint>
 #include "creature.h"
 #include "luascript.h"
+#include "lua.hpp"
 
 class Npc;
+class NpcType;
 class Player;
-
-class Npcs
-{
-public:
-	static void reload();
-};
 
 class NpcScriptInterface final : public LuaScriptInterface
 {
@@ -57,6 +58,8 @@ class NpcEventsHandler
 {
 public:
 	NpcEventsHandler(const std::string& file, Npc* npc);
+	NpcEventsHandler();
+	~NpcEventsHandler();
 
 	void onCreatureAppear(Creature* creature) const;
 	void onCreatureDisappear(Creature* creature) const;
@@ -68,12 +71,9 @@ public:
 	void onPlayerEndTrade(Player* player) const;
 	void onThink() const;
 
+	void setNpc(Npc* n) { npc = n; }
+
 	bool isLoaded() const;
-
-	std::unique_ptr<NpcScriptInterface> scriptInterface;
-
-private:
-	Npc* npc;
 
 	int32_t creatureAppearEvent = -1;
 	int32_t creatureDisappearEvent = -1;
@@ -82,12 +82,78 @@ private:
 	int32_t playerCloseChannelEvent = -1;
 	int32_t playerEndTradeEvent = -1;
 	int32_t thinkEvent = -1;
+
+	std::shared_ptr<NpcScriptInterface> scriptInterface;
+
+	friend class NpcScriptInterface;
+public:
 	bool loaded = false;
+
+private:
+	Npc* npc = nullptr;
 };
+
+class NpcType
+{
+public:
+	NpcType() = default;
+
+	// non-copyable
+	NpcType(const NpcType&) = delete;
+	NpcType& operator=(const NpcType&) = delete;
+
+	bool loadCallback(NpcScriptInterface* scriptInterface);
+	bool loadFromXml();
+
+	std::string name;
+	std::string filename;
+	std::string scriptFilename;
+
+	uint8_t speechBubble = 0;
+
+	uint32_t walkTicks = 1500;
+	uint32_t baseSpeed = 100;
+
+	int32_t masterRadius = 2;
+	int32_t health = 100;
+	int32_t healthMax = 100;
+
+	bool floorChange = false;
+	bool attackable = false;
+	bool ignoreHeight = false;
+	bool loaded = false;
+	bool isIdle = true;
+	bool pushable = true;
+	bool fromLua = false;
+
+	Outfit_t defaultOutfit;
+	Skulls_t skull = SKULL_NONE;
+
+	uint16_t moneyType = 0;
+
+	std::map<std::string, std::string> parameters;
+
+	std::string eventType;
+	std::unique_ptr<NpcEventsHandler> npcEventHandler = std::make_unique<NpcEventsHandler>();
+};
+
+namespace Npcs {
+void load(bool reload = false);
+bool loadScripts(bool reload = false);
+void reload();
+void addNpcType(const std::string& name, const std::shared_ptr<NpcType>& npcType);
+void clearNpcTypes();
+const std::map<std::string, std::shared_ptr<NpcType>>& getNpcTypes();
+std::shared_ptr<NpcType> getNpcType(const std::string& name);
+NpcScriptInterface* getScriptInterface();
+static const int32_t ViewportX = 15 * 2 + 2; // Approximate or use Map constants if available
+static const int32_t ViewportY = 11 * 2 + 2;
+} // namespace Npcs
 
 class Npc final : public Creature
 {
 public:
+	explicit Npc(const std::string& name);
 	~Npc();
 
 	using Creature::onWalk;
@@ -111,7 +177,7 @@ public:
 	void removeList() override;
 	void addList() override;
 
-	static std::unique_ptr<Npc> createNpc(const std::string &name);
+	static std::unique_ptr<Npc> createNpc(const std::string& name);
 
 	bool canSee(const Position& pos) const override;
 
@@ -119,6 +185,7 @@ public:
 	void reload();
 
 	const std::string& getName() const override { return name; }
+	void setName(const std::string& n) { name = n; }
 	const std::string& getNameDescription() const override { return name; }
 
 	CreatureType_t getType() const override { return CREATURETYPE_NPC; }
@@ -151,11 +218,18 @@ public:
 
 	const auto& getSpectators() { return spectators; }
 
-	auto& getScriptInterface() { return npcEventHandler->scriptInterface; }
+	void loadNpcTypeInfo();
+
+	std::unique_ptr<NpcEventsHandler> npcEventHandler;
+	bool fromLua = false;
+	std::shared_ptr<NpcType> npcType;
+
+	void closeAllShopWindows();
+	void addShopPlayer(const std::shared_ptr<Player>& player);
+	void removeShopPlayer(const std::shared_ptr<Player>& player);
+	std::map<std::string, std::string> parameters;
 
 	static uint32_t npcAutoID;
-
-	explicit Npc(const std::string& name);
 
 private:
 	void onCreatureAppear(Creature* creature, bool isLogin) override;
@@ -177,14 +251,7 @@ private:
 	bool canWalkTo(const Position& fromPos, Direction dir) const;
 	bool getRandomStep(Direction& direction) const;
 
-	void reset();
-	bool loadFromXml();
-
-	void addShopPlayer(const std::shared_ptr<Player>& player);
-	void removeShopPlayer(const std::shared_ptr<Player>& player);
-	void closeAllShopWindows();
-
-	std::map<std::string, std::string> parameters;
+	void reset(bool reload = false);
 
 	std::set<std::shared_ptr<Player>> shopPlayerSet;
 	std::set<std::shared_ptr<Player>> spectators;
@@ -192,11 +259,10 @@ private:
 	std::string name;
 	std::string filename;
 
-	std::unique_ptr<NpcEventsHandler> npcEventHandler;
-
 	Position masterPos;
 
 	uint32_t walkTicks;
+	uint32_t baseSpeed;
 	int32_t focusCreature;
 	int32_t masterRadius;
 
@@ -211,7 +277,7 @@ private:
 
 	uint16_t moneyType;
 
-	friend class Npcs;
+	friend class NpcType;
 	friend class NpcScriptInterface;
 };
 

@@ -6009,6 +6009,7 @@ bool Game::reload(ReloadTypes_t reloadType)
 		}
 		case RELOAD_TYPE_NPCS: {
 			Npcs::reload();
+			Npcs::loadScripts(true);
 			LOG_INFO("NPCs reloaded successfully.");
 			return true;
 		}

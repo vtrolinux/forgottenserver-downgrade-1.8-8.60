@@ -1163,7 +1163,7 @@ public:
 	int32_t getBaseMaxHealth() const { return healthMax; }
 	int32_t getBaseMaxMana() const { return manaMax; }
 
-	uint32_t getItemTypeCount(uint16_t itemId, int32_t subType = -1) const override;
+	uint32_t getItemTypeCount(uint16_t itemId, int32_t subType = -1, bool ignoreEquipped = false) const override;
 
 	void setStaminaMinutes(uint16_t newStamina) { staminaMinutes = std::min<uint16_t>(2520, newStamina); }
 

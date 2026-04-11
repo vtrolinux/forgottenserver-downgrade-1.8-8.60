@@ -167,7 +167,7 @@ public:
 	 * \param subType is the extra type an item can have such as charges/fluidtype, -1 means not used
 	 * \returns the amount of items of the asked item type
 	 */
-	virtual uint32_t getItemTypeCount(uint16_t itemId, int32_t subType = -1) const;
+	virtual uint32_t getItemTypeCount(uint16_t itemId, int32_t subType = -1, bool ignoreEquipped = false) const;
 
 	/**
 	 * Get the amount of items of a all types

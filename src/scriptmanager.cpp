@@ -10,6 +10,7 @@
 #include "events.h"
 #include "globalevent.h"
 #include "movement.h"
+#include "npc.h"
 #include "script.h"
 #include "spells.h"
 #include "talkaction.h"
@@ -129,6 +130,8 @@ bool ScriptingManager::loadScriptSystems()
 		LOG_ERROR("> ERROR: Unable to load events!");
 		return false;
 	}
+
+	Npcs::load();
 
 	return true;
 }

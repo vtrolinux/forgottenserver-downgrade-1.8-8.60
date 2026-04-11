@@ -30,6 +30,7 @@ enum LuaDataType
 	LuaData_Player,
 	LuaData_Monster,
 	LuaData_Npc,
+	LuaData_NpcType,
 	LuaData_Tile,
 	LuaData_Condition,
 
@@ -95,6 +96,7 @@ class MonsterType;
 class MoveEvent;
 class NetworkMessage;
 class Npc;
+class NpcType;
 class Party;
 class Player;
 class RuneSpell;
@@ -133,6 +135,7 @@ NEW_LUA_DATA_TYPE(Creature)
 NEW_LUA_DATA_TYPE(Player)
 NEW_LUA_DATA_TYPE(Monster)
 NEW_LUA_DATA_TYPE(Npc)
+NEW_LUA_DATA_TYPE(NpcType)
 NEW_LUA_DATA_TYPE(Tile)
 NEW_LUA_DATA_TYPE(Condition)
 
@@ -373,6 +376,7 @@ protected:
 	void registerModalWindow();
 	void registerMonster();
 	void registerNpc();
+	void registerNpcType();
 	void registerGuild();
 	void registerGroup();
 	void registerVocation();

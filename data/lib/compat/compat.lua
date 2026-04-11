@@ -136,6 +136,175 @@ do
 end
 
 do
+	RevNpcTypeCompatData = RevNpcTypeCompatData or setmetatable({}, {__mode = "k"})
+
+	local function getNpcTypeCompatData(npcType)
+		local data = RevNpcTypeCompatData[npcType]
+		if not data then
+			data = {}
+			RevNpcTypeCompatData[npcType] = data
+		end
+		return data
+	end
+
+	function RevNpcTypeCompatGetData(npcType)
+		return getNpcTypeCompatData(npcType)
+	end
+
+	local function getCallbackDebugInfo(callback)
+		if type(callback) ~= "function" or not debug or not debug.getinfo then
+			return nil
+		end
+
+		local ok, info = pcall(debug.getinfo, callback, "Su")
+		if not ok then
+			return nil
+		end
+		return info
+	end
+
+	local function expectsCrystalNpcSignature(callback, minimumParams)
+		local info = getCallbackDebugInfo(callback)
+		if not info then
+			return false
+		end
+
+		if info.nparams then
+			return info.nparams >= minimumParams
+		end
+
+		local source = info.short_src or info.source or ""
+		if source:find("data/npc/lib/revnpcsys/", 1, true) then
+			return false
+		end
+
+		if source:find("data/npc/lua/", 1, true) then
+			return minimumParams <= 2
+		end
+
+		return false
+	end
+
+	local function wrapNpcTypeCallback(key, callback)
+		if type(callback) ~= "function" then
+			return callback
+		end
+
+		if key == "onSay" then
+			local crystalStyle = expectsCrystalNpcSignature(callback, 4)
+			if not crystalStyle then
+				return callback
+			end
+
+			return function(creature, messageType, message)
+				return callback(Npc(), creature, messageType, message)
+			end
+		elseif key == "onAppear" or key == "onDisappear" then
+			local crystalStyle = expectsCrystalNpcSignature(callback, 2)
+			if not crystalStyle then
+				return callback
+			end
+
+			return function(creature)
+				return callback(Npc(), creature)
+			end
+		elseif key == "onMove" then
+			local crystalStyle = expectsCrystalNpcSignature(callback, 4)
+			if not crystalStyle then
+				return callback
+			end
+
+			return function(creature, oldPos, newPos)
+				return callback(Npc(), creature, oldPos, newPos)
+			end
+		elseif key == "onCloseChannel" or key == "onPlayerCloseChannel" or key == "onPlayerEndTrade" then
+			local crystalStyle = expectsCrystalNpcSignature(callback, 2)
+			if not crystalStyle then
+				return callback
+			end
+
+			return function(player)
+				return callback(Npc(), player)
+			end
+		elseif key == "onThink" then
+			local crystalStyle = expectsCrystalNpcSignature(callback, 1)
+			if not crystalStyle then
+				return callback
+			end
+
+			return function(...)
+				return callback(Npc(), ...)
+			end
+		elseif key == "onBuyItem" or key == "onSellItem" or key == "onCheckItem" then
+			local crystalStyle = expectsCrystalNpcSignature(callback, 7)
+			if not crystalStyle then
+				return callback
+			end
+
+			return function(player, itemId, subType, amount, ignore, inBackpacks, totalCost)
+				return callback(Npc(), player, itemId, subType, amount, ignore, inBackpacks, totalCost)
+			end
+		end
+
+		return callback
+	end
+
+	local function NpcTypeNewIndex(self, key, value)
+		local compatData = getNpcTypeCompatData(self)
+		if key == "onSay" then
+			compatData[key] = value
+			self:eventType("say")
+			self:onSay(wrapNpcTypeCallback(key, value))
+			return
+		elseif key == "onDisappear" then
+			compatData[key] = value
+			self:eventType("disappear")
+			self:onDisappear(wrapNpcTypeCallback(key, value))
+			return
+		elseif key == "onAppear" then
+			compatData[key] = value
+			self:eventType("appear")
+			self:onAppear(wrapNpcTypeCallback(key, value))
+			return
+		elseif key == "onMove" then
+			compatData[key] = value
+			self:eventType("move")
+			self:onMove(wrapNpcTypeCallback(key, value))
+			return
+		elseif key == "onCloseChannel" or key == "onPlayerCloseChannel" then
+			compatData.onCloseChannel = value
+			compatData.onPlayerCloseChannel = value
+			self:eventType("closechannel")
+			self:onPlayerCloseChannel(wrapNpcTypeCallback(key, value))
+			return
+		elseif key == "onPlayerEndTrade" then
+			compatData[key] = value
+			self:eventType("endtrade")
+			self:onPlayerEndTrade(wrapNpcTypeCallback(key, value))
+			return
+		elseif key == "onThink" then
+			compatData[key] = value
+			self:eventType("think")
+			self:onThink(wrapNpcTypeCallback(key, value))
+			return
+		elseif key == "onBuyItem" or key == "onSellItem" or key == "onCheckItem" then
+			compatData[key] = value
+			local registerKey = key
+			if key == "onBuyItem" and self.onBuyItem then
+				self:onBuyItem(wrapNpcTypeCallback(registerKey, value))
+			elseif key == "onSellItem" and self.onSellItem then
+				self:onSellItem(wrapNpcTypeCallback(registerKey, value))
+			elseif key == "onCheckItem" and self.onCheckItem then
+				self:onCheckItem(wrapNpcTypeCallback(registerKey, value))
+			end
+			return
+		end
+		compatData[key] = value
+	end
+	rawgetmetatable("NpcType").__newindex = NpcTypeNewIndex
+end
+
+do
 	local function TalkActionNewIndex(self, key, value)
 		if key == "onSay" then
 			self:onSay(value)

@@ -9,31 +9,263 @@
 #include "logger.h"
 #include "pugicast.h"
 
-#include <fmt/format.h>
+#if defined(__GNUC__) && (__GNUC__ < 8)
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
+namespace fs = std::filesystem;
+#endif
+
+#include <iostream>
+#include <sstream>
+#include <algorithm>
 
 extern Game g_game;
 extern LuaEnvironment g_luaEnvironment;
 
 uint32_t Npc::npcAutoID = 0x80000000;
 
-void Npcs::reload()
+// ─── Npcs namespace ───────────────────────────────────────────────────────────
+
+namespace Npcs {
+
+bool loaded = false;
+std::shared_ptr<NpcScriptInterface> scriptInterface;
+std::map<std::string, std::shared_ptr<NpcType>> npcTypes;
+
+void load(bool reload /*= false*/)
 {
-	const std::unordered_map<uint32_t, Npc*>& npcs = g_game.getNpcs();
+	if (!reload && loaded) {
+		return;
+	}
+
+	if (!scriptInterface || reload) {
+		scriptInterface = std::make_shared<NpcScriptInterface>();
+	}
+
+	if (!scriptInterface->loadNpcLib("data/npc/lib/npc.lua")) {
+		LOG_WARN("[Warning - Npcs::load] Can not load lib: data/npc/lib/npc.lua");
+		LOG_WARN(scriptInterface->getLastLuaError());
+		return;
+	}
+
+	loaded = true;
+
+	if (!reload) {
+		LOG_INFO(">> NpcLib loaded");
+	} else {
+		LOG_INFO(">> NpcLib reloaded");
+	}
+}
+
+bool loadScripts(bool reload /* = false */)
+{
+	if (!scriptInterface) {
+		load(reload);
+	}
+
+	const std::string dirPath = "data/npc/lua";
+	if (!fs::exists(dirPath)) {
+		return false;
+	}
+
+	std::vector<fs::path> files;
+	try {
+		for (const auto& entry : fs::recursive_directory_iterator(dirPath)) {
+			if (fs::is_regular_file(entry) && entry.path().extension() == ".lua") {
+				const std::string filename = entry.path().filename().string();
+				if (filename.find("#") == std::string::npos) {
+					files.emplace_back(entry.path());
+				}
+			}
+		}
+	} catch (const std::exception& e) {
+		std::ostringstream ss;
+		ss << "[Error - Npcs::loadScripts] Exception: " << e.what();
+		LOG_ERROR(ss.str());
+		return false;
+	}
+
+	std::sort(files.begin(), files.end());
+	for (const auto& path : files) {
+		const std::string scriptFile = path.string();
+		if (scriptInterface->loadFile(scriptFile) == -1) {
+			LOG_ERROR("> " + path.filename().string() + " [error]");
+			LOG_ERROR(fmt::format("^ {}", scriptInterface->getLastLuaError()));
+		} else {
+			LOG_DEBUG("> " + path.filename().string() + " [loaded]");
+		}
+	}
+
+	// Summary of registered NPC types (hybrid: Lua + XML)
+	size_t luaCount = 0;
+	for (const auto& it : npcTypes) {
+		const std::string& ntName = it.first;
+		const auto& ntType = it.second;
+		if (ntType->fromLua) {
+			++luaCount;
+			std::ostringstream ss;
+			ss << "   [Lua NPC] '" << ntName << "' lookType=" << ntType->defaultOutfit.lookType;
+			if (ntType->npcEventHandler) {
+				ss << " events(say=" << ntType->npcEventHandler->creatureSayEvent 
+				   << " appear=" << ntType->npcEventHandler->creatureAppearEvent 
+				   << " think=" << ntType->npcEventHandler->thinkEvent << ")";
+			}
+			LOG_DEBUG(ss.str());
+			
+			if (ntType->defaultOutfit.lookType == 0 && ntType->defaultOutfit.lookTypeEx == 0) {
+				LOG_WARN("   [Warning] Lua NPC '" + ntName + "' has NO outfit (lookType=0) - will be INVISIBLE!");
+			}
+			if (ntType->npcEventHandler && ntType->npcEventHandler->creatureSayEvent == -1) {
+				LOG_WARN("   [Warning] Lua NPC '" + ntName + "' has NO onSay event - will NOT respond to players!");
+			}
+		}
+	}
+	if (luaCount > 0) {
+		std::ostringstream ss;
+		ss << ">> " << luaCount << " Lua NPC type(s) registered (hybrid mode active)";
+		LOG_INFO(ss.str());
+	} else {
+		LOG_WARN(">> No Lua NPC types registered from data/npc/lua/ - only XML NPCs will work.");
+	}
+
+	return true;
+}
+
+void reload()
+{
+	// 1. Reload the library and the Lua scripts
+	load(true);
+	loadScripts(true);
+
+	const auto& npcs = g_game.getNpcs();
+	
+	// 2. Clear shop windows for all NPCs before reloading
 	for (const auto& it : npcs) {
 		it.second->closeAllShopWindows();
 	}
 
+	// 3. Reload NPC Types
+	for (const auto& it : getNpcTypes()) {
+		if (!it.second->fromLua) {
+			// XML NPCs reload their XML definition
+			it.second->loadFromXml();
+		}
+		// Lua NPCs are re-registered/updated during loadScripts(true)
+	}
+
+	// 4. Refresh all active NPC instances on the map
 	for (const auto& it : npcs) {
-		it.second->reload();
+		Npc* npc = it.second;
+		if (npc->npcType->fromLua) {
+			// For Lua NPCs: Refresh the event handler and info
+			npc->loadNpcTypeInfo();
+			npc->npcEventHandler = std::make_unique<NpcEventsHandler>(*npc->npcType->npcEventHandler);
+			npc->npcEventHandler->loaded = true;
+			npc->npcEventHandler->setNpc(npc);
+			LOG_DEBUG(fmt::format(">> [Hybrid] Reloaded Lua NPC instance: '{}'", npc->getName()));
+		} else {
+			// For XML NPCs: standard reload
+			npc->reload();
+		}
 	}
 }
 
-std::unique_ptr<Npc> Npc::createNpc(const std::string &name)
+void addNpcType(const std::string& name, const std::shared_ptr<NpcType>& npcType)
 {
-	std::unique_ptr<Npc> npc = std::make_unique<Npc>(name);
-	if (!npc->load()) {
-		return nullptr;
+	npcTypes[name] = npcType;
+}
+
+void clearNpcTypes()
+{
+	npcTypes.clear();
+}
+
+const std::map<std::string, std::shared_ptr<NpcType>>& getNpcTypes()
+{
+	return npcTypes;
+}
+
+std::shared_ptr<NpcType> getNpcType(const std::string& name)
+{
+	auto it = npcTypes.find(name);
+	if (it != npcTypes.end()) {
+		return it->second;
 	}
+
+	for (const auto& [npcName, npcType] : npcTypes) {
+		if (caseInsensitiveEqual(npcName, name)) {
+			return npcType;
+		}
+	}
+	return nullptr;
+}
+
+NpcScriptInterface* getScriptInterface()
+{
+	return scriptInterface.get();
+}
+
+} // namespace Npcs
+
+// ─── Npc ──────────────────────────────────────────────────────────────────────
+
+std::unique_ptr<Npc> Npc::createNpc(const std::string& name)
+{
+	// Hybrid NPC system: first check if the NPC was registered via Lua (RevScript),
+	// if not found, fall back to the traditional XML system.
+	auto npcType = Npcs::getNpcType(name);
+	if (npcType) {
+		// Found in registry (either Lua or previously cached XML)
+		LOG_DEBUG(fmt::format(">> [Hybrid] NPC '{}' -> {} (lookType={})",
+			name, npcType->fromLua ? "Lua RevScript" : "XML (cached)", npcType->defaultOutfit.lookType));
+	} else {
+		// Not found in Lua registry, try traditional XML
+		npcType = std::make_shared<NpcType>();
+		npcType->name = name;
+		npcType->filename = "data/npc/" + name + ".xml";
+		if (!npcType->loadFromXml()) {
+			LOG_WARN(fmt::format("[Warning - Npc::createNpc] NPC '{}' not found as Lua type or XML file.", name));
+			return nullptr;
+		}
+		Npcs::addNpcType(npcType->name, npcType);
+		LOG_DEBUG(fmt::format(">> [Hybrid] NPC '{}' -> XML file (lookType={})",
+			name, npcType->defaultOutfit.lookType));
+	}
+
+	auto npc = std::make_unique<Npc>(name);
+	npc->setName(npcType->name);
+	npc->loaded = true;
+	npc->npcType = npcType;
+	npc->loadNpcTypeInfo();
+
+	if (npcType->fromLua) {
+		// Lua RevScript NPC: copy the event handler from the NpcType template
+		npc->npcEventHandler = std::make_unique<NpcEventsHandler>(*npcType->npcEventHandler);
+		npc->npcEventHandler->loaded = true;
+
+		// Validate that the Lua NPC has essential events registered
+		if (npc->npcEventHandler->creatureSayEvent == -1) {
+			LOG_WARN(fmt::format("[Warning] Lua NPC '{}' has no onSay event! Check if defaultBehavior() was called.", name));
+		}
+		if (npc->npcEventHandler->thinkEvent == -1) {
+			LOG_WARN(fmt::format("[Warning] Lua NPC '{}' has no onThink event! NPC will not process focus/timeout.", name));
+		}
+		if (npc->npcEventHandler->creatureAppearEvent == -1) {
+			LOG_WARN(fmt::format("[Warning] Lua NPC '{}' has no onAppear event!", name));
+		}
+	} else {
+		// Traditional XML NPC: load script file for events
+		npc->npcEventHandler = std::make_unique<NpcEventsHandler>(npcType->scriptFilename, npc.get());
+	}
+	npc->npcEventHandler->setNpc(npc.get());
+
+	// Validate outfit for both Lua and XML NPCs
+	if (npc->currentOutfit.lookType == 0 && npc->currentOutfit.lookTypeEx == 0) {
+		LOG_WARN(fmt::format("[Warning] NPC '{}' has lookType=0 - NPC will be INVISIBLE on the map!", name));
+	}
+
 	return npc;
 }
 
@@ -42,11 +274,7 @@ Npc::Npc(const std::string& name) : Creature(), filename("data/npc/" + name + ".
 	reset();
 }
 
-Npc::~Npc()
-{
-	parameters.clear();
-	reset(); 
-}
+Npc::~Npc() { reset(); }
 
 void Npc::addList() { g_game.addNpc(this); }
 
@@ -58,13 +286,15 @@ bool Npc::load()
 		return true;
 	}
 
-	reset();
+	loadNpcTypeInfo();
+	npcEventHandler = std::make_unique<NpcEventsHandler>(npcType->scriptFilename, this);
+	npcEventHandler->setNpc(this);
 
-	loaded = loadFromXml();
+	loaded = true;
 	return loaded;
 }
 
-void Npc::reset()
+void Npc::reset(bool reload)
 {
 	loaded = false;
 	isIdle = true;
@@ -74,20 +304,26 @@ void Npc::reset()
 	attackable = false;
 	ignoreHeight = false;
 	focusCreature = 0;
-
+	speechBubble = 0;
 	moneyType = 0;
+	baseSpeed = 100;
 
 	npcEventHandler.reset();
 
 	parameters.clear();
 	shopPlayerSet.clear();
 	spectators.clear();
+
+	if (reload) {
+		load();
+	}
 }
 
 void Npc::reload()
 {
-	reset();
-	load();
+	if (!npcType->fromLua) {
+		reset(true);
+	}
 
 	SpectatorVec players;
 	g_game.map.getSpectators(players, getPosition(), true, true);
@@ -108,18 +344,40 @@ void Npc::reload()
 	}
 }
 
-bool Npc::loadFromXml()
+void Npc::loadNpcTypeInfo()
+{
+	speechBubble = npcType->speechBubble;
+	walkTicks = npcType->walkTicks;
+	baseSpeed = npcType->baseSpeed;
+	masterRadius = npcType->masterRadius;
+	floorChange = npcType->floorChange;
+	attackable = npcType->attackable;
+	ignoreHeight = npcType->ignoreHeight;
+	isIdle = npcType->isIdle;
+	pushable = npcType->pushable;
+	defaultOutfit = npcType->defaultOutfit;
+	currentOutfit = defaultOutfit;
+	parameters = npcType->parameters;
+	health = npcType->health;
+	healthMax = npcType->healthMax;
+	moneyType = npcType->moneyType;
+	setSkull(npcType->skull);
+}
+
+// ─── NpcType ──────────────────────────────────────────────────────────────────
+
+bool NpcType::loadFromXml()
 {
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(filename.c_str());
 	if (!result) {
-		printXMLError("Error - Npc::loadFromXml", filename, result);
+		printXMLError("Error - NpcType::loadFromXml", filename, result);
 		return false;
 	}
 
 	pugi::xml_node npcNode = doc.child("npc");
 	if (!npcNode) {
-		LOG_ERROR(fmt::format("[Error - Npc::loadFromXml] Missing npc tag in {}", filename));
+		LOG_ERROR(fmt::format("[Error - NpcType::loadFromXml] Missing npc tag in {}", filename));
 		return false;
 	}
 
@@ -150,8 +408,12 @@ bool Npc::loadFromXml()
 		ignoreHeight = attr.as_bool();
 	}
 
+	if ((attr = npcNode.attribute("speechbubble"))) {
+		speechBubble = pugi::cast<uint32_t>(attr.value());
+	}
+
 	if ((attr = npcNode.attribute("skull"))) {
-		setSkull(getSkullType(boost::algorithm::to_lower_copy<std::string>(attr.as_string())));
+		skull = getSkullType(boost::algorithm::to_lower_copy<std::string>(attr.as_string()));
 	}
 
 	pugi::xml_node healthNode = npcNode.child("health");
@@ -170,7 +432,7 @@ bool Npc::loadFromXml()
 
 		if (health > healthMax) {
 			health = healthMax;
-			LOG_WARN(fmt::format("[Warning - Npc::loadFromXml] Health now is greater than health max in {}", filename));
+			LOG_WARN(fmt::format("[Warning - NpcType::loadFromXml] Health now is greater than health max in {}", filename));
 		}
 	}
 
@@ -187,8 +449,6 @@ bool Npc::loadFromXml()
 		} else if ((attr = lookNode.attribute("typeex"))) {
 			defaultOutfit.lookTypeEx = pugi::cast<uint16_t>(attr.value());
 		}
-
-		currentOutfit = defaultOutfit;
 	}
 
 	if ((attr = npcNode.attribute("money"))) {
@@ -201,13 +461,38 @@ bool Npc::loadFromXml()
 
 	pugi::xml_attribute scriptFile = npcNode.attribute("script");
 	if (scriptFile) {
-		auto handler = std::make_unique<NpcEventsHandler>(scriptFile.as_string(), this);
-		if (!handler->isLoaded()) {
-			return false;
-		}
-
-		npcEventHandler = std::move(handler);
+		scriptFilename = scriptFile.as_string();
 	}
+
+	return true;
+}
+
+bool NpcType::loadCallback(NpcScriptInterface* scriptInterface)
+{
+	int32_t id = scriptInterface->getEvent();
+	if (id == -1) {
+		LOG_WARN(fmt::format("[Warning - NpcType::loadCallback] Event '{}' not found for NPC '{}'. "
+			"Check if the callback function is passed correctly in defaultBehavior().", eventType, name));
+		return false;
+	}
+
+	if (eventType == "say") {
+		npcEventHandler->creatureSayEvent = id;
+	} else if (eventType == "disappear") {
+		npcEventHandler->creatureDisappearEvent = id;
+	} else if (eventType == "appear") {
+		npcEventHandler->creatureAppearEvent = id;
+	} else if (eventType == "move") {
+		npcEventHandler->creatureMoveEvent = id;
+	} else if (eventType == "closechannel") {
+		npcEventHandler->playerCloseChannelEvent = id;
+	} else if (eventType == "endtrade") {
+		npcEventHandler->playerEndTradeEvent = id;
+	} else if (eventType == "think") {
+		npcEventHandler->thinkEvent = id;
+	}
+
+	LOG_DEBUG(fmt::format(">> NPC '{}' event '{}' registered (id={})", name, eventType, id));
 	return true;
 }
 
@@ -233,29 +518,17 @@ void Npc::onCreatureAppear(Creature* creature, bool isLogin)
 	Creature::onCreatureAppear(creature, isLogin);
 
 	if (creature == this) {
-		SpectatorVec players;
-		g_game.map.getSpectators(players, getPosition(), true, true);
-		for (const auto& player : players.players()) {
-			spectators.insert(std::static_pointer_cast<Player>(player));
-		}
-
-		const bool hasSpectators = !spectators.empty();
-		setIdle(!hasSpectators);
-
-		if (hasSpectators && walkTicks > 0) {
+		if (walkTicks > 0) {
 			addEventWalk();
 		}
 
 		if (npcEventHandler) {
 			npcEventHandler->onCreatureAppear(creature);
 		}
-	} else if (Player* player = creature->getPlayer()) {
+	} else if (creature->getPlayer()) {
 		if (npcEventHandler) {
 			npcEventHandler->onCreatureAppear(creature);
 		}
-
-		spectators.insert(std::static_pointer_cast<Player>(g_game.getCreatureSharedRef(player)));
-		setIdle(false);
 	}
 }
 
@@ -268,13 +541,10 @@ void Npc::onRemoveCreature(Creature* creature, bool isLogout)
 		if (npcEventHandler) {
 			npcEventHandler->onCreatureDisappear(creature);
 		}
-	} else if (Player* player = creature->getPlayer()) {
+	} else if (creature->getPlayer()) {
 		if (npcEventHandler) {
 			npcEventHandler->onCreatureDisappear(creature);
 		}
-
-		spectators.erase(std::static_pointer_cast<Player>(g_game.getCreatureSharedRef(player)));
-		setIdle(spectators.empty());
 	}
 }
 
@@ -286,19 +556,6 @@ void Npc::onCreatureMove(Creature* creature, const Tile* newTile, const Position
 	if (creature == this || creature->getPlayer()) {
 		if (npcEventHandler) {
 			npcEventHandler->onCreatureMove(creature, oldPos, newPos);
-		}
-
-		if (creature != this) {
-			Player* player = creature->getPlayer();
-
-			// if player is now in range, add to spectators list, otherwise erase
-			if (player->canSee(position)) {
-				spectators.insert(std::static_pointer_cast<Player>(g_game.getCreatureSharedRef(player)));
-			} else {
-				spectators.erase(std::static_pointer_cast<Player>(g_game.getCreatureSharedRef(player)));
-			}
-
-			setIdle(spectators.empty());
 		}
 	}
 }
@@ -327,15 +584,30 @@ void Npc::onPlayerCloseChannel(Player* player)
 
 void Npc::onThink(uint32_t interval)
 {
+	SpectatorVec players;
+	g_game.map.getSpectators(players, getPosition(), true, true, Npcs::ViewportX, Npcs::ViewportX,
+	                         Npcs::ViewportY, Npcs::ViewportY);
+	for (const auto& player : players.players()) {
+		spectators.insert(std::static_pointer_cast<Player>(player));
+	}
+
+	setIdle(spectators.empty());
+
+	if (isIdle) {
+		return;
+	}
+
 	Creature::onThink(interval);
 
 	if (npcEventHandler) {
 		npcEventHandler->onThink();
 	}
 
-	if (!isIdle && getTimeSinceLastMove() >= walkTicks) {
+	if (getTimeSinceLastMove() >= walkTicks) {
 		addEventWalk();
 	}
+
+	spectators.clear();
 }
 
 void Npc::doSay(std::string_view text) { g_game.internalCreatureSay(this, TALKTYPE_SAY, text, false); }
@@ -359,7 +631,7 @@ void Npc::onPlayerTrade(Player* player, int32_t callback, uint16_t itemId, uint8
 
 void Npc::onPlayerEndTrade(Player* player, int32_t buyCallback, int32_t sellCallback)
 {
-	lua_State* L = getScriptInterface()->getLuaState();
+	lua_State* L = Npcs::getScriptInterface()->getLuaState();
 
 	if (buyCallback != -1) {
 		luaL_unref(L, LUA_REGISTRYINDEX, buyCallback);
@@ -528,6 +800,16 @@ NpcScriptInterface::NpcScriptInterface() : LuaScriptInterface("Npc interface")
 bool NpcScriptInterface::initState()
 {
 	if (!LuaScriptInterface::initState()) {
+		return false;
+	}
+
+	// Npc scripts share the global Lua state with the scripts interface.
+	// Re-registering classes here recreates metatables, so we must re-apply
+	// the Lua-side core/compat extensions (notably NpcType __newindex hooks)
+	// before loading lua NPC definitions.
+	if (g_luaEnvironment.loadFile("data/lib/lib.lua") == -1) {
+		LOG_WARN("[Warning - NpcScriptInterface::initState] Can not load data/lib/lib.lua");
+		LOG_WARN(getLastLuaError());
 		return false;
 	}
 
@@ -1051,14 +1333,8 @@ int NpcScriptInterface::luaNpcCloseShopWindow(lua_State* L)
 }
 
 NpcEventsHandler::NpcEventsHandler(const std::string& file, Npc* npc) :
-    scriptInterface(std::make_unique<NpcScriptInterface>()), npc(npc)
+    scriptInterface(Npcs::scriptInterface), npc(npc)
 {
-	if (!scriptInterface->loadNpcLib("data/npc/lib/npc.lua")) {
-		LOG_WARN(fmt::format("[Warning - NpcLib::NpcLib] Can not load lib: {}", file));
-		LOG_WARN(scriptInterface->getLastLuaError());
-		return;
-	}
-
 	loaded = scriptInterface->loadFile("data/npc/scripts/" + file, npc) == 0;
 	if (!loaded) {
 		LOG_WARN(fmt::format("[Warning - NpcScript::NpcScript] Can not load script: {}", file));
@@ -1071,6 +1347,18 @@ NpcEventsHandler::NpcEventsHandler(const std::string& file, Npc* npc) :
 		playerCloseChannelEvent = scriptInterface->getEvent("onPlayerCloseChannel");
 		playerEndTradeEvent = scriptInterface->getEvent("onPlayerEndTrade");
 		thinkEvent = scriptInterface->getEvent("onThink");
+	}
+}
+
+NpcEventsHandler::NpcEventsHandler() : scriptInterface(Npcs::scriptInterface) {}
+
+NpcEventsHandler::~NpcEventsHandler()
+{
+	if (npc && npc->npcType && !npc->npcType->fromLua) {
+		for (auto eventId : {creatureSayEvent, creatureDisappearEvent, creatureAppearEvent,
+		                     creatureMoveEvent, playerCloseChannelEvent, playerEndTradeEvent, thinkEvent}) {
+			scriptInterface->removeEvent(eventId);
+		}
 	}
 }
 
