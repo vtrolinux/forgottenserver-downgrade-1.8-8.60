@@ -19,11 +19,44 @@
 extern Game g_game;
 extern Monsters g_monsters;
 
-spellBlock_t::~spellBlock_t()
+spellBlock_t::~spellBlock_t() = default;
+
+spellBlock_t::spellBlock_t(spellBlock_t&& other) noexcept :
+    ownedSpell(std::move(other.ownedSpell)),
+    spell(ownedSpell ? ownedSpell.get() : other.spell),
+    chance(other.chance),
+    speed(other.speed),
+    range(other.range),
+    minCombatValue(other.minCombatValue),
+    maxCombatValue(other.maxCombatValue),
+    combatSpell(other.combatSpell),
+    isMelee(other.isMelee)
 {
-	if (combatSpell) {
-		delete spell;
+	other.spell = nullptr;
+	other.combatSpell = false;
+	other.isMelee = false;
+}
+
+spellBlock_t& spellBlock_t::operator=(spellBlock_t&& other) noexcept
+{
+	if (this == &other) {
+		return *this;
 	}
+
+	ownedSpell = std::move(other.ownedSpell);
+	spell = ownedSpell ? ownedSpell.get() : other.spell;
+	chance = other.chance;
+	speed = other.speed;
+	range = other.range;
+	minCombatValue = other.minCombatValue;
+	maxCombatValue = other.maxCombatValue;
+	combatSpell = other.combatSpell;
+	isMelee = other.isMelee;
+
+	other.spell = nullptr;
+	other.combatSpell = false;
+	other.isMelee = false;
+	return *this;
 }
 
 void MonsterType::loadLoot(MonsterType* monsterType, LootBlock lootBlock)
@@ -99,24 +132,21 @@ bool Monsters::deserializeSpell(MonsterSpell* spell, spellBlock_t& sb, const std
 		return true;
 	}
 
-	CombatSpell* combatSpell = nullptr;
-
 	if (spell->isScripted) {
-		std::unique_ptr<CombatSpell> combatSpellPtr(new CombatSpell(nullptr, spell->needTarget, spell->needDirection));
-		if (!combatSpellPtr->loadScript(fmt::format("data/{}/scripts/{}", g_spells->getScriptBaseName(), spell->scriptName))) {
+		auto combatSpell = std::make_unique<CombatSpell>(nullptr, spell->needTarget, spell->needDirection);
+		if (!combatSpell->loadScript(fmt::format("data/{}/scripts/{}", g_spells->getScriptBaseName(), spell->scriptName))) {
 			LOG_WARN("cannot find file");
 			return false;
 		}
 
-		if (!combatSpellPtr->loadScriptCombat()) {
+		if (!combatSpell->loadScriptCombat()) {
 			return false;
 		}
 
-		combatSpell = combatSpellPtr.release();
 		combatSpell->getCombat()->setPlayerCombatValues(COMBAT_FORMULA_DAMAGE, sb.minCombatValue, 0, sb.maxCombatValue, 0);
+		sb.ownedSpell = std::move(combatSpell);
 	} else {
 		Combat_ptr combat = std::make_shared<Combat>();
-		sb.combatSpell = true;
 
 		if (spell->length > 0) {
 			spell->spread = std::max<int32_t>(0, spell->spread);
@@ -298,11 +328,11 @@ bool Monsters::deserializeSpell(MonsterSpell* spell, spellBlock_t& sb, const std
 		}
 
 		combat->setPlayerCombatValues(COMBAT_FORMULA_DAMAGE, sb.minCombatValue, 0, sb.maxCombatValue, 0);
-		combatSpell = new CombatSpell(combat, spell->needTarget, spell->needDirection);
+		sb.ownedSpell = std::make_unique<CombatSpell>(combat, spell->needTarget, spell->needDirection);
 	}
 
-	sb.spell = combatSpell;
-	if (combatSpell) {
+	sb.spell = sb.ownedSpell.get();
+	if (sb.spell) {
 		sb.combatSpell = true;
 	}
 	return true;

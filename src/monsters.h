@@ -65,19 +65,10 @@ struct spellBlock_t
 	~spellBlock_t();
 	spellBlock_t(const spellBlock_t& other) = delete;
 	spellBlock_t& operator=(const spellBlock_t& other) = delete;
-	spellBlock_t(spellBlock_t&& other) :
-	    spell(other.spell),
-	    chance(other.chance),
-	    speed(other.speed),
-	    range(other.range),
-	    minCombatValue(other.minCombatValue),
-	    maxCombatValue(other.maxCombatValue),
-	    combatSpell(other.combatSpell),
-	    isMelee(other.isMelee)
-	{
-		other.spell = nullptr;
-	}
+	spellBlock_t(spellBlock_t&& other) noexcept;
+	spellBlock_t& operator=(spellBlock_t&& other) noexcept;
 
+	std::unique_ptr<BaseSpell> ownedSpell;
 	BaseSpell* spell = nullptr;
 	uint32_t chance = 100;
 	uint32_t speed = 2000;
