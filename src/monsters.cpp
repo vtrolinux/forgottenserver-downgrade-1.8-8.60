@@ -73,7 +73,7 @@ bool Monsters::deserializeSpell(MonsterSpell* spell, spellBlock_t& sb, const std
 		return false;
 	}
 
-	sb.speed = spell->interval;
+	sb.speed = std::max<uint32_t>(1000, spell->interval);
 
 	if (spell->chance > 100) {
 		sb.chance = 100;

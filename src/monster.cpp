@@ -1081,7 +1081,12 @@ void Monster::doAttacking(uint32_t interval)
 			continue;
 		}
 
-		const Position& targetPos = attackedCreature.lock()->getPosition();
+		auto victim = attackedCreature.lock();
+		if (!victim) {
+			continue;
+		}
+
+		const Position& targetPos = victim->getPosition();
 
 		if (canUseSpell(myPos, targetPos, spellBlock, interval, inRange, resetTicks)) {
 			if (spellBlock.chance >= static_cast<uint32_t>(uniform_random(1, 100))) {
@@ -1099,7 +1104,7 @@ void Monster::doAttacking(uint32_t interval)
 				minCombatValue = minVal;
 				maxCombatValue = maxVal;
 
-				spellBlock.spell->castSpell(this, attackedCreature.lock().get());
+				spellBlock.spell->castSpell(this, victim.get());
 
 				// Check after cast — this is the only place state can actually change
 				if (isRemoved() || isDead() || attackedCreature.expired() || attackedCreature.lock()->isRemoved() || attackedCreature.lock()->isDead()) {
@@ -1166,7 +1171,7 @@ bool Monster::canUseSpell(const Position& pos, const Position& targetPos, const 
 			return false;
 		}
 
-		if (attackTicks % sb.speed >= interval) {
+		if (sb.speed == 0 || attackTicks % sb.speed >= interval) {
 			// already used this spell for this round
 			return false;
 		}
@@ -1265,7 +1270,7 @@ void Monster::onThinkDefense(uint32_t interval)
 			continue;
 		}
 
-		if (defenseTicks % spellBlock.speed >= interval) {
+		if (spellBlock.speed == 0 || defenseTicks % spellBlock.speed >= interval) {
 			// already used this spell for this round
 			continue;
 		}
@@ -1293,7 +1298,7 @@ void Monster::onThinkDefense(uint32_t interval)
 				continue;
 			}
 
-			if (defenseTicks % summonBlock.speed >= interval) {
+			if (summonBlock.speed == 0 || defenseTicks % summonBlock.speed >= interval) {
 				// already used this spell for this round
 				continue;
 			}

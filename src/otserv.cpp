@@ -201,6 +201,12 @@ void mainLoader(ServiceManager* services)
 		return;
 	}
 
+	LOG_INFO(">> Loading monster scripts");
+	if (!g_scripts->loadScripts("monsters", false, false)) {
+		startupErrorMessage("Failed to load monster scripts");
+		return;
+	}
+
 	LOG_INFO(">> Loading lua scripts");
 	if (!g_scripts->loadScripts("scripts", false, false)) {
 		startupErrorMessage("Failed to load lua scripts");

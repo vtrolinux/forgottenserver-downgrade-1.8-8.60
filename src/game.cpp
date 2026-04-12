@@ -5998,7 +5998,7 @@ bool Game::reload(ReloadTypes_t reloadType)
 		case RELOAD_TYPE_MONSTERS: {
 			g_monsters.reload();
 			g_scripts->clearLoadedFiles();
-			g_scripts->loadScripts("scripts/monsters", false, true);
+			g_scripts->loadScripts("monsters", false, true);
 			LOG_INFO("Monsters reloaded successfully.");
 			return true;
 		}
@@ -6032,6 +6032,7 @@ bool Game::reload(ReloadTypes_t reloadType)
 			g_scripts->clearLoadedFiles();
 			g_scripts->loadScripts("scripts/spells", false, true);
 			g_monsters.reload();
+			g_scripts->loadScripts("monsters", false, true);
 			LOG_INFO("Spells reloaded successfully.");
 			return true;
 		}
@@ -6064,6 +6065,8 @@ bool Game::reload(ReloadTypes_t reloadType)
 			g_spells->clear(true);
 			g_scripts->clearLoadedFiles();
 			g_scripts->loadScripts("scripts", false, true);
+			g_monsters.reload();
+			g_scripts->loadScripts("monsters", false, true);
 			g_creatureEvents->removeInvalidEvents();
 			LOG_INFO("Scripts reloaded successfully.");
 			return true;
@@ -6096,6 +6099,8 @@ bool Game::reload(ReloadTypes_t reloadType)
 			g_chat->load();
 			g_scripts->clearLoadedFiles();
 			g_scripts->loadScripts("scripts", false, true);
+			g_monsters.reload();
+			g_scripts->loadScripts("monsters", false, true);
 			g_creatureEvents->removeInvalidEvents();
 			LOG_INFO("All reloaded successfully.");
 			return true;

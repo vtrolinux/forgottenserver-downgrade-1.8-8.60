@@ -579,9 +579,14 @@ int luaMonsterTypeGetAttackList(lua_State* L)
 		setField(L, "minCombatValue", spellBlock.minCombatValue);
 		setField(L, "maxCombatValue", spellBlock.maxCombatValue);
 		setField(L, "range", spellBlock.range);
-		setField(L, "speed", spellBlock.speed);
-		pushUserdata<CombatSpell>(L, static_cast<CombatSpell*>(spellBlock.spell));
-		lua_setfield(L, -2, "spell");
+		if (spellBlock.spell) {
+			if (spellBlock.combatSpell) {
+				pushUserdata<CombatSpell>(L, static_cast<CombatSpell*>(spellBlock.spell));
+			} else {
+				pushUserdata<Spell>(L, static_cast<Spell*>(spellBlock.spell));
+			}
+			lua_setfield(L, -2, "spell");
+		}
 
 		lua_rawseti(L, -2, ++index);
 	}
@@ -631,9 +636,14 @@ int luaMonsterTypeGetDefenseList(lua_State* L)
 		setField(L, "minCombatValue", spellBlock.minCombatValue);
 		setField(L, "maxCombatValue", spellBlock.maxCombatValue);
 		setField(L, "range", spellBlock.range);
-		setField(L, "speed", spellBlock.speed);
-		pushUserdata<CombatSpell>(L, static_cast<CombatSpell*>(spellBlock.spell));
-		lua_setfield(L, -2, "spell");
+		if (spellBlock.spell) {
+			if (spellBlock.combatSpell) {
+				pushUserdata<CombatSpell>(L, static_cast<CombatSpell*>(spellBlock.spell));
+			} else {
+				pushUserdata<Spell>(L, static_cast<Spell*>(spellBlock.spell));
+			}
+			lua_setfield(L, -2, "spell");
+		}
 
 		lua_rawseti(L, -2, ++index);
 	}

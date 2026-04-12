@@ -10,7 +10,7 @@ function spell.onCastSpell(creature, var)
 		return false
 	end
 	local creaturePos = creature:getPosition()
-	local path = creaturePos:getPathTo(target:getPosition(), 0, 0, true, true, 8)
+	local path = creature:getPathTo(target:getPosition(), 0, 0, true, true, 8)
 	if not path or #path == 0 then
 		return false
 	end
