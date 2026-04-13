@@ -2,6 +2,16 @@ function Player:onLook(thing, position, distance)
 	local description = ""
 	if hasEvent.onLook then description = Event.onLook(self, thing, position, distance, description) end
 
+	if thing:isCreature() then
+		local master = thing:getMaster()
+		local summons = { "sorcerer familiar", "knight familiar", "druid familiar", "paladin familiar", "monk familiar" }
+		if master and table.contains(summons, thing:getName():lower()) then
+			local familiarSummonTime = master:getStorageValue(845232) or 0
+			description = description .. " (Master: " .. master:getName() .. "). \z
+				It will disappear in " .. Game.getTimeInWords(familiarSummonTime - os.time())
+		end
+	end
+
 	if description ~= "" then self:sendTextMessage(MESSAGE_INFO_DESCR, description) end
 end
 
