@@ -26,7 +26,7 @@ if not KeywordHandler then
 			       self.callback(cid, message, self.keywords, self.parameters, self))
 	end
 
-	-- Returns true if message contains all patterns/strings found in keywords.
+	-- Returns true if message contains any of the patterns/strings found in keywords.
 	function KeywordNode:checkMessage(message)
 		if self.keywords.callback then
 			return self.keywords.callback(self.keywords, message)
@@ -34,11 +34,12 @@ if not KeywordHandler then
 
 		for _, v in ipairs(self.keywords) do
 			if type(v) == 'string' then
-				local a, b = string.find(message, v)
-				if not a or not b then return false end
+				if string.find(message, v) then
+					return true
+				end
 			end
 		end
-		return true
+		return false
 	end
 
 	-- Returns the parent of this node or nil if no such node exists.
