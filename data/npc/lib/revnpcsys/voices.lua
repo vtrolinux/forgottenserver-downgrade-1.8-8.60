@@ -40,9 +40,13 @@ if not NpcVoices then
 			return false
 		end
 
-		for _,voice in pairs(handler.voices) do
-			if math.random(1, 100) <= voice.chance then
-				table.insert(voices, voice)
+		local globalChance = handler.voices.chance or 100
+		for k, voice in pairs(handler.voices) do
+			if type(k) == "number" then
+				local voiceChance = voice.chance or globalChance
+				if math.random(1, 100) <= voiceChance then
+					table.insert(voices, voice)
+				end
 			end
 		end
 

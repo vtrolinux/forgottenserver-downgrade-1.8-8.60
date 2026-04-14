@@ -135,7 +135,7 @@ if not NpcEvents then
         if handler.voices then
             local canUse, voice = voices:canUseVoice(handler)
             if canUse then
-                npc:say(voice.words, voice.talkType)
+                npc:say(voice.words or voice.text, voice.talkType or TALKTYPE_SAY)
             end
         end
     end

@@ -396,6 +396,18 @@ do
 		end
 	end
 
+	if not compat.originalNpcHandlerOnThink then
+		compat.originalNpcHandlerOnThink = NpcHandler.onThink
+
+		function NpcHandler:onThink(npc, interval)
+			local result = compat.originalNpcHandlerOnThink(self)
+			if NpcEvents and NpcEvents.onThink then
+				NpcEvents.onThink(npc or Npc())
+			end
+			return result
+		end
+	end
+
 	if not compat.originalNpcHandlerUnGreet then
 		compat.originalNpcHandlerUnGreet = NpcHandler.unGreet
 
@@ -765,6 +777,11 @@ do
 			if #shopItems > 0 and not handler:getCallback(CALLBACK_MESSAGE_DEFAULT) then
 				registerTradeKeyword(handler)
 			end
+		end
+
+		if npcConfig.voices then
+			local h = NpcsHandler(self)
+			h:talk(npcConfig.voices, npcConfig.voices.interval)
 		end
 
 		return true
