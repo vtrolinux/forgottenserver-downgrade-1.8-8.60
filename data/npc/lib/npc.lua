@@ -404,6 +404,67 @@ do
 			if NpcEvents and NpcEvents.onThink then
 				NpcEvents.onThink(npc or Npc())
 			end
+
+			local npcObj = npc or Npc()
+			if npcObj then
+				local npcData = getNpcData(npcObj:getName())
+				if npcData and npcData.respawnType and npcData.respawnType.period and npcData.respawnType.period ~= RESPAWNPERIOD_ALL then
+					local worldTime = getWorldTime()
+					local isNight = (worldTime >= 1080 or worldTime <= 360) 
+					local isDay = not isNight
+
+					local shouldBeHidden = false
+					if npcData.respawnType.period == RESPAWNPERIOD_DAY and isNight then
+						shouldBeHidden = true
+					elseif npcData.respawnType.period == RESPAWNPERIOD_NIGHT and isDay then
+						shouldBeHidden = true
+					end
+
+					if shouldBeHidden then
+						local spawnName = npcObj:getName()
+						local spawnPos = npcObj:getPosition()
+						local spawnDir = npcObj:getDirection()
+						local period = npcData.respawnType.period
+						-- We must capture the master position so the NPC can move later
+						-- Some Npcs created dynamically might lack getMasterPos, fallback to spawnPos
+						local masterRadius = 2
+
+						spawnPos:sendMagicEffect(CONST_ME_POFF)
+						npcObj:remove()
+
+						local function checkRespawn()
+							local wt = getWorldTime()
+							local night = (wt >= 1080 or wt <= 360)
+							local day = not night
+
+							local shouldSpawn = false
+							if period == RESPAWNPERIOD_DAY and day then
+								shouldSpawn = true
+							elseif period == RESPAWNPERIOD_NIGHT and night then
+								shouldSpawn = true
+							end
+
+							if shouldSpawn then
+								local newNpc = Game.createNpc(spawnName, spawnPos)
+								if newNpc then
+									newNpc:setDirection(spawnDir)
+									-- Master radius is essential for the NPC to move freely
+									newNpc:setMasterPos(spawnPos, masterRadius)
+									spawnPos:sendMagicEffect(CONST_ME_TELEPORT)
+								else
+									addEvent(checkRespawn, 10000)
+								end
+							else
+								addEvent(checkRespawn, 10000)
+							end
+						end
+						
+						addEvent(checkRespawn, 10000)
+						return result
+					end
+				end	
+			end
+
 			return result
 		end
 	end
@@ -738,6 +799,7 @@ do
 			onBuyItem = compatData.onBuyItem,
 			onSellItem = compatData.onSellItem,
 			onCheckItem = compatData.onCheckItem,
+			respawnType = npcConfig.respawnType,
 		}
 		compat.npcConfigs[npcName:lower()] = compat.npcConfigs[npcName]
 
