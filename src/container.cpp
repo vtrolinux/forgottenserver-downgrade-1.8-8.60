@@ -153,6 +153,7 @@ void Container::onAddContainerItem(Item* item) const
 {
 	SpectatorVec spectators;
 	g_game.map.getSpectators(spectators, getPosition(), false, true, 1, 1, 1, 1);
+	spectators.partitionByType();
 
 	// send to client
 	for (const auto& spectator : spectators.players()) {
@@ -169,6 +170,7 @@ void Container::onUpdateContainerItem(uint32_t index, Item* oldItem, Item* newIt
 {
 	SpectatorVec spectators;
 	g_game.map.getSpectators(spectators, getPosition(), false, true, 1, 1, 1, 1);
+	spectators.partitionByType();
 
 	// send to client
 	for (const auto& spectator : spectators.players()) {
@@ -185,6 +187,7 @@ void Container::onRemoveContainerItem(uint32_t index, Item* item) const
 {
 	SpectatorVec spectators;
 	g_game.map.getSpectators(spectators, getPosition(), false, true, 1, 1, 1, 1);
+	spectators.partitionByType();
 
 	// send change to client
 	for (const auto& spectator : spectators.players()) {
