@@ -49,5 +49,5 @@ end
 spell:name("gaz'haragoth summon")
 spell:words("###125")
 spell:blockWalls(true)
-spell:needLearn(false)
+spell:needLearn(true)
 spell:register()

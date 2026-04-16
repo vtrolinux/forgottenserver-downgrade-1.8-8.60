@@ -63,7 +63,7 @@ end
 
 spell:name("rootkrakentwo")
 spell:words("#773334")
-spell:needLearn(false)
+spell:needLearn(true)
 spell:isAggressive(true)
 spell:isSelfTarget(true)
 spell:register()
