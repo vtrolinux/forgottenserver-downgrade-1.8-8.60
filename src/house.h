@@ -95,7 +95,7 @@ using HouseBedItemList = std::list<BedItem*>;
 class HouseTransferItem final : public Item
 {
 public:
-	[[nodiscard]] static HouseTransferItem* createHouseTransferItem(House* house);
+	[[nodiscard]] static std::shared_ptr<HouseTransferItem> createHouseTransferItem(House* house);
 
 	explicit HouseTransferItem(House* house);
 
@@ -212,7 +212,7 @@ private:
 	std::string houseName;
 	std::string ownerName;
 
-	HouseTransferItem* transferItem = nullptr;
+	std::weak_ptr<HouseTransferItem> transferItem;
 
 	time_t paidUntil = 0;
 

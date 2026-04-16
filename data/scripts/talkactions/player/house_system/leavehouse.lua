@@ -16,7 +16,6 @@ function talkaction.onSay(player, words, param)
     if houseType == HOUSE_TYPE_NORMAL then
         local ownerGuid = house:getOwnerGuid()
         local playerGuid = player:getGuid()
-
         if ownerGuid == 0 then
             player:sendCancelMessage("This house has no owner.")
             position:sendMagicEffect(CONST_ME_POFF)
@@ -41,7 +40,6 @@ function talkaction.onSay(player, words, param)
 
         local houseOwnerGuildId = house:getOwnerGuild()
         local guildId = guild:getId()
-
         if houseOwnerGuildId == 0 then
             player:sendCancelMessage("This guildhall has no owner.")
             position:sendMagicEffect(CONST_ME_POFF)

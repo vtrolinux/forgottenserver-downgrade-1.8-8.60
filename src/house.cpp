@@ -469,36 +469,34 @@ bool House::canEditAccessList(uint32_t listId, const Player* player) const
 
 HouseTransferItem* House::getTransferItem()
 {
-	if (transferItem != nullptr) {
-		return nullptr;
+	if (auto item = transferItem.lock()) {
+		return item.get();
 	}
 
-	transfer_container.setParent(nullptr);
-	transferItem = HouseTransferItem::createHouseTransferItem(this);
-	transfer_container.addThing(transferItem);
-	return transferItem;
+	auto newTransferItem = HouseTransferItem::createHouseTransferItem(this);
+	transferItem = newTransferItem;
+	transfer_container.addThing(newTransferItem.get());
+	return newTransferItem.get();
 }
 
 void House::resetTransferItem()
 {
-	if (transferItem) {
-		Item* tmpItem = transferItem;
-		transferItem = nullptr;
-		transfer_container.setParent(nullptr);
-
-		transfer_container.removeThing(tmpItem, tmpItem->getItemCount());
+	if (auto item = transferItem.lock()) {
+		Item* rawItem = item.get();
+		transferItem.reset();
+		transfer_container.removeThing(rawItem, rawItem->getItemCount());
 	}
 }
 
 HouseTransferItem::HouseTransferItem(House* house) : Item(0), house(house->shared_from_this()) {}
 
-HouseTransferItem* HouseTransferItem::createHouseTransferItem(House* house)
+std::shared_ptr<HouseTransferItem> HouseTransferItem::createHouseTransferItem(House* house)
 {
-	auto transferItem = std::make_unique<HouseTransferItem>(house);
+	auto transferItem = std::make_shared<HouseTransferItem>(house);
 	transferItem->setID(ITEM_DOCUMENT_RO);
 	transferItem->setSubType(1);
 	transferItem->setSpecialDescription(fmt::format("It is a house transfer document for '{:s}'.", house->getName()));
-	return transferItem.release();
+	return transferItem;
 }
 
 void HouseTransferItem::onTradeEvent(TradeEvents_t event, Player* owner)
@@ -518,7 +516,8 @@ void HouseTransferItem::onTradeEvent(TradeEvents_t event, Player* owner)
 
 bool House::executeTransfer(HouseTransferItem* item, Player* newOwner)
 {
-	if (transferItem != item) {
+	auto currentItem = transferItem.lock();
+	if (!currentItem || currentItem.get() != item) {
 		return false;
 	}
 
@@ -530,7 +529,7 @@ bool House::executeTransfer(HouseTransferItem* item, Player* newOwner)
 			setOwner(newOwnerGuild->getId());
 		}
 	}
-	transferItem = nullptr;
+	transferItem.reset();
 	return true;
 }
 
