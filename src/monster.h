@@ -101,7 +101,7 @@ public:
 	                    const Position& oldPos, bool teleport) override;
 	void onCreatureSay(Creature* creature, SpeakClasses type, std::string_view text) override;
 
-	void drainHealth(Creature* attacker, int32_t damage) override;
+	void drainHealth(const std::shared_ptr<Creature>& attacker, int32_t damage) override;
 	void changeHealth(int32_t healthChange, bool sendHealthChange = true) override;
 
 	bool isWalkingToSpawn() const { return walkingToSpawn; }
@@ -137,7 +137,7 @@ public:
 	bool isTargetNearby() const { return stepDuration >= 1; }
 	bool isIgnoringFieldDamage() const { return ignoreFieldDamage; }
 
-	BlockType_t blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage, bool checkDefense = false,
+	BlockType_t blockHit(const std::shared_ptr<Creature>& attacker, CombatType_t combatType, int32_t& damage, bool checkDefense = false,
 	                     bool checkArmor = false, bool field = false, bool ignoreResistances = false) override;
 
 	static uint32_t monsterAutoID;

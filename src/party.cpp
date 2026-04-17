@@ -474,18 +474,18 @@ bool Party::setSharedExperience(Player* player, bool sharedExpActive)
 	return true;
 }
 
-void Party::shareExperience(uint64_t experience, Creature* source /* = nullptr*/)
+void Party::shareExperience(uint64_t experience, const std::shared_ptr<Creature>& source /* = nullptr*/)
 {
 	uint64_t shareExperience = experience;
 	g_events->eventPartyOnShareExperience(this, shareExperience);
 
 	for (auto& memberWeak : memberList) {
-		if (Player* member = memberWeak.lock().get()) {
+		if (auto member = memberWeak.lock()) {
 			member->onGainSharedExperience(shareExperience, source);
 		}
 	}
 	
-	if (Player* currentLeader = leader.lock().get()) {
+	if (auto currentLeader = leader.lock()) {
 		currentLeader->onGainSharedExperience(shareExperience, source);
 	}
 }

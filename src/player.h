@@ -549,7 +549,7 @@ public:
 	void changeSoul(int32_t soulChange);
 
 	bool isPzLocked() const { return pzLocked; }
-	BlockType_t blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage, bool checkDefense = false,
+	BlockType_t blockHit(const std::shared_ptr<Creature>& attacker, CombatType_t combatType, int32_t& damage, bool checkDefense = false,
 	                     bool checkArmor = false, bool field = false, bool ignoreResistances = false) override;
 	void doAttacking(uint32_t interval) override;
 	bool hasExtraSwing() override { return lastAttack > 0 && ((OTSYS_TIME() - lastAttack) >= getAttackSpeed()); }
@@ -580,8 +580,8 @@ public:
 	int32_t getWeaponSkill(const Item* item) const;
 	void getShieldAndWeapon(const Item*& shield, const Item*& weapon) const;
 
-	void drainHealth(Creature* attacker, int32_t damage) override;
-	void drainMana(Creature* attacker, int32_t manaLoss);
+	void drainHealth(const std::shared_ptr<Creature>& attacker, int32_t damage) override;
+	void drainMana(const std::shared_ptr<Creature>& attacker, int32_t manaLoss);
 	void addManaSpent(uint64_t amount, bool artificial = false);
 	void removeManaSpent(uint64_t amount, bool notify = false);
 	void addSkillAdvance(skills_t skill, uint64_t count, bool artificial = false);
@@ -597,20 +597,20 @@ public:
 	void addHealExhaust(uint32_t ticks);
 	void addInFightTicks(bool pzlock = false);
 
-	uint64_t getGainedExperience(Creature* attacker) const override;
+	uint64_t getGainedExperience(const std::shared_ptr<Creature>& attacker) const override;
 
 	// combat event functions
 	void onAddCondition(ConditionType_t type) override;
 	void onAddCombatCondition(ConditionType_t type) override;
 	void onEndCondition(ConditionType_t type) override;
 	void onCombatRemoveCondition(Condition* condition) override;
-	void onAttackedCreature(Creature* target, bool addFightTicks = true) override;
+	void onAttackedCreature(const std::shared_ptr<Creature>& target, bool addFightTicks = true) override;
 	void onAttacked() override;
-	void onAttackedCreatureDrainHealth(Creature* target, int32_t points) override;
-	void onTargetCreatureGainHealth(Creature* target, int32_t points) override;
-	bool onKilledCreature(Creature* target, bool lastHit = true) override;
-	void onGainExperience(uint64_t gainExp, Creature* target) override;
-	void onGainSharedExperience(uint64_t gainExp, Creature* source);
+	void onAttackedCreatureDrainHealth(const std::shared_ptr<Creature>& target, int32_t points) override;
+	void onTargetCreatureGainHealth(const std::shared_ptr<Creature>& target, int32_t points) override;
+	bool onKilledCreature(const std::shared_ptr<Creature>& target, bool lastHit = true) override;
+	void onGainExperience(uint64_t gainExp, const std::shared_ptr<Creature>& target) override;
+	void onGainSharedExperience(uint64_t gainExp, const std::shared_ptr<Creature>& source);
 	void onAttackedCreatureBlockHit(BlockType_t blockType) override;
 	void onBlockHit() override;
 	void onChangeZone(ZoneType_t zone) override;
@@ -1154,7 +1154,7 @@ public:
 
 	double getLostPercent() const;
 
-	void addExperience(Creature* source, uint64_t exp, bool sendText = false);
+	void addExperience(const std::shared_ptr<Creature>& source, uint64_t exp, bool sendText = false);
 	void removeExperience(uint64_t exp, bool sendText = false);
 
 	void setMana(uint32_t newMana) { mana = std::min<uint32_t>(newMana, manaMax); }
@@ -1210,7 +1210,7 @@ private:
 	void resetTalkState(size_t from = 0, size_t to = 15);
 	void setManagerTalkState(size_t index, bool value) { managerTalkState[index] = value; }
 
-	void gainExperience(uint64_t gainExp, Creature* source);
+	void gainExperience(uint64_t gainExp, const std::shared_ptr<Creature>& source);
 
 	void updateInventoryWeight();
 

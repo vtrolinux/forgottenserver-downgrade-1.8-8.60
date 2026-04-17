@@ -1810,13 +1810,13 @@ void Player::removeMessageBuffer()
 	}
 }
 
-void Player::drainHealth(Creature* attacker, int32_t damage)
+void Player::drainHealth(const std::shared_ptr<Creature>& attacker, int32_t damage)
 {
 	Creature::drainHealth(attacker, damage);
 	sendStats();
 }
 
-void Player::drainMana(Creature* attacker, int32_t manaLoss)
+void Player::drainMana(const std::shared_ptr<Creature>& attacker, int32_t manaLoss)
 {
 	onAttacked();
 	changeMana(-manaLoss);
@@ -1920,7 +1920,7 @@ void Player::removeManaSpent(uint64_t amount, bool notify /* = false*/)
 	}
 }
 
-void Player::addExperience(Creature* source, uint64_t exp, bool sendText /* = false*/)
+void Player::addExperience(const std::shared_ptr<Creature>& source, uint64_t exp, bool sendText /* = false*/)
 {
 	uint64_t currLevelExp = Player::getExpForLevel(level);
 	uint64_t nextLevelExp = Player::getExpForLevel(level + 1);
@@ -1932,7 +1932,7 @@ void Player::addExperience(Creature* source, uint64_t exp, bool sendText /* = fa
 		return;
 	}
 
-	g_events->eventPlayerOnGainExperience(this, source, exp, rawExp, sendText);
+	g_events->eventPlayerOnGainExperience(this, source.get(), exp, rawExp, sendText);
 	if (exp == 0) {
 		return;
 	}
@@ -2137,7 +2137,7 @@ bool Player::hasShield() const
 	return false;
 }
 
-BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
+BlockType_t Player::blockHit(const std::shared_ptr<Creature>& attacker, CombatType_t combatType, int32_t& damage,
                              bool checkDefense /* = false*/, bool checkArmor /* = false*/, bool field /* = false*/,
                              bool ignoreResistances /* = false*/)
 {
@@ -2145,7 +2145,7 @@ BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_
 	    Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor, field, ignoreResistances);
 
 	if (attacker && combatType != COMBAT_HEALING) {
-		sendCreatureSquare(attacker, SQ_COLOR_BLACK);
+		sendCreatureSquare(attacker.get(), SQ_COLOR_BLACK);
 	}
 
 	if (blockType != BLOCK_NONE) {
@@ -2248,7 +2248,7 @@ BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_
 			reflectDamage.primary.type = combatType;
 			reflectDamage.primary.value = -std::round(damage * (reflect.percent / 100.));
 			reflectDamage.origin = ORIGIN_REFLECT;
-			g_game.combatChangeHealth(this, attacker, reflectDamage);
+			g_game.combatChangeHealth(this, attacker.get(), reflectDamage);
 		}
 	}
 
@@ -3626,11 +3626,11 @@ void Player::maintainAttackFlow()
 	}
 }
 
-uint64_t Player::getGainedExperience(Creature* attacker) const
+uint64_t Player::getGainedExperience(const std::shared_ptr<Creature>& attacker) const
 {
 	if (getBoolean(ConfigManager::EXPERIENCE_FROM_PLAYERS)) {
-		Player* attackerPlayer = attacker->getPlayer();
-		if (attackerPlayer && attackerPlayer != this && skillLoss &&
+		Player* attackerPlayer = attacker ? attacker->getPlayer() : nullptr;
+		if (attackerPlayer && attacker.get() != this && skillLoss &&
 		    std::abs(static_cast<int64_t>(attackerPlayer->getLevel() - level)) <=
 		        getInteger(ConfigManager::EXP_FROM_PLAYERS_LEVEL_RANGE)) {
 			return std::max<uint64_t>(0, std::floor(getLostExperience() * getDamageRatio(attacker) * 0.75));
@@ -3826,22 +3826,26 @@ void Player::onCombatRemoveCondition(Condition* condition)
 	}
 }
 
-void Player::onAttackedCreature(Creature* target, bool addFightTicks /* = true */)
+void Player::onAttackedCreature(const std::shared_ptr<Creature>& target, bool addFightTicks /* = true */)
 {
 	Creature::onAttackedCreature(target);
 
 	// Check if attacking a Trainer for stamina regeneration
-	if (ConfigManager::getBoolean(ConfigManager::STAMINA_TRAINER) && target && isTrainerTarget(target)) {
+	if (ConfigManager::getBoolean(ConfigManager::STAMINA_TRAINER) && target && isTrainerTarget(target.get())) {
 		staminaTrainerDelayMs = ConfigManager::getInteger(ConfigManager::STAMINA_TRAINER_DELAY) * 60 * 1000;
 		staminaTrainerActive = true;
 		staminaTrainerTicks = 0;
+	}
+
+	if (!target) {
+		return;
 	}
 
 	if (target->getZone() == ZONE_PVP) {
 		return;
 	}
 
-	if (target == this) {
+	if (target.get() == this) {
 		if (addFightTicks) {
 			addInFightTicks();
 		}
@@ -3915,12 +3919,12 @@ void Player::onPlacedCreature()
 	}
 }
 
-void Player::onAttackedCreatureDrainHealth(Creature* target, int32_t points)
+void Player::onAttackedCreatureDrainHealth(const std::shared_ptr<Creature>& target, int32_t points)
 {
 	Creature::onAttackedCreatureDrainHealth(target, points);
 
 	if (target) {
-		if (auto p = party.lock(); p && !Combat::isPlayerCombat(target)) {
+		if (auto p = party.lock(); p && !Combat::isPlayerCombat(target.get())) {
 			Monster* tmpMonster = target->getMonster();
 			if (tmpMonster && tmpMonster->isHostile()) {
 				// We have fulfilled a requirement for shared experience
@@ -3930,7 +3934,7 @@ void Player::onAttackedCreatureDrainHealth(Creature* target, int32_t points)
 	}
 }
 
-void Player::onTargetCreatureGainHealth(Creature* target, int32_t points)
+void Player::onTargetCreatureGainHealth(const std::shared_ptr<Creature>& target, int32_t points)
 {
 	if (target && !party.expired()) {
 		Player* tmpPlayer = nullptr;
@@ -3949,7 +3953,7 @@ void Player::onTargetCreatureGainHealth(Creature* target, int32_t points)
 	}
 }
 
-bool Player::onKilledCreature(Creature* target, bool lastHit /* = true*/)
+bool Player::onKilledCreature(const std::shared_ptr<Creature>& target, bool lastHit /* = true*/)
 {
 	bool unjustified = false;
 
@@ -3992,7 +3996,7 @@ bool Player::onKilledCreature(Creature* target, bool lastHit /* = true*/)
 	return unjustified;
 }
 
-void Player::gainExperience(uint64_t gainExp, Creature* source)
+void Player::gainExperience(uint64_t gainExp, const std::shared_ptr<Creature>& source)
 {
 	if (hasFlag(PlayerFlag_NotGainExperience) || gainExp == 0 || staminaMinutes == 0) {
 		return;
@@ -4001,7 +4005,7 @@ void Player::gainExperience(uint64_t gainExp, Creature* source)
 	addExperience(source, gainExp, true);
 }
 
-void Player::onGainExperience(uint64_t gainExp, Creature* target)
+void Player::onGainExperience(uint64_t gainExp, const std::shared_ptr<Creature>& target)
 {
 	if (hasFlag(PlayerFlag_NotGainExperience)) {
 		return;
@@ -4018,7 +4022,10 @@ void Player::onGainExperience(uint64_t gainExp, Creature* target)
 	gainExperience(gainExp, target);
 }
 
-void Player::onGainSharedExperience(uint64_t gainExp, Creature* source) { gainExperience(gainExp, source); }
+void Player::onGainSharedExperience(uint64_t gainExp, const std::shared_ptr<Creature>& source)
+{
+	gainExperience(gainExp, source);
+}
 
 bool Player::isImmune(CombatType_t type) const
 {

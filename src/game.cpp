@@ -4327,11 +4327,13 @@ bool Game::combatBlockHit(CombatDamage& damage, Creature* attacker, Creature* ta
 
 	if (attacker && !attacker->compareInstance(target->getInstanceID())) {
 		return true;
-	  }
-	
-	  uint32_t targetInstanceId = target->getInstanceID();
-	  const auto sendBlockEffect = [targetInstanceId](BlockType_t blockType, CombatType_t combatType,
-	                                           const Position& targetPos) {
+	}
+
+	auto attackerRef = attacker ? attacker->shared_from_this() : std::shared_ptr<Creature>();
+
+	uint32_t targetInstanceId = target->getInstanceID();
+	const auto sendBlockEffect = [targetInstanceId](BlockType_t blockType, CombatType_t combatType,
+	                                                const Position& targetPos) {
 		if (blockType == BLOCK_DEFENSE) {
 			InstanceUtils::sendMagicEffectToInstance(targetPos, targetInstanceId, CONST_ME_POFF);
 		} else if (blockType == BLOCK_ARMOR) {
@@ -4370,7 +4372,7 @@ bool Game::combatBlockHit(CombatDamage& damage, Creature* attacker, Creature* ta
 	BlockType_t primaryBlockType, secondaryBlockType;
 	if (damage.primary.type != COMBAT_NONE) {
 		damage.primary.value = std::abs(damage.primary.value);
-		primaryBlockType = target->blockHit(attacker, damage.primary.type, damage.primary.value, checkDefense,
+		primaryBlockType = target->blockHit(attackerRef, damage.primary.type, damage.primary.value, checkDefense,
 		                                    checkArmor, field, ignoreResistances);
 
 		if (damage.primary.type != COMBAT_HEALING) {
@@ -4383,7 +4385,7 @@ bool Game::combatBlockHit(CombatDamage& damage, Creature* attacker, Creature* ta
 
 	if (damage.secondary.type != COMBAT_NONE) {
 		damage.secondary.value = std::abs(damage.secondary.value);
-		secondaryBlockType = target->blockHit(attacker, damage.secondary.type, damage.secondary.value, false, false,
+		secondaryBlockType = target->blockHit(attackerRef, damage.secondary.type, damage.secondary.value, false, false,
 		                                      field, ignoreResistances);
 		if (damage.secondary.type != COMBAT_HEALING) {
 			damage.secondary.value = -damage.secondary.value;
@@ -4522,6 +4524,8 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 		return false;
 	}
 
+	auto attackerRef = attacker ? attacker->shared_from_this() : std::shared_ptr<Creature>();
+
 	const Position& targetPos = target->getPosition();
 	if (damage.primary.value > 0) {
 
@@ -4550,7 +4554,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 		}
 
 		int32_t realHealthChange = target->getHealth();
-		target->gainHealth(attacker, damage.primary.value);
+		target->gainHealth(attackerRef, damage.primary.value);
 		realHealthChange = target->getHealth() - realHealthChange;
 
 		// rewardboss healing contribution
@@ -4686,7 +4690,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 					}
 				}
 
-				targetPlayer->drainMana(attacker, manaDamage);
+				targetPlayer->drainMana(attackerRef, manaDamage);
 
 				map.getSpectators(spectators, targetPos, true, true);
 				spectators = InstanceUtils::filterByInstance(spectators, target->getInstanceID());
@@ -4888,7 +4892,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 			}
 		}
 
-		target->drainHealth(attacker, realDamage);
+		target->drainHealth(attackerRef, realDamage);
 		addCreatureHealth(spectators, target);
 
 		// onPlayerAttack callback
@@ -4912,6 +4916,8 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, CombatDamage& 
 	if (attacker && !attacker->compareInstance(target->getInstanceID())) {
 		return false;
 	}
+
+	auto attackerRef = attacker ? attacker->shared_from_this() : std::shared_ptr<Creature>();
 
 	int32_t manaChange = damage.primary.value + damage.secondary.value;
 	if (manaChange > 0) {
@@ -4959,7 +4965,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, CombatDamage& 
 		}
 
 		int32_t manaLoss = std::min<int32_t>(targetPlayer->getMana(), -manaChange);
-		BlockType_t blockType = target->blockHit(attacker, COMBAT_MANADRAIN, manaLoss);
+		BlockType_t blockType = target->blockHit(attackerRef, COMBAT_MANADRAIN, manaLoss);
 		if (blockType != BLOCK_NONE) {
 			InstanceUtils::sendMagicEffectToInstance(targetPos, target->getInstanceID(), CONST_ME_POFF);
 			return false;
@@ -4980,7 +4986,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, CombatDamage& 
 			}
 		}
 
-		targetPlayer->drainMana(attacker, manaLoss);
+		targetPlayer->drainMana(attackerRef, manaLoss);
 
 		std::string spectatorMessage;
 

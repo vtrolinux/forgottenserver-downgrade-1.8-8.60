@@ -94,6 +94,8 @@ public:
 
 	Creature* getCreature() override final { return this; }
 	const Creature* getCreature() const override final { return this; }
+	std::shared_ptr<Creature> asCreature() { return shared_from_this(); }
+	std::shared_ptr<const Creature> asCreature() const { return shared_from_this(); }
 
 	static bool isAlive(const Creature* c) { return liveCreatures.count(c) > 0; }
 	virtual Player* getPlayer() { return nullptr; }
@@ -222,7 +224,7 @@ public:
 		return creature.get();
 	}
 	virtual bool setAttackedCreature(Creature* creature);
-	virtual BlockType_t blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
+	virtual BlockType_t blockHit(const std::shared_ptr<Creature>& attacker, CombatType_t combatType, int32_t& damage,
 	                             bool checkDefense = false, bool checkArmor = false, bool field = false,
 	                             bool ignoreResistances = false);
 
@@ -269,15 +271,15 @@ public:
 
 	virtual void changeHealth(int32_t healthChange, bool sendHealthChange = true);
 
-	void gainHealth(Creature* healer, int32_t healthGain);
-	virtual void drainHealth(Creature* attacker, int32_t damage);
+	void gainHealth(const std::shared_ptr<Creature>& healer, int32_t healthGain);
+	virtual void drainHealth(const std::shared_ptr<Creature>& attacker, int32_t damage);
 
 	virtual bool challengeCreature(Creature*, bool) { return false; }
 
 	CreatureVector getKillers() const;
 	void onDeath();
-	virtual uint64_t getGainedExperience(Creature* attacker) const;
-	void addDamagePoints(Creature* attacker, int32_t damagePoints);
+	virtual uint64_t getGainedExperience(const std::shared_ptr<Creature>& attacker) const;
+	void addDamagePoints(const std::shared_ptr<Creature>& attacker, int32_t damagePoints);
 	bool hasBeenAttacked(uint32_t attackerId);
 
 	// combat event functions
@@ -286,12 +288,12 @@ public:
 	virtual void onEndCondition(ConditionType_t type);
 	void onTickCondition(ConditionType_t type, bool& bRemove);
 	virtual void onCombatRemoveCondition(Condition* condition);
-	virtual void onAttackedCreature(Creature*, bool = true) {}
+	virtual void onAttackedCreature(const std::shared_ptr<Creature>&, bool = true) {}
 	virtual void onAttacked();
-	virtual void onAttackedCreatureDrainHealth(Creature* target, int32_t points);
-	virtual void onTargetCreatureGainHealth(Creature*, int32_t) {}
-	virtual bool onKilledCreature(Creature* target, bool lastHit = true);
-	virtual void onGainExperience(uint64_t gainExp, Creature* target);
+	virtual void onAttackedCreatureDrainHealth(const std::shared_ptr<Creature>& target, int32_t points);
+	virtual void onTargetCreatureGainHealth(const std::shared_ptr<Creature>&, int32_t) {}
+	virtual bool onKilledCreature(const std::shared_ptr<Creature>& target, bool lastHit = true);
+	virtual void onGainExperience(uint64_t gainExp, const std::shared_ptr<Creature>& target);
 	virtual void onAttackedCreatureBlockHit(BlockType_t) {}
 	virtual void onBlockHit() {}
 	virtual void onChangeZone(ZoneType_t zone);
@@ -363,7 +365,7 @@ public:
 
 	static bool canSee(const Position& myPos, const Position& pos, int32_t viewRangeX, int32_t viewRangeY);
 
-	double getDamageRatio(Creature* attacker) const;
+	double getDamageRatio(const std::shared_ptr<Creature>& attacker) const;
 
 	bool getPathTo(const Position& targetPos, std::vector<Direction>& dirList, const FindPathParams& fpp) const;
 	bool getPathTo(const Position& targetPos, std::vector<Direction>& dirList, int32_t minTargetDist,

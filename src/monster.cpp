@@ -837,7 +837,7 @@ void Monster::onFollowCreatureComplete(const Creature* creature)
 	}
 }
 
-BlockType_t Monster::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
+BlockType_t Monster::blockHit(const std::shared_ptr<Creature>& attacker, CombatType_t combatType, int32_t& damage,
                               bool checkDefense /* = false*/, bool checkArmor /* = false*/, bool /* field = false */,
                               bool /* ignoreResistances = false */)
 {
@@ -2242,7 +2242,7 @@ void Monster::dropLoot(Container* corpse, Creature*)
 
 void Monster::setNormalCreatureLight() { internalLight = mType->info.light; }
 
-void Monster::drainHealth(Creature* attacker, int32_t damage)
+void Monster::drainHealth(const std::shared_ptr<Creature>& attacker, int32_t damage)
 {
 	Creature::drainHealth(attacker, damage);
 

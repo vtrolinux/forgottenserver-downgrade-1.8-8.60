@@ -918,7 +918,9 @@ bool RuneSpell::executeUse(Player* player, Item* item, const Position&, Thing* t
 	if (var.isNumber()) {
 		target = g_game.getCreatureByID(var.getNumber());
 		if (getPzLock() && target) {
-			player->onAttackedCreature(target->getCreature());
+			if (Creature* targetCreature = target->getCreature()) {
+				player->onAttackedCreature(targetCreature->shared_from_this());
+			}
 		}
 	}
 

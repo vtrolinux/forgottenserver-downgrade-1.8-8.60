@@ -543,7 +543,8 @@ int luaCreatureSetHealth(lua_State* L)
 		creature->setHealth(health);
 		g_game.addCreatureHealth(creature);
 	} else {
-		creature->drainHealth(getCreature(L, 3), creature->getHealth());
+		Creature* attacker = getCreature(L, 3);
+		creature->drainHealth(attacker ? attacker->shared_from_this() : nullptr, creature->getHealth());
 	}
 
 	if (!creature->isDead()) {

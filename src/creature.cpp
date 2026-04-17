@@ -498,30 +498,30 @@ void Creature::onDeath()
 {
 	bool lastHitUnjustified = false;
 	bool mostDamageUnjustified = false;
-	Creature* lastHitCreature = lastAttacker.lock().get();
-	Creature* lastHitCreatureMaster;
+	auto self = shared_from_this();
+	auto lastHitCreature = lastAttacker.lock();
+	std::shared_ptr<Creature> lastHitCreatureMaster;
 	if (lastHitCreature) {
-		lastHitUnjustified = lastHitCreature->onKilledCreature(this);
-		lastHitCreatureMaster = lastHitCreature->getMaster();
-	} else {
-		lastHitCreatureMaster = nullptr;
+		lastHitUnjustified = lastHitCreature->onKilledCreature(self);
+		lastHitCreatureMaster = lastHitCreature->getMasterShared();
 	}
 
-	Creature* mostDamageCreature = nullptr;
+	std::shared_ptr<Creature> mostDamageCreature;
 
 	const int64_t timeNow = OTSYS_TIME();
 	const int64_t inFightTicks = getInteger(ConfigManager::PZ_LOCKED);
 	int32_t mostDamage = 0;
-	std::unordered_map<Creature*, uint64_t> experienceMap;
+	std::unordered_map<std::shared_ptr<Creature>, uint64_t> experienceMap;
 	for (const auto& it : damageMap) {
-		if (Creature* attacker = g_game.getCreatureByID(it.first)) {
+		if (Creature* attackerRaw = g_game.getCreatureByID(it.first)) {
+			auto attacker = attackerRaw->shared_from_this();
 			CountBlock_t cb = it.second;
 			if ((cb.total > mostDamage && (timeNow - cb.ticks <= inFightTicks))) {
 				mostDamage = cb.total;
 				mostDamageCreature = attacker;
 			}
 
-			if (attacker != this) {
+			if (attacker.get() != this) {
 				uint64_t gainExp = getGainedExperience(attacker);
 				if (Player* attackerPlayer = attacker->getPlayer()) {
 					attackerPlayer->removeAttacked(getPlayer());
@@ -529,7 +529,7 @@ void Creature::onDeath()
 					Party* party = attackerPlayer->getParty();
 					if (party && party->getLeader() && party->isSharedExperienceActive() &&
 					    party->isSharedExperienceEnabled()) {
-						attacker = party->getLeader();
+						attacker = party->getLeader()->shared_from_this();
 					}
 				}
 
@@ -544,21 +544,22 @@ void Creature::onDeath()
 	}
 
 	for (const auto& it : experienceMap) {
-		it.first->onGainExperience(it.second, this);
+		it.first->onGainExperience(it.second, self);
 	}
 
 	if (mostDamageCreature) {
 		if (mostDamageCreature != lastHitCreature && mostDamageCreature != lastHitCreatureMaster) {
-			Creature* mostDamageCreatureMaster = mostDamageCreature->getMaster();
+			auto mostDamageCreatureMaster = mostDamageCreature->getMasterShared();
 			if (lastHitCreature != mostDamageCreatureMaster &&
-			    (lastHitCreatureMaster == nullptr || mostDamageCreatureMaster != lastHitCreatureMaster)) {
-				mostDamageUnjustified = mostDamageCreature->onKilledCreature(this, false);
+			    (!lastHitCreatureMaster || mostDamageCreatureMaster != lastHitCreatureMaster)) {
+				mostDamageUnjustified = mostDamageCreature->onKilledCreature(self, false);
 			}
 		}
 	}
 
-	bool droppedCorpse = dropCorpse(lastHitCreature, mostDamageCreature, lastHitUnjustified, mostDamageUnjustified);
-	death(lastHitCreature);
+	bool droppedCorpse = dropCorpse(lastHitCreature.get(), mostDamageCreature.get(), lastHitUnjustified,
+	                               mostDamageUnjustified);
+	death(lastHitCreature.get());
 
 	if (!master.expired()) {
 		setMaster(nullptr);
@@ -676,26 +677,26 @@ void Creature::changeHealth(int32_t healthChange, bool sendHealthChange /* = tru
 	}
 }
 
-void Creature::gainHealth(Creature* healer, int32_t healthGain)
+void Creature::gainHealth(const std::shared_ptr<Creature>& healer, int32_t healthGain)
 {
 	changeHealth(healthGain);
 	if (healer) {
-		healer->onTargetCreatureGainHealth(this, healthGain);
+		healer->onTargetCreatureGainHealth(shared_from_this(), healthGain);
 	}
 }
 
-void Creature::drainHealth(Creature* attacker, int32_t damage)
+void Creature::drainHealth(const std::shared_ptr<Creature>& attacker, int32_t damage)
 {
 	changeHealth(-damage, false);
 
 	if (attacker) {
-		attacker->onAttackedCreatureDrainHealth(this, damage);
+		attacker->onAttackedCreatureDrainHealth(shared_from_this(), damage);
 	} else {
 		lastAttacker.reset();
 	}
 }
 
-BlockType_t Creature::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
+BlockType_t Creature::blockHit(const std::shared_ptr<Creature>& attacker, CombatType_t combatType, int32_t& damage,
                                bool checkDefense /* = false */, bool checkArmor /* = false */, bool /* field = false */,
                                bool /* ignoreResistances = false */)
 {
@@ -775,7 +776,7 @@ BlockType_t Creature::blockHit(Creature* attacker, CombatType_t combatType, int3
 		}
 
 		if (combatType != COMBAT_HEALING) {
-			attacker->onAttackedCreature(this);
+			attacker->onAttackedCreature(shared_from_this());
 			attacker->onAttackedCreatureBlockHit(blockType);
 			// OPTIMIZATION: Removed per-hit master notification for summons.
 			// onAttackedCreature on master was called every single hit which
@@ -809,8 +810,9 @@ bool Creature::setAttackedCreature(Creature* creature)
 			return false;
 		}
 
-		attackedCreature = creature->shared_from_this();
-		onAttackedCreature(creature);
+		auto creatureRef = creature->shared_from_this();
+		attackedCreature = creatureRef;
+		onAttackedCreature(creatureRef);
 		creature->onAttacked();
 	} else {
 		attackedCreature.reset();
@@ -904,7 +906,7 @@ size_t Creature::getSummonCount() const
 	                     [](const std::weak_ptr<Creature>& summon) { return !summon.expired(); });
 }
 
-double Creature::getDamageRatio(Creature* attacker) const
+double Creature::getDamageRatio(const std::shared_ptr<Creature>& attacker) const
 {
 	uint32_t totalDamage = 0;
 	uint32_t attackerDamage = 0;
@@ -912,7 +914,7 @@ double Creature::getDamageRatio(Creature* attacker) const
 	for (const auto& it : damageMap) {
 		const CountBlock_t& cb = it.second;
 		totalDamage += cb.total;
-		if (it.first == attacker->getID()) {
+		if (attacker && it.first == attacker->getID()) {
 			attackerDamage += cb.total;
 		}
 	}
@@ -924,14 +926,14 @@ double Creature::getDamageRatio(Creature* attacker) const
 	return (static_cast<double>(attackerDamage) / totalDamage);
 }
 
-uint64_t Creature::getGainedExperience(Creature* attacker) const
+uint64_t Creature::getGainedExperience(const std::shared_ptr<Creature>& attacker) const
 {
 	return std::floor(getDamageRatio(attacker) * getLostExperience());
 }
 
-void Creature::addDamagePoints(Creature* attacker, int32_t damagePoints)
+void Creature::addDamagePoints(const std::shared_ptr<Creature>& attacker, int32_t damagePoints)
 {
-	if (damagePoints <= 0) {
+	if (damagePoints <= 0 || !attacker) {
 		return;
 	}
 
@@ -941,7 +943,7 @@ void Creature::addDamagePoints(Creature* attacker, int32_t damagePoints)
 	cb.ticks = OTSYS_TIME();
 	cb.total += damagePoints;
 
-	lastAttacker = attacker->shared_from_this();
+	lastAttacker = attacker;
 }
 
 void Creature::onAddCondition(ConditionType_t type)
@@ -1012,12 +1014,12 @@ void Creature::onAttacked()
 	//
 }
 
-void Creature::onAttackedCreatureDrainHealth(Creature* target, int32_t points)
+void Creature::onAttackedCreatureDrainHealth(const std::shared_ptr<Creature>& target, int32_t points)
 {
-	target->addDamagePoints(this, points);
+	target->addDamagePoints(shared_from_this(), points);
 }
 
-bool Creature::onKilledCreature(Creature* target, bool)
+bool Creature::onKilledCreature(const std::shared_ptr<Creature>& target, bool)
 {
 	if (auto m = master.lock()) {
 		m->onKilledCreature(target);
@@ -1026,12 +1028,12 @@ bool Creature::onKilledCreature(Creature* target, bool)
 	// scripting event - onKill
 	const CreatureEventList& killEvents = getCreatureEvents(CREATURE_EVENT_KILL);
 	for (CreatureEvent* killEvent : killEvents) {
-		killEvent->executeOnKill(this, target);
+		killEvent->executeOnKill(this, target.get());
 	}
 	return false;
 }
 
-void Creature::onGainExperience(uint64_t gainExp, Creature* target)
+void Creature::onGainExperience(uint64_t gainExp, const std::shared_ptr<Creature>& target)
 {
 	auto m = master.lock();
 	if (gainExp == 0 || !m) {
