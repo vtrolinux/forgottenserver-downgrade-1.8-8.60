@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rotten Golem")
 local monster = {}
 
+monster.name = "Rotten Golem"
 monster.description = "a rotten golem"
 monster.experience = 17860
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Rotten Wasteland.",
 }
 
-monster.events = {}
 
 monster.health = 28000
 monster.maxHealth = 28000

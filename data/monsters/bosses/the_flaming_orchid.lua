@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Flaming Orchid")
 local monster = {}
 
+monster.name = "The Flaming Orchid"
 monster.description = "a flaming orchid"
 monster.experience = 8500
 monster.outfit = {
@@ -19,8 +20,6 @@ monster.race = "blood"
 monster.corpse = 21987 -- review later
 monster.speed = 210
 monster.manaCost = 0
-
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 4000,
@@ -87,7 +86,7 @@ monster.loot = {
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -25 },
 	{ name = "combat", interval = 1000, chance = 10, type = COMBAT_DEATHDAMAGE, minDamage = -400, maxDamage = -700, range = 7, effect = CONST_ANI_DEATH, target = true },
-	{ name = "Ignite", interval = 2000, chance = 20, range = 7, radius = 1, target = true, shootEffect = CONST_ANI_FIRE },
+	--{ name = "Ignite", interval = 2000, chance = 20, range = 7, radius = 1, target = true, shootEffect = CONST_ANI_FIRE },
 	{ name = "big death wave", interval = 4000, chance = 18, minDamage = 0, maxDamage = -500 }, -- review later
 	{ name = "aggressivelavawave", interval = 5000, chance = 19, minDamage = 0, maxDamage = -200 }, -- review later
 	{ name = "combat", interval = 6000, chance = 20, type = COMBAT_FIREDAMAGE, range = 5, radius = 7, target = true, minDamage = -100, maxDamage = -250, shootEffect = CONST_ANI_FIRE, effect = CONST_ME_FIREAREA, target = false },

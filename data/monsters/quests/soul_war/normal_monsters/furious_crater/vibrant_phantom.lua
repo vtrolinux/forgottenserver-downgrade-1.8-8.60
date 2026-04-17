@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vibrant Phantom")
 local monster = {}
 
+monster.name = "Vibrant Phantom"
 monster.description = "a vibrant phantom"
 monster.experience = 19700
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Furious Crater.",
 }
 
-monster.events = {}
 
 monster.health = 27000
 monster.maxHealth = 27000

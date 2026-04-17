@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Fruit Drop")
 local monster = {}
 
+monster.name = "Fruit Drop"
 monster.description = "a fruit drop"
 monster.experience = 18
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Eradicator")
 local monster = {}
 
+monster.name = "Eradicator"
 monster.description = "Eradicator"
 monster.experience = 50000
 monster.outfit = {
@@ -57,7 +58,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -111,7 +111,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 100,
 	armor = 100,
-	--	mitigation = ???,
 }
 
 monster.elements = {

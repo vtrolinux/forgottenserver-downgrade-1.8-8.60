@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Brokul")
 local monster = {}
 
+monster.name = "Brokul"
 monster.description = "Brokul"
 monster.experience = 23000
 monster.outfit = {
@@ -25,7 +26,6 @@ monster.corpse = 28635
 monster.speed = 105
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 1000,
@@ -102,7 +102,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 86,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 20, type = COMBAT_HEALING, minDamage = 200, maxDamage = 500, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "combat", interval = 3000, chance = 20, type = COMBAT_HEALING, minDamage = 500, maxDamage = 1000, effect = CONST_ME_MAGIC_BLUE, target = false },
 }

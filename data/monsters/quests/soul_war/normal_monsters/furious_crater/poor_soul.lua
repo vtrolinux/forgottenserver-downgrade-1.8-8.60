@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Poor Soul")
 local monster = {}
 
+monster.name = "Poor Soul"
 monster.description = "a poor soul"
 monster.experience = 0
 monster.outfit = {

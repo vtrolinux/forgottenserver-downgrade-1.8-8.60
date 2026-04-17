@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Utua Stone Sting")
 local monster = {}
 
+monster.name = "Utua Stone Sting"
 monster.description = "Utua Stone Sting"
 monster.experience = 5100
 monster.outfit = {
@@ -107,7 +108,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 0,
 	armor = 42,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_HEALING, minDamage = 60, maxDamage = 100, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

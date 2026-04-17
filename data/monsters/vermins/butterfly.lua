@@ -1,10 +1,11 @@
 local mType = Game.createMonsterType("Butterfly")
 local monster = {}
 
+monster.name = "Butterfly"
 monster.description = "a butterfly"
 monster.experience = 0
 monster.outfit = {
-	lookType = 227,
+	lookType = 213,
 	lookHead = 0,
 	lookBody = 0,
 	lookLegs = 0,
@@ -31,7 +32,7 @@ monster.Bestiary = {
 monster.health = 2
 monster.maxHealth = 2
 monster.race = "venom"
-monster.corpse = 4378
+monster.corpse = 4992
 monster.speed = 160
 monster.manaCost = 0
 

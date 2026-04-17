@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Duskbringer")
 local monster = {}
 
+monster.name = "Duskbringer"
 monster.description = "a duskbringer"
 monster.experience = 2600
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Pig")
 local monster = {}
 
+monster.name = "Pig"
 monster.description = "a pig"
 monster.experience = 0
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {
@@ -81,8 +81,8 @@ monster.loot = {
 }
 
 monster.defenses = {
-	defense = 5,
-	armor = 2,
+	defense = 0,
+	armor = 1,
 	mitigation = 0.05,
 }
 

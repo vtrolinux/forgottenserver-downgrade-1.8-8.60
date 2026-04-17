@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Distorted Phantom")
 local monster = {}
 
+monster.name = "Distorted Phantom"
 monster.description = "a distorted phantom"
 monster.experience = 18870
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Mirrored Nightmare.",
 }
 
-monster.events = {}
 
 monster.health = 26000
 monster.maxHealth = 26000

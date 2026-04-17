@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Zamulosh3")
 local monster = {}
 
 monster.name = "Zamulosh"
+monster.name = "Zamulosh3"
 monster.description = "Zamulosh"
 monster.experience = 55000
 monster.outfit = {
@@ -13,8 +14,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 1000
 monster.maxHealth = 1000

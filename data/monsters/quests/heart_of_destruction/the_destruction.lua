@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Destruction")
 local monster = {}
 
+monster.name = "The Destruction"
 monster.description = "The Destruction"
 monster.experience = 0
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -81,7 +81,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 100,
 	armor = 100,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 0, maxDamage = 546, effect = CONST_ME_MAGIC_GREEN, target = false },
 }
 

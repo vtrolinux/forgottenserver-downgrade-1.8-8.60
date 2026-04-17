@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mazzinor")
 local monster = {}
 
+monster.name = "Mazzinor"
 monster.description = "Mazzinor"
 monster.experience = 100000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 2,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1605,
@@ -104,7 +103,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

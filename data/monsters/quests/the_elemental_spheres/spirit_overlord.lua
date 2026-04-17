@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spirit Overlord")
 local monster = {}
 
+monster.name = "Spirit Overlord"
 monster.description = "Spirit Overlord"
 monster.experience = 2800
 monster.outfit = {
@@ -11,10 +12,6 @@ monster.outfit = {
 	lookFeet = 0,
 	lookAddons = 3,
 	lookMount = 0,
-}
-
-monster.events = {
-	"ElementalOverlordDeath",
 }
 
 monster.health = 4000
@@ -72,7 +69,7 @@ monster.loot = {
 	{ name = "holy ash", chance = 10800 },
 	{ name = "great spirit potion", chance = 8750, maxCount = 2 },
 	{ name = "moonlight rod", chance = 8300 },
-	--{ name = "spirited soil", chance = 7000 },
+-- { name = "spirited soil", chance = 7000 },
 	{ name = "holy orchid", chance = 6000 },
 }
 
@@ -86,7 +83,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 }
 
 monster.elements = {

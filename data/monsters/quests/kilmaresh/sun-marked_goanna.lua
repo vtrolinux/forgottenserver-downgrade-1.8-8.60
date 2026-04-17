@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sun-Marked Goanna")
 local monster = {}
 
+monster.name = "Sun-Marked Goanna"
 monster.description = "a sun-marked goanna"
 monster.experience = 7600
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Remorseless Corruptor")
 local monster = {}
 
+monster.name = "The Remorseless Corruptor"
 monster.description = "The Remorseless Corruptor"
 monster.experience = 0
 monster.outfit = {
@@ -76,7 +77,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 100,
 	armor = 100,
-	--	mitigation = ???,
 }
 
 monster.elements = {

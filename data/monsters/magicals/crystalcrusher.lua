@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Crystalcrusher")
 local monster = {}
 
+monster.name = "Crystalcrusher"
 monster.description = "a crystalcrusher"
 monster.experience = 500
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 869
 monster.Bestiary = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Orshabaal")
 local monster = {}
 
+monster.name = "Orshabaal"
 monster.description = "Orshabaal"
 monster.experience = 10000
 monster.outfit = {
@@ -141,7 +142,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 111,
 	armor = 90,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 9, type = COMBAT_HEALING, minDamage = 1500, maxDamage = 2500, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "combat", interval = 1000, chance = 17, type = COMBAT_HEALING, minDamage = 600, maxDamage = 1000, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 1000, chance = 5, speedChange = 1901, effect = CONST_ME_MAGIC_RED, target = false, duration = 7000 },

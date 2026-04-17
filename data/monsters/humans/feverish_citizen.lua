@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Feverish Citizen")
 local monster = {}
 
+monster.name = "Feverish Citizen"
 monster.description = "a feverish citizen"
 monster.experience = 30
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

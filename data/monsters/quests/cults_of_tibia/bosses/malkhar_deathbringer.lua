@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Malkhar Deathbringer")
 local monster = {}
 
+monster.name = "Malkhar Deathbringer"
 monster.description = "Malkhar Deathbringer"
 monster.experience = 50000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 30000
 monster.maxHealth = 30000
@@ -74,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 35,
-	--	mitigation = ???,
 }
 
 monster.elements = {

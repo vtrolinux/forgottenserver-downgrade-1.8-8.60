@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Percht")
 local monster = {}
 
+monster.name = "Percht"
 monster.description = "a percht"
 monster.experience = 600
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mutated Rat")
 local monster = {}
 
+monster.name = "Mutated Rat"
 monster.description = "a mutated rat"
 monster.experience = 450
 monster.outfit = {
@@ -95,11 +96,14 @@ monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -158, condition = { type = CONDITION_POISON, totalDamage = 100, interval = 4000 } },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_EARTHDAMAGE, minDamage = -45, maxDamage = -85, range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POISONAREA, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -80, maxDamage = -100, length = 5, spread = 3, effect = CONST_ME_POISONAREA, target = false },
+	{ name = "condition", interval = 2000, chance = 20, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -80, maxDamage = -100, length = 5, spread = 3, effect = CONST_ME_POISONAREA } },
 	{ name = "speed", interval = 2000, chance = 10, speedChange = -600, range = 7, effect = CONST_ME_MAGIC_RED, target = true, duration = 30000 },
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_LIFEDRAIN, minDamage = -30, maxDamage = -70, range = 7, radius = 3, effect = CONST_ME_MAGIC_RED, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, range = 7, radius = 3, effect = CONST_ME_POISONAREA, target = false },
+	{ name = "condition", interval = 2000, chance = 20, target = false, condition =
+	{ type = CONDITION_POISON, range = 7, radius = 3, effect = CONST_ME_POISONAREA } },
+
 }
 
 monster.defenses = {

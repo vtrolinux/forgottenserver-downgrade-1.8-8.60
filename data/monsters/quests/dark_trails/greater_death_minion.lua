@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Greater Death Minion")
 local monster = {}
 
+monster.name = "Greater Death Minion"
 monster.description = "a greater death minion"
 monster.experience = 0
 monster.outfit = {
@@ -71,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 }
 
 monster.elements = {

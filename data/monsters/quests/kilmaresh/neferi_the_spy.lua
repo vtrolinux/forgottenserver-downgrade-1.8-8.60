@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Neferi the Spy")
 local monster = {}
 
+monster.name = "Neferi the Spy"
 monster.description = "Neferi the Spy"
 monster.experience = 19650
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 2105,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 28000
 monster.maxHealth = 28000
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 2105,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Hateful Soul")
 local monster = {}
 
+monster.name = "Hateful Soul"
 monster.description = "a hateful soul"
 monster.experience = 5580
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 82,
-	--	mitigation = ???,
 }
 
 monster.elements = {

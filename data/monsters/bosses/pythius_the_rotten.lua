@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Pythius The Rotten")
 local monster = {}
 
+monster.name = "Pythius The Rotten"
 monster.description = "Pythius The Rotten"
 monster.experience = 7000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 9000
 monster.maxHealth = 9000
@@ -85,13 +84,13 @@ monster.attacks = {
 	{ name = "combat", interval = 2500, chance = 22, type = COMBAT_MANADRAIN, minDamage = -85, maxDamage = -110, range = 7, radius = 4, shootEffect = CONST_ANI_ICE, effect = CONST_ME_LOSEENERGY, target = true },
 	{ name = "speed", interval = 2000, chance = 20, speedChange = -300, range = 7, shootEffect = CONST_ANI_SUDDENDEATH, effect = CONST_ME_MORTAREA, target = true, duration = 30000 },
 	-- curse
-	{ name = "condition", type = CONDITION_CURSED, interval = 2000, chance = 15, range = 7, shootEffect = CONST_ANI_ICE, effect = CONST_ME_ICEATTACK, target = true },
+	{ name = "condition", interval = 2000, chance = 15, target = false, condition =
+	{ type = CONDITION_CURSED, minDamage = -85, maxDamage = -110, range = 7, shootEffect = CONST_ANI_ICE, effect = CONST_ME_ICEATTACK } },
 }
 
 monster.defenses = {
 	defense = 45,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Arachir the Ancient One")
 local monster = {}
 
+monster.name = "Arachir the Ancient One"
 monster.description = "Arachir the Ancient One"
 monster.experience = 1800
 monster.outfit = {

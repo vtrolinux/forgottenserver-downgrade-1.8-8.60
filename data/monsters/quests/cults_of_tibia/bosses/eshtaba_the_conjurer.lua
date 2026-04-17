@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Eshtaba the Conjurer")
 local monster = {}
 
+monster.name = "Eshtaba the Conjurer"
 monster.description = "Eshtaba the Conjurer"
 monster.experience = 50000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 3,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 30000
 monster.maxHealth = 30000
@@ -84,7 +83,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 35,
-	--	mitigation = ???,
 }
 
 monster.elements = {

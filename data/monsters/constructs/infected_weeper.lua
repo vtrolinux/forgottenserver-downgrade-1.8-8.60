@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Infected Weeper")
 local monster = {}
 
+monster.name = "Infected Weeper"
 monster.description = "an infected weeper"
 monster.experience = 1200
 monster.outfit = {
@@ -61,7 +62,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Squire of Nictros")
 local monster = {}
 
+monster.name = "Squire of Nictros"
 monster.description = "a squire of Nictros"
 monster.experience = 0
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 45,
 	armor = 45,
-	--	mitigation = ???,
 	{ name = "invisible", interval = 2000, chance = 15, effect = CONST_ME_MAGIC_BLUE },
 }
 

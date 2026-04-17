@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spark of Destruction")
 local monster = {}
 
+monster.name = "Spark of Destruction"
 monster.description = "a spark of destruction"
 monster.experience = 0
 monster.outfit = {
@@ -69,13 +70,13 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_ENERGYDAMAGE, minDamage = -180, maxDamage = -400, range = 5, radius = 5, shootEffect = CONST_ANI_ENERGYBALL, effect = CONST_ME_PURPLEENERGY, target = true },
 	{ name = "reality reaver wave", interval = 2000, chance = 20, minDamage = -100, maxDamage = -400, target = false },
 	-- energy damage
-	{ name = "condition", type = CONDITION_ENERGY, interval = 2000, chance = 20, minDamage = -400, maxDamage = -800, radius = 5, effect = CONST_ME_STUN, target = false },
+	{ name = "condition", interval = 2000, chance = 20, target = false, condition =
+	{ type = CONDITION_ENERGY, minDamage = -400, maxDamage = -800, radius = 5, effect = CONST_ME_STUN } },
 }
 
 monster.defenses = {
 	defense = 65,
 	armor = 65,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Goshnar's Megalomania Green")
 local monster = {}
 
 monster.name = "Goshnar's Megalomania"
+monster.name = "Goshnar's Megalomania Green"
 monster.description = "Goshnar's Megalomania"
 monster.experience = 3000000
 monster.outfit = {
@@ -30,8 +31,6 @@ monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
 }
-
-monster.events = {}
 
 monster.strategiesTarget = {
 	nearest = 80,
@@ -106,7 +105,6 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 30, type = COMBAT_DEATHDAMAGE, minDamage = -1050, maxDamage = -2020, length = 8, spread = 3, effect = CONST_ME_SMALLCLOUDS, target = false },
 	{ name = "combat", interval = 2000, chance = 30, type = COMBAT_DEATHDAMAGE, minDamage = -950, maxDamage = -1400, radius = 3, effect = CONST_ME_MORTAREA, target = true },
 	{ name = "soulwars fear", interval = 35000, chance = 100, target = true },
-	{ name = "megalomania transform elemental", chance = 50 },
 	{ name = "combat", interval = 30000, chance = 100, type = COMBAT_LIFEDRAIN, minDamage = -1000, maxDamage = -1500, length = 8, radius = 5, spread = 0, effect = CONST_ME_PINK_ENERGY_SPARK, target = true },
 }
 

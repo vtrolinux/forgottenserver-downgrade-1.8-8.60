@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Branchy Crawler")
 local monster = {}
 
+monster.name = "Branchy Crawler"
 monster.description = "a branchy crawler"
 monster.experience = 17860
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Rotten Wasteland.",
 }
 
-monster.events = {}
 
 monster.health = 27000
 monster.maxHealth = 27000
@@ -133,9 +133,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval)
-	monster:tryTeleportToPlayer("My growth is your death!")
-end
 
 mType:register(monster)

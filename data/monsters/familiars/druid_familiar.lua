@@ -1,10 +1,11 @@
 local mType = Game.createMonsterType("Druid familiar")
 local monster = {}
 
+monster.name = "Druid familiar"
 monster.description = "a druid familiar"
 monster.experience = 0
 monster.outfit = {
-	lookType = 993,
+	--lookType = 993,
 	lookHead = 0,
 	lookBody = 0,
 	lookLegs = 0,
@@ -93,9 +94,7 @@ monster.elements = {
 
 monster.immunities = {
 	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = false },
 	{ type = "invisible", condition = true },
-	{ type = "bleed", condition = false },
 }
 
 mType:register(monster)

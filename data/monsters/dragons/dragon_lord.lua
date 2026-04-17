@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dragon Lord")
 local monster = {}
 
+monster.name = "Dragon Lord"
 monster.description = "a dragon lord"
 monster.experience = 2100
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 39
 monster.Bestiary = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spit Nettle")
 local monster = {}
 
+monster.name = "Spit Nettle"
 monster.description = "a spit nettle"
 monster.experience = 20
 monster.outfit = {
@@ -84,7 +85,8 @@ monster.loot = {
 monster.attacks = {
 	{ name = "combat", interval = 1000, chance = 20, type = COMBAT_EARTHDAMAGE, minDamage = -15, maxDamage = -40, range = 7, shootEffect = CONST_ANI_POISON, target = true },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 15, minDamage = -40, maxDamage = -100, range = 7, shootEffect = CONST_ANI_POISON, target = true },
+	{ name = "condition", interval = 2000, chance = 15, target = true, condition =
+	{ type = CONDITION_POISON, minDamage = -40, maxDamage = -100, range = 7, shootEffect = CONST_ANI_POISON } },
 }
 
 monster.defenses = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Whirling Blades")
 local monster = {}
 
+monster.name = "Whirling Blades"
 monster.description = "a whirling blades"
 monster.experience = 0
 monster.outfit = {
@@ -72,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 199,
 	armor = 199,
-	--	mitigation = ???,
 }
 
 monster.elements = {

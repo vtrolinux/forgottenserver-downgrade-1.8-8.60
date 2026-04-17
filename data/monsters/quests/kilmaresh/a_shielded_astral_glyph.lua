@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("A Shielded Astral Glyph")
 local monster = {}
 
+monster.name = "A Shielded Astral Glyph"
 monster.description = "a shielded astral glyph"
 monster.experience = 0
 monster.outfit = {
@@ -68,7 +69,6 @@ monster.defenses = {
 	defense = 199,
 	armor = 199,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 0, maxDamage = 118, effect = CONST_ME_MAGIC_BLUE, target = false },
-	--	mitigation = ???,
 }
 
 monster.elements = {

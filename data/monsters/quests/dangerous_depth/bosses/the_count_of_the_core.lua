@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Count of the Core")
 local monster = {}
 
+monster.name = "The Count of the Core"
 monster.description = "The Count Of The Core"
 monster.experience = 300000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1519,
+	bossRace = RARITY_BANE,
+}
 
 monster.health = 350000
 monster.maxHealth = 350000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1519,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {
@@ -114,6 +113,7 @@ monster.loot = {
 	{ name = "guardian axe", chance = 1690 },
 	{ name = "twiceslicer", chance = 1690 },
 	{ name = "tinged pot", chance = 1690 },
+	{ name = "gnomish footwraps", chance = 1790 },
 }
 
 monster.attacks = {
@@ -127,7 +127,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 160,
 	armor = 160,
-	--	mitigation = ???,
 }
 
 monster.elements = {

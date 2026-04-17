@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mitmah Scout")
 local monster = {}
 
+monster.name = "Mitmah Scout"
 monster.description = "a mitmah scout"
 monster.experience = 3230
 monster.outfit = {
@@ -81,7 +82,7 @@ monster.voices = {
 
 monster.loot = {
 	{ name = "platinum coin", chance = 100000, maxCount = 10 },
-	--{ name = "broken mitmah necklace", chance = 17180 },
+-- { name = "broken mitmah necklace", chance = 17180 },
 	{ name = "brown crystal splinter", chance = 7620 },
 	{ id = 281, chance = 7400 }, -- giant shimmering pearl
 	{ name = "green crystal splinter", chance = 6890 },
@@ -92,7 +93,7 @@ monster.loot = {
 	{ id = 3037, chance = 2450 }, -- yellow gem
 	{ name = "prismatic quartz", chance = 2410 },
 	{ name = "ruby necklace", chance = 1810 },
-	--{ name = "gold-brocaded cloth", chance = 1340 },
+-- { name = "gold-brocaded cloth", chance = 1340 },
 	{ name = "drill bolt", chance = 1270, maxCount = 10 },
 	{ id = 3040, chance = 320 }, -- gold nugget
 	{ name = "ornate crossbow", chance = 140 },

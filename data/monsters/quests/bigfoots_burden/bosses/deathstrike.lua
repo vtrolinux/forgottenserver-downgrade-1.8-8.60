@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Deathstrike")
 local monster = {}
 
+monster.name = "Deathstrike"
 monster.description = "Deathstrike"
 monster.experience = 40000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 892,
@@ -94,7 +93,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 25,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 25, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 5500, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

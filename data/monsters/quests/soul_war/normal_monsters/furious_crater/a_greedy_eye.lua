@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("A Greedy Eye")
 local monster = {}
 
+monster.name = "A Greedy Eye"
 monster.description = "a greedy eye"
 monster.experience = 0
 monster.outfit = {
@@ -61,7 +62,7 @@ monster.voices = {
 }
 
 monster.attacks = {
-	{ name = "greedy eye beam", interval = 2000, chance = 100, minDamage = -1000, maxDamage = -1000 },
+	--{ name = "greedy eye beam", interval = 2000, chance = 100, minDamage = -1000, maxDamage = -1000 },
 }
 
 monster.defenses = {

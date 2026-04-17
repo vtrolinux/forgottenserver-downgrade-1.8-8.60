@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Eshtaba The Conjurer Stop")
 local monster = {}
 
 monster.name = "Eshtaba The Conjurer"
+monster.name = "Eshtaba The Conjurer Stop"
 monster.description = "Eshtaba The Conjurer"
 monster.experience = 0
 monster.outfit = {

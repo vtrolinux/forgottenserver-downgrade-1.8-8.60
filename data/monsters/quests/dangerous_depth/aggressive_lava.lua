@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Aggressive Lava")
 local monster = {}
 
+monster.name = "Aggressive Lava"
 monster.description = "an aggressive lava"
 monster.experience = 0
 monster.outfit = {
@@ -72,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rift Fragment")
 local monster = {}
 
+monster.name = "Rift Fragment"
 monster.description = "a rift fragment"
 monster.experience = 0
 monster.outfit = {
@@ -67,7 +68,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

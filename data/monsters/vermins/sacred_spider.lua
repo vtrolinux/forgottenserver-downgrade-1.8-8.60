@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sacred Spider")
 local monster = {}
 
+monster.name = "Sacred Spider"
 monster.description = "a sacred spider"
 monster.experience = 330
 monster.outfit = {
@@ -62,7 +63,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

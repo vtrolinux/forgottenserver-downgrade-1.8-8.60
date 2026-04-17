@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Big Boss Trolliver")
 local monster = {}
 
+monster.name = "Big Boss Trolliver"
 monster.description = "Big Boss Trolliver"
 monster.experience = 105
 monster.outfit = {
@@ -77,13 +78,15 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 100000, maxCount = 64 },
-	{ name = "meat", chance = 25000 },
-	{ name = "hand axe", chance = 9650 },
-	{ name = "leather boots", chance = 9000 },
-	{ name = "silver amulet", chance = 5450 },
-	{ name = "studded club", chance = 5450 },
-	{ name = "spear", chance = 100000 },
+	{ name = "gold coin", chance = 83330, maxCount = 64 },
+	{ name = "meat", chance = 44440 },
+	{ name = "hand axe", chance = 11110 },
+	{ name = "leather boots", chance = 16670 },
+	{ name = "silver amulet", chance = 22220 },
+	{ name = "studded club", chance = 27780 },
+	{ name = "wooden shield", chance = 27780 },
+	{ name = "bunch of troll hair", chance = 16670 },
+	{ name = "spear", chance = 11110 },
 }
 
 monster.attacks = {
@@ -93,7 +96,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 }
 
 monster.elements = {
@@ -115,19 +117,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

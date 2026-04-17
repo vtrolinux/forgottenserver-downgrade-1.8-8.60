@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Gorger Inferniarch")
 local monster = {}
 
+monster.name = "Gorger Inferniarch"
 monster.description = "a gorger inferniarch"
 monster.experience = 7680
 monster.outfit = {
@@ -63,8 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyable = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {
@@ -91,7 +90,7 @@ monster.loot = {
 	{ id = 3053, chance = 5000, maxCount = 1 }, -- Time ring
 	{ id = 3040, chance = 5000, maxCount = 1 }, -- gold nugget
 	{ id = 3093, chance = 5000, maxCount = 1 }, -- club ring
-	--{ name = "gorger inferniarch soul core", chance = 100 },
+	{ name = "gorger inferniarch soul core", chance = 100 },
 }
 
 monster.attacks = {

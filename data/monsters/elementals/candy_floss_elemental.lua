@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Candy Floss Elemental")
 local monster = {}
 
+monster.name = "Candy Floss Elemental"
 monster.description = "a candy floss elemental"
 monster.experience = 3850
 monster.outfit = {

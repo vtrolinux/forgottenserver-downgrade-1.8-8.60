@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Brain Parasite")
 local monster = {}
 
+monster.name = "Brain Parasite"
 monster.description = "a brain parasite"
 monster.experience = 0
 monster.outfit = {

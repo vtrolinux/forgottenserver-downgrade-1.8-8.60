@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Tremor Worm")
 local monster = {}
 
+monster.name = "Tremor Worm"
 monster.description = "a tremor worm"
 monster.experience = 80000
 monster.outfit = {
@@ -75,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 100,
 	armor = 100,
-	--	mitigation = ???,
 }
 
 monster.elements = {

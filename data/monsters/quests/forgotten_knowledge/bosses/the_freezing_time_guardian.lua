@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Freezing Time Guardian")
 local monster = {}
 
+monster.name = "The Freezing Time Guardian"
 monster.description = "The Freezing Time Guardian"
 monster.experience = 50000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 150000
 monster.maxHealth = 150000
@@ -94,15 +93,16 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_ENERGYDAMAGE, minDamage = -600, maxDamage = -780, length = 9, spread = 0, effect = CONST_ME_ENERGYHIT, target = false },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_ENERGYDAMAGE, minDamage = -600, maxDamage = -780, length = 9, spread = 0, effect = CONST_ME_ENERGYAREA, target = false },
 	-- energy damage
-	{ name = "condition", type = CONDITION_ENERGY, interval = 2000, chance = 20, minDamage = -2000, maxDamage = -2000, radius = 7, effect = CONST_ME_BLOCKHIT, target = false },
+	{ name = "condition", interval = 2000, chance = 20, target = false, condition =
+	{ type = CONDITION_ENERGY, minDamage = -2000, maxDamage = -2000, radius = 7, effect = CONST_ME_BLOCKHIT } },
 	-- bleed
-	{ name = "condition", type = CONDITION_BLEEDING, interval = 2000, chance = 20, minDamage = -2000, maxDamage = -2000, length = 9, spread = 0, effect = CONST_ME_BLOCKHIT, target = false },
+	{ name = "condition", interval = 2000, chance = 20, target = false, condition =
+	{ type = CONDITION_BLEEDING, minDamage = -2000, maxDamage = -2000, length = 9, spread = 0, effect = CONST_ME_BLOCKHIT } },
 }
 
 monster.defenses = {
 	defense = 70,
 	armor = 70,
-	--	mitigation = ???,
 	{ name = "time guardian lost time", interval = 2000, chance = 10, target = false },
 }
 

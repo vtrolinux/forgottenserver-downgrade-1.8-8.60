@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ribstride")
 local monster = {}
 
+monster.name = "Ribstride"
 monster.description = "Ribstride"
 monster.experience = 1100
 monster.outfit = {
@@ -79,9 +80,11 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_LIFEDRAIN, minDamage = -25, maxDamage = -47, radius = 3, effect = CONST_ME_MAGIC_RED, target = false },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_EARTHDAMAGE, minDamage = -50, maxDamage = -90, range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POISONAREA, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -50, maxDamage = -60, radius = 3, effect = CONST_ME_POISONAREA, target = false },
+	{ name = "condition", interval = 2000, chance = 10, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -50, maxDamage = -60, radius = 3, effect = CONST_ME_POISONAREA } },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -70, maxDamage = -80, length = 6, spread = 3, effect = CONST_ME_POISONAREA, target = false },
+	{ name = "condition", interval = 2000, chance = 10, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -70, maxDamage = -80, length = 6, spread = 3, effect = CONST_ME_POISONAREA } },
 	{ name = "speed", interval = 2000, chance = 15, speedChange = -300, target = true, duration = 13000 },
 }
 

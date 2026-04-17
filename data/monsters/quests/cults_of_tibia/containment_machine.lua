@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Containment Machine")
 local monster = {}
 
+monster.name = "Containment Machine"
 monster.description = "a containment machine"
 monster.experience = 0
 monster.outfit = {
@@ -58,7 +59,6 @@ monster.loot = {}
 monster.defenses = {
 	defense = 50,
 	armor = 35,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Plant Abomination")
 local monster = {}
 
+monster.name = "Plant Abomination"
 monster.description = "a plant abomination"
 monster.experience = 0
 monster.outfit = {
@@ -76,7 +77,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 20,
 	armor = 20,
-	--	mitigation = ???,
 }
 
 monster.elements = {

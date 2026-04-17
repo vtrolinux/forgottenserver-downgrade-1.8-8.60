@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Flame of Omrafir")
 local monster = {}
 
+monster.name = "Flame of Omrafir"
 monster.description = "a flame of omrafir"
 monster.experience = 550
 monster.outfit = {
@@ -71,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 20,
 	armor = 20,
-	--	mitigation = ???,
 }
 
 monster.elements = {

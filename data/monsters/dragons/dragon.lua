@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dragon")
 local monster = {}
 
+monster.name = "Dragon"
 monster.description = "a dragon"
 monster.experience = 700
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 34
 monster.Bestiary = {
@@ -51,7 +50,6 @@ monster.strategiesTarget = {
 	damage = 10,
 	random = 10,
 }
-
 monster.flags = {
 	summonable = false,
 	attackable = true,

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Weeping Soul")
 local monster = {}
 
+monster.name = "Weeping Soul"
 monster.description = "a weeping soul"
 monster.experience = 0
 monster.outfit = {

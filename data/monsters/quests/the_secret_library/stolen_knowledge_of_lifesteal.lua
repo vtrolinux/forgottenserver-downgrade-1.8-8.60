@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Stolen Knowledge of Lifesteal")
 local monster = {}
 
+monster.name = "Stolen Knowledge of Lifesteal"
 monster.description = "a stolen knowledge of lifesteal"
 monster.experience = 0
 monster.outfit = {
@@ -20,7 +21,6 @@ monster.corpse = 0
 monster.speed = 75
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 5000,
@@ -72,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Librarian")
 local monster = {}
 
+monster.name = "Librarian"
 monster.description = "a librarian"
 monster.experience = 0
 monster.outfit = {
@@ -15,7 +16,7 @@ monster.outfit = {
 
 monster.health = 11000
 monster.maxHealth = 11000
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 28613
 monster.speed = 125
 monster.manaCost = 0
@@ -70,7 +71,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 33,
-	--	mitigation = ???,
 }
 
 monster.elements = {

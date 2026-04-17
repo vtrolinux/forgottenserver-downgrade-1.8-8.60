@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Fallen Challenger")
 local monster = {}
 
+monster.name = "Fallen Challenger"
 monster.description = "a fallen challenger"
 monster.experience = 0
 monster.outfit = {
@@ -20,7 +21,6 @@ monster.corpse = 775
 monster.speed = 150
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 5000,
@@ -75,7 +75,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 55,
 	armor = 50,
-	--	mitigation = ???,
 	{ name = "combat", interval = 5000, chance = 25, type = COMBAT_HEALING, minDamage = 60, maxDamage = 100, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

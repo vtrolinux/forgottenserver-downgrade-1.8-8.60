@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Frenzy")
 local monster = {}
 
+monster.name = "Frenzy"
 monster.description = "Frenzy"
 monster.experience = 1313
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -76,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 100,
 	armor = 100,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 0, maxDamage = 438, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

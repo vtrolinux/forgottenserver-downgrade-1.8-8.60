@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ugly Monster")
 local monster = {}
 
+monster.name = "Ugly Monster"
 monster.description = "an ugly monster"
 monster.experience = 1000
 monster.outfit = {
@@ -20,7 +21,6 @@ monster.corpse = 31551
 monster.speed = 340
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 4000,
@@ -81,7 +81,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 48,
 	armor = 0,
-	--	mitigation = ???,
 	{ name = "invisible", interval = 2000, chance = 8, effect = CONST_ME_HITAREA },
 }
 

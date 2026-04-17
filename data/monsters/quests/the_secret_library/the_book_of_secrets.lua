@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Book of Secrets")
 local monster = {}
 
+monster.name = "The Book of Secrets"
 monster.description = "a The Book of Secrets"
 monster.experience = 0
 monster.outfit = {
@@ -64,7 +65,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

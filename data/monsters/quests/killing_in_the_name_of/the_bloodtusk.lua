@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Bloodtusk")
 local monster = {}
 
+monster.name = "The Bloodtusk"
 monster.description = "the Bloodtusk"
 monster.experience = 300
 monster.outfit = {
@@ -80,7 +81,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 57,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

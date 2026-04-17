@@ -1,8 +1,9 @@
 local mType = Game.createMonsterType("Crypt Warrior")
 local monster = {}
 
+monster.name = "Crypt Warrior"
 monster.description = "a crypt warrior"
-monster.experience = 4200
+monster.experience = 6050
 monster.outfit = {
 	lookType = 298,
 	lookHead = 0,
@@ -11,18 +12,6 @@ monster.outfit = {
 	lookFeet = 0,
 	lookAddons = 0,
 	lookMount = 0,
-}
-
-monster.Bestiary = {
-	class = "Undead",
-
-	toKill = 2500,
-	FirstUnlock = 100,
-	SecondUnlock = 1000,
-	CharmsPoints = 50,
-	Stars = 4,
-	Occurrence = 0,
-	Locations = "Bounac.",
 }
 
 monster.health = 7800

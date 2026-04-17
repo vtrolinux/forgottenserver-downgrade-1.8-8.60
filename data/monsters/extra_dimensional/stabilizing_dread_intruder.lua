@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Stabilizing Dread Intruder")
 local monster = {}
 
+monster.name = "Stabilizing Dread Intruder"
 monster.description = "a stabilizing dread intruder"
 monster.experience = 1900
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Overcharged Energy Elemental")
 local monster = {}
 
+monster.name = "Overcharged Energy Elemental"
 monster.description = "an overcharged energy elemental"
 monster.experience = 1300
 monster.outfit = {

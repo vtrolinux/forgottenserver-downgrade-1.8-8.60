@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("High Voltage Elemental")
 local monster = {}
 
+monster.name = "High Voltage Elemental"
 monster.description = "a high voltage elemental"
 monster.experience = 1500
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

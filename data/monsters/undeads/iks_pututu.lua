@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Iks Pututu")
 local monster = {}
 
+monster.name = "Iks Pututu"
 monster.description = "an iks pututu"
 monster.experience = 980
 monster.outfit = {
@@ -81,9 +82,10 @@ monster.loot = {
 	{ name = "small sapphire", chance = 5810, maxCount = 3 },
 	{ name = "spellbook of enlightenment", chance = 1920 },
 	{ name = "opal", chance = 1850 },
-	--{ name = "gold-brocaded cloth", chance = 1780 },
+-- { name = "gold-brocaded cloth", chance = 1780 },
 	{ name = "gold ingot", chance = 960 },
 	{ name = "broken iks headpiece", chance = 70 },
+	{ id = 50150, chance = 560 }, -- ring of orange plasma
 }
 
 monster.attacks = {

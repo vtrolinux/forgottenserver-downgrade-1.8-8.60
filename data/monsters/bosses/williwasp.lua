@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Willi Wasp")
 local monster = {}
 
+monster.name = "Willi Wasp"
 monster.description = "a wasp"
 monster.experience = 250
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 955,
+	bossRace = RARITY_NEMESIS,
+}
+
 monster.health = 250
 monster.maxHealth = 250
 monster.race = "venom"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 955,
-	bossRace = RARITY_NEMESIS,
 }
 
 monster.strategiesTarget = {
@@ -103,19 +104,5 @@ monster.immunities = {
 	{ type = "invisible", condition = false },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

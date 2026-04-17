@@ -1,7 +1,8 @@
-local mType = Game.createMonsterType("Clubarc The Plunderer")
+local mType = Game.createMonsterType("Cublarc The Plunderer")
 local monster = {}
 
-monster.description = "Clubarc The Plunderer"
+monster.name = "Cublarc The Plunderer"
+monster.description = "Cublarc The Plunderer"
 monster.experience = 400
 monster.outfit = {
 	lookType = 342,
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 0,
 	lookAddons = 0,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 634,
+	bossRace = RARITY_NEMESIS,
 }
 
 monster.health = 400
@@ -64,22 +70,24 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 53500, maxCount = 78 },
-	{ name = "meat", chance = 23390 },
+	{ name = "gold coin", chance = 53610, maxCount = 80 },
+	{ name = "meat", chance = 25900 },
 	{ name = "orcish axe", chance = 19350 },
-	{ name = "shaggy tail", chance = 13700 },
-	{ name = "disgusting trophy", chance = 4840 },
-	{ name = "bow", chance = 3230 },
-	{ name = "orc tooth", chance = 2420 },
-	{ name = "silkweaver bow", chance = 2420 },
-	{ name = "crossbow", chance = 1610 },
+	{ name = "shaggy tail", chance = 13860 },
+	{ name = "disgusting trophy", chance = 5420 },
+	{ name = "bow", chance = 4220 },
+	{ name = "orc tooth", chance = 2410 },
+	{ name = "silkweaver bow", chance = 1810 },
+	{ name = "crossbow", chance = 1200 },
+	{ name = "orc leather", chance = 500 },
 }
 
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -130 },
 	{ name = "combat", interval = 2000, chance = 50, type = COMBAT_PHYSICALDAMAGE, minDamage = 0, maxDamage = -85, range = 7, shootEffect = CONST_ANI_ONYXARROW, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 11, minDamage = -8, maxDamage = -8, effect = CONST_ME_POISONAREA, target = false },
+	{ name = "condition", interval = 2000, chance = 11, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -8, maxDamage = -8, effect = CONST_ME_POISONAREA } },
 }
 
 monster.defenses = {
@@ -107,19 +115,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Minion of Versperoth")
 local monster = {}
 
+monster.name = "Minion of Versperoth"
 monster.description = "a minion of Versperoth"
 monster.experience = 0
 monster.outfit = {
@@ -76,7 +77,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 60,
-	--	mitigation = ???,
 }
 
 monster.elements = {

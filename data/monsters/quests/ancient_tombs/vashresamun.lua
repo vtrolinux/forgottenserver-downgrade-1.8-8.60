@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vashresamun")
 local monster = {}
 
+monster.name = "Vashresamun"
 monster.description = "Vashresamun"
 monster.experience = 2950
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 85,
+	bossRace = RARITY_BANE,
+}
+
 monster.health = 4000
 monster.maxHealth = 4000
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 85,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {

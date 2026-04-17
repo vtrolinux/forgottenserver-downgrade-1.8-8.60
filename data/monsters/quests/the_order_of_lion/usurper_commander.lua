@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Usurper Commander")
 local monster = {}
 
+monster.name = "Usurper Commander"
 monster.description = "an usurper commander"
 monster.experience = 7200
 monster.outfit = {
@@ -31,8 +32,6 @@ monster.changeTarget = {
 monster.strategiesTarget = {
 	nearest = 100,
 }
-
-monster.events = {}
 
 monster.flags = {
 	summonable = false,
@@ -87,7 +86,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 86,
 	armor = 86,
-	--	mitigation = ???,
 }
 
 monster.elements = {

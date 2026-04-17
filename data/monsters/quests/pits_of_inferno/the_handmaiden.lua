@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Handmaiden")
 local monster = {}
 
+monster.name = "The Handmaiden"
 monster.description = "The Handmaiden"
 monster.experience = 7500
 monster.outfit = {
@@ -80,7 +81,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 25,
-	--	mitigation = ???,
 	{ name = "speed", interval = 3000, chance = 12, speedChange = 380, effect = CONST_ME_MAGIC_RED, target = false, duration = 8000 },
 	{ name = "invisible", interval = 4000, chance = 50, effect = CONST_ME_MAGIC_RED },
 	{ name = "combat", interval = 2000, chance = 50, type = COMBAT_HEALING, minDamage = 100, maxDamage = 250, effect = CONST_ME_MAGIC_BLUE, target = false },

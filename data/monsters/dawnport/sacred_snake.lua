@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sacred Snake")
 local monster = {}
 
+monster.name = "Sacred Snake"
 monster.description = "a sacred snake"
 monster.experience = 0
 monster.outfit = {

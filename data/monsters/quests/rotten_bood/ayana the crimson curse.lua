@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ayana the crimson curse")
 local monster = {}
 
+monster.name = "Ayana the crimson curse"
 monster.description = "Ayana the crimson curse"
 monster.experience = 12400
 monster.outfit = {
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 76,
 	lookAddons = 0,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 2404,
+	bossRace = RARITY_NEMESIS,
 }
 
 monster.health = 17000
@@ -25,10 +31,6 @@ monster.changeTarget = {
 	chance = 10,
 }
 
-monster.bosstiary = {
-	bossRaceId = 2404,
-	bossRace = RARITY_NEMESIS,
-}
 monster.strategiesTarget = {
 	nearest = 80,
 	health = 10,

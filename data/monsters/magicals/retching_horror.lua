@@ -1,17 +1,10 @@
 local mType = Game.createMonsterType("Retching Horror")
 local monster = {}
 
+monster.name = "Retching Horror"
 monster.description = "a retching horror"
 monster.experience = 4100
-monster.outfit = {
-	lookType = 588,
-	lookHead = 0,
-	lookBody = 0,
-	lookLegs = 0,
-	lookFeet = 0,
-	lookAddons = 0,
-	lookMount = 0,
-}
+monster.outfit = { lookType = 588 }
 
 monster.raceId = 1018
 monster.Bestiary = {
@@ -59,7 +52,7 @@ monster.flags = {
 	targetDistance = 1,
 	runHealth = 0,
 	healthHidden = false,
-	isBlockable = false,
+	isBlockable = true,
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,

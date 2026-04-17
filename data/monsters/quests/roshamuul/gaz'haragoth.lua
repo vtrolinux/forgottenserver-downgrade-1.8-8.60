@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Gaz'Haragoth")
 local monster = {}
 
+monster.name = "Gaz'Haragoth"
 monster.description = "Gaz'Haragoth"
 monster.experience = 1000000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1003,
+	bossRace = RARITY_NEMESIS,
+}
+
 monster.health = 350000
 monster.maxHealth = 350000
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 10000,
 	chance = 20,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1003,
-	bossRace = RARITY_NEMESIS,
 }
 
 monster.strategiesTarget = {
@@ -57,14 +58,17 @@ monster.flags = {
 	canWalkOnPoison = false,
 }
 
-monster.events = {}
-
 monster.light = {
 	level = 0,
 	color = 0,
 }
 
-monster.summon = {}
+monster.summon = {
+	maxSummons = 7,
+	summons = {
+		{ name = "Minion of Gaz'haragoth", chance = 35, interval = 2000, count = 1 },
+	},
+}
 
 monster.voices = {
 	interval = 5000,
@@ -147,7 +151,6 @@ monster.attacks = {
 	{ name = "gaz'haragoth iceball", interval = 2000, chance = 24, minDamage = -1000, maxDamage = -1000, target = false },
 	{ name = "gaz'haragoth death", interval = 4000, chance = 6, target = false },
 	{ name = "gaz'haragoth paralyze", interval = 2000, chance = 12, target = false },
-	{ name = "gaz'haragoth summon", interval = 1000, chance = 100, target = false },
 }
 
 monster.defenses = {

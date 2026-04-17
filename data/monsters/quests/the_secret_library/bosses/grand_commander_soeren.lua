@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Grand Commander Soeren")
 local monster = {}
 
+monster.name = "Grand Commander Soeren"
 monster.description = "Grand Commander Soeren"
 monster.experience = 12000
 monster.outfit = {
@@ -25,7 +26,6 @@ monster.corpse = 28726
 monster.speed = 105
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 5000,
@@ -92,7 +92,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 82,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 200, maxDamage = 650, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

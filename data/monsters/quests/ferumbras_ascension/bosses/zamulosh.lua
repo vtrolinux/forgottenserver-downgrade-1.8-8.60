@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Zamulosh")
 local monster = {}
 
+monster.name = "Zamulosh"
 monster.description = "Zamulosh"
 monster.experience = 500000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1181,
+	bossRace = RARITY_ARCHFOE,
+}
 
 monster.health = 300000
 monster.maxHealth = 300000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1181,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -115,7 +114,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_HEALING, minDamage = 220, maxDamage = 535, effect = CONST_ME_YELLOW_RINGS, target = false },
 	{ name = "zamulosh invisible", interval = 2000, chance = 25 },
 	{ name = "zamulosh tp", interval = 2000, chance = 15, target = false },

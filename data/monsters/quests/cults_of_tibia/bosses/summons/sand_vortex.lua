@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sand Vortex")
 local monster = {}
 
+monster.name = "Sand Vortex"
 monster.description = "a sand vortex"
 monster.experience = 0
 monster.outfit = {

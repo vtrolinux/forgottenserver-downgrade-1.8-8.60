@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ravenous Beyondling")
 local monster = {}
 
+monster.name = "Ravenous Beyondling"
 monster.description = "a ravenous beyondling"
 monster.experience = 0
 monster.outfit = {
@@ -70,7 +71,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 33,
-	--	mitigation = ???,
 }
 
 monster.elements = {

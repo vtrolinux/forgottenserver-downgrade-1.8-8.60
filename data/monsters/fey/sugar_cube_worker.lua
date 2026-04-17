@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sugar Cube Worker")
 local monster = {}
 
+monster.name = "Sugar Cube Worker"
 monster.description = "a sugar cube worker"
 monster.experience = 20
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

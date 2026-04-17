@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Elder Mummy")
 local monster = {}
 
+monster.name = "Elder Mummy"
 monster.description = "an elder mummy"
 monster.experience = 560
 monster.outfit = {
@@ -62,7 +63,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

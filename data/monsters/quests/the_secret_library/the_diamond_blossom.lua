@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Diamond Blossom")
 local monster = {}
 
+monster.name = "The Diamond Blossom"
 monster.description = "The Diamond Blossom"
 monster.experience = 10000
 monster.outfit = {
@@ -25,7 +26,6 @@ monster.corpse = 28802
 monster.speed = 175
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 5000,
@@ -77,7 +77,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

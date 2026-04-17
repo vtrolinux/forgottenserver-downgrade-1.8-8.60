@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lisa")
 local monster = {}
 
+monster.name = "Lisa"
 monster.description = "Lisa"
 monster.experience = 18000
 monster.outfit = {
@@ -105,7 +106,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 15,
-	--	mitigation = ???,
 	{ name = "lisa summon", interval = 2000, chance = 5, target = false },
 	{ name = "lisa heal", interval = 1000, chance = 100, target = false },
 }
@@ -129,19 +129,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

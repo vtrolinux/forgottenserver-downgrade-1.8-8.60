@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Enraged Crystal Golem")
 local monster = {}
 
+monster.name = "Enraged Crystal Golem"
 monster.description = "an enraged crystal golem"
 monster.experience = 550
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

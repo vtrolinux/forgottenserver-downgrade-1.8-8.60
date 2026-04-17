@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Water Buffalo")
 local monster = {}
 
+monster.name = "Water Buffalo"
 monster.description = "a water buffalo"
 monster.experience = 20
 monster.outfit = {
@@ -61,7 +62,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

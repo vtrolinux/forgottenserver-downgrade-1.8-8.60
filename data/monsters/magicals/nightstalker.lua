@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Nightstalker")
 local monster = {}
 
+monster.name = "Nightstalker"
 monster.description = "a Nightstalker"
 monster.experience = 500
 monster.outfit = {

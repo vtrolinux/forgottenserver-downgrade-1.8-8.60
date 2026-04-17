@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Percht Queen")
 local monster = {}
 
+monster.name = "The Percht Queen"
 monster.description = "The Percht Queen"
 monster.experience = 500
 monster.outfit = {
@@ -118,7 +119,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 79,
-	--	mitigation = ???,
 }
 
 monster.elements = {

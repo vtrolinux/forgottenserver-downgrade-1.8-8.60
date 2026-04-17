@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("World Devourer")
 local monster = {}
 
+monster.name = "World Devourer"
 monster.description = "World Devourer"
 monster.experience = 77700
 monster.outfit = {
@@ -57,7 +58,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -110,7 +110,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 150,
 	armor = 150,
-	--	mitigation = ???,
 }
 
 monster.elements = {

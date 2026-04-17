@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Omnivora")
 local monster = {}
 
+monster.name = "Omnivora"
 monster.description = "an omnivora"
 monster.experience = 750
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

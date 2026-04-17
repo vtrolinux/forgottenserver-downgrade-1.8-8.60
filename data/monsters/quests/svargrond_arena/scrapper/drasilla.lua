@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Drasilla")
 local monster = {}
 
+monster.name = "Drasilla"
 monster.description = "Drasilla"
 monster.experience = 700
 monster.outfit = {
@@ -77,7 +78,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 32,
-	--	mitigation = ???,
 	{ name = "combat", interval = 6000, chance = 65, type = COMBAT_HEALING, minDamage = 20, maxDamage = 50, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

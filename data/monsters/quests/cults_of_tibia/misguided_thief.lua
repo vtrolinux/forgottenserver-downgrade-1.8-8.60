@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Misguided Thief")
 local monster = {}
 
+monster.name = "Misguided Thief"
 monster.description = "a misguided thief"
 monster.experience = 1600
 monster.outfit = {
@@ -44,8 +45,6 @@ monster.strategiesTarget = {
 	damage = 10,
 	random = 10,
 }
-
-monster.events = {}
 
 monster.flags = {
 	summonable = false,
@@ -100,7 +99,7 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 35,
-	{ name = "combat", interval = 1000, chance = 20, type = COMBAT_HEALING, minDamage = 200, maxDamage = 450, effect = CONST_ME_MAGIC_BLUE, target = false },
+	{ name = "combat", interval = 1000, chance = 20, type = COMBAT_HEALING, minDamage = 20, maxDamage = 140, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Minotaur Bruiser")
 local monster = {}
 
+monster.name = "Minotaur Bruiser"
 monster.description = "a minotaur bruiser"
 monster.experience = 50
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 100
 monster.maxHealth = 100

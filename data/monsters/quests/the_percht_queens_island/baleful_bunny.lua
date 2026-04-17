@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Baleful Bunny")
 local monster = {}
 
+monster.name = "Baleful Bunny"
 monster.description = "a baleful bunny"
 monster.experience = 450
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

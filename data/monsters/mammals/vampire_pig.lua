@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vampire Pig")
 local monster = {}
 
+monster.name = "Vampire Pig"
 monster.description = "a vampire pig"
 monster.experience = 165
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

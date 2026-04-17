@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Blightwalker")
 local monster = {}
 
+monster.name = "Blightwalker"
 monster.description = "a blightwalker"
 monster.experience = 6400
 monster.outfit = {

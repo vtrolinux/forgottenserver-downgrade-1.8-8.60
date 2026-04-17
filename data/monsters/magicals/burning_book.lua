@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Burning Book")
 local monster = {}
 
+monster.name = "Burning Book"
 monster.description = "a burning book"
 monster.experience = 11934
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 18000
 monster.maxHealth = 18000
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 28754
 monster.speed = 220
 monster.manaCost = 0

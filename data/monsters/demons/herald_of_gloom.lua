@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Herald of Gloom")
 local monster = {}
 
+monster.name = "Herald of Gloom"
 monster.description = "a herald of gloom"
 monster.experience = 450
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {
@@ -97,7 +97,7 @@ monster.defenses = {
 	{ name = "invisible", interval = 5000, chance = 20, effect = CONST_ME_MAGIC_RED },
 	{ name = "outfit", interval = 1500, chance = 20, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 6000, outfitMonster = "nightstalker" },
 	{ name = "outfit", interval = 1500, chance = 10, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 6000, outfitMonster = "werewolf" },
-	{ name = "outfit", interval = 1500, chance = 10, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 6000, outfitMonster = "the count =" },
+	{ name = "outfit", interval = 1500, chance = 10, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 6000, outfitMonster = "the count" },
 	{ name = "outfit", interval = 1500, chance = 10, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 6000, outfitMonster = "grim reaper" },
 	{ name = "outfit", interval = 1500, chance = 10, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 6000, outfitMonster = "tarantula" },
 	{ name = "outfit", interval = 1500, chance = 10, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 6000, outfitMonster = "ferumbras" },

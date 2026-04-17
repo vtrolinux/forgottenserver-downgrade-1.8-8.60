@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Courage Leech")
 local monster = {}
 
+monster.name = "Courage Leech"
 monster.description = "a courage leech"
 monster.experience = 18900
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Furious Crater",
 }
 
-monster.events = {}
 
 monster.health = 27000
 monster.maxHealth = 27000

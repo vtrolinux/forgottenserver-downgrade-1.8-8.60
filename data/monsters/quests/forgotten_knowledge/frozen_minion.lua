@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Frozen Minion")
 local monster = {}
 
+monster.name = "Frozen Minion"
 monster.description = "a frozen minion"
 monster.experience = 230
 monster.outfit = {

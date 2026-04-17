@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Unpleasant Dream")
 local monster = {}
 
+monster.name = "Unpleasant Dream"
 monster.description = "an unpleasant dream"
 monster.experience = 0
 monster.outfit = {
@@ -72,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 5,
 	armor = 5,
-	--	mitigation = ???,
 }
 
 monster.elements = {

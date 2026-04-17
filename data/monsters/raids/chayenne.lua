@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Chayenne")
 local monster = {}
 
+monster.name = "Chayenne"
 monster.description = "Chayenne"
 monster.experience = 40000
 monster.outfit = {
@@ -78,7 +79,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 20,
 	armor = 15,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 1, type = COMBAT_HEALING, minDamage = 0, maxDamage = 10000, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "combat", interval = 3500, chance = 30, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 1000, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "outfit", interval = 2000, chance = 10, effect = CONST_ME_ENERGYHIT, target = false, duration = 10000, outfitMonster = "Devovorga" },

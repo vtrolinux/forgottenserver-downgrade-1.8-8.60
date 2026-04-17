@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Tarantula")
 local monster = {}
 
+monster.name = "Tarantula"
 monster.description = "a tarantula"
 monster.experience = 120
 monster.outfit = {
@@ -85,6 +86,7 @@ monster.loot = {
 	{ name = "plate shield", chance = 2000 },
 	{ name = "spider fangs", chance = 4820 },
 	{ name = "tarantula egg", chance = 10000 },
+	{ name = "monk robe", chance = 390 },
 }
 
 monster.attacks = {

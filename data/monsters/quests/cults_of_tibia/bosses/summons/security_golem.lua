@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Security Golem")
 local monster = {}
 
+monster.name = "Security Golem"
 monster.description = "a security golem"
 monster.experience = 0
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

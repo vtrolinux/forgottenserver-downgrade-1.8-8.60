@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Goshnar's Spite")
 local monster = {}
 
+monster.name = "Goshnar's Spite"
 monster.description = "Goshnar's Spite"
 monster.experience = 75000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1903,
+	bossRace = RARITY_ARCHFOE,
+}
 
 monster.health = 300000
 monster.maxHealth = 300000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 2000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1903,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {

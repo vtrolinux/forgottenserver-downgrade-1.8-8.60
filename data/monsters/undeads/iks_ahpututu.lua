@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Iks Ahpututu")
 local monster = {}
 
+monster.name = "Iks Ahpututu"
 monster.description = "an iks ahpututu"
 monster.experience = 1700
 monster.outfit = {
@@ -78,14 +79,14 @@ monster.loot = {
 	{ name = "tiger Eye", chance = 7100 },
 	{ name = "strong mana potion", chance = 6380, maxCount = 4 },
 	{ name = "small sapphire", chance = 4370, maxCount = 5 },
-	--{ name = "daedal chisel", chance = 2910 },
+-- { name = "daedal chisel", chance = 2910 },
 	{ name = "opal", chance = 1640, maxCount = 2 },
-	--{ name = "ritual tooth", chance = 1460 },
+-- { name = "ritual tooth", chance = 1460 },
 	{ name = "spellbook of enlightenment", chance = 1090 },
 	{ name = "gold ingot", chance = 730 },
-	--{ name = "rotten feather", chance = 730 },
+-- { name = "rotten feather", chance = 730 },
 	{ name = "broken iks faulds", chance = 360 },
-	--{ name = "gold-brocaded cloth", chance = 360 },
+-- { name = "gold-brocaded cloth", chance = 360 },
 }
 
 monster.attacks = {

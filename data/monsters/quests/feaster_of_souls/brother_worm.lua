@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Brother Worm")
 local monster = {}
 
+monster.name = "Brother Worm"
 monster.description = "Brother Worm"
 monster.experience = 30000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1868,
+	bossRace = RARITY_ARCHFOE,
+}
 
 monster.health = 300000
 monster.maxHealth = 300000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 60000,
 	chance = 0,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1868,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -79,7 +78,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 10,
-	--	mitigation = ???,
 	{ name = "speed", interval = 10000, chance = 40, speedChange = 510, effect = CONST_ME_MAGIC_GREEN, target = false, duration = 20000 },
 	{ name = "combat", interval = 2000, chance = 60, type = COMBAT_HEALING, minDamage = 350, maxDamage = 600, effect = CONST_ME_MAGIC_BLUE, target = false },
 }

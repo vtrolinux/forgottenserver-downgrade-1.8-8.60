@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Cart Packed with Gold")
 local monster = {}
 
+monster.name = "Cart Packed with Gold"
 monster.description = "a cart packed with gold"
 monster.experience = 0
 monster.outfit = {
@@ -66,7 +67,6 @@ monster.loot = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 }
 
 monster.elements = {

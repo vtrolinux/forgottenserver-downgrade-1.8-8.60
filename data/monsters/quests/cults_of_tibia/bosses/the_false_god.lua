@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The False God")
 local monster = {}
 
+monster.name = "The False God"
 monster.description = "The False God"
 monster.experience = 50000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1409,
@@ -114,7 +113,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 }
 
 monster.elements = {

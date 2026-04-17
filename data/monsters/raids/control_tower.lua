@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Control Tower")
 local monster = {}
 
+monster.name = "Control Tower"
 monster.description = "a control tower"
 monster.experience = 3000
 monster.outfit = {
@@ -65,7 +66,6 @@ monster.loot = {
 monster.defenses = {
 	defense = 10,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

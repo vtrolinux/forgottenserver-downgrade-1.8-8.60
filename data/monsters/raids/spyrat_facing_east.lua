@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Spyrat East")
 local monster = {}
 
 monster.name = "Spyrat"
+monster.name = "Spyrat East"
 monster.description = "You see a spyrat"
 monster.experience = 3750
 monster.outfit = {

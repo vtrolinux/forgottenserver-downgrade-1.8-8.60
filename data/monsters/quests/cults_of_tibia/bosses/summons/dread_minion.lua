@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dread Minion")
 local monster = {}
 
+monster.name = "Dread Minion"
 monster.description = "a dread minion"
 monster.experience = 0
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 90, maxDamage = 150, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

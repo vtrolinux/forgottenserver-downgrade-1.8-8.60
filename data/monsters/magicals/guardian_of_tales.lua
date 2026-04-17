@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Guardian of Tales")
 local monster = {}
 
+monster.name = "Guardian of Tales"
 monster.description = "a guardian of tales"
 monster.experience = 9204
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 15000
 monster.maxHealth = 15000
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 28770
 monster.speed = 210
 monster.manaCost = 0

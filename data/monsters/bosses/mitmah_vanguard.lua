@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mitmah Vanguard")
 local monster = {}
 
+monster.name = "Mitmah Vanguard"
 monster.description = "Mitmah Vanguard"
 monster.experience = 300000
 monster.outfit = {
@@ -92,10 +93,10 @@ monster.loot = {
 	{ name = "white gem", chance = 311100 },
 	{ name = "yellow gem", chance = 251900 },
 	{ name = "blue gem", chance = 222200 },
-	--{ name = "crystal of the mitmah", chance = 451900 },
-	--{ name = "broken mitmah necklace", chance = 548100 },
-	--{ name = "broken mitmah chestplate", chance = 44400 },
-	--{ name = "splintered mitmah gem", chance = 3700 },
+-- { name = "crystal of the mitmah", chance = 451900 },
+-- { name = "broken mitmah necklace", chance = 548100 },
+-- { name = "broken mitmah chestplate", chance = 44400 },
+-- { name = "splintered mitmah gem", chance = 3700 },
 	{ name = "stoic iks boots", chance = 500 },
 	{ name = "stoic iks faulds", chance = 500 },
 	{ name = "stoic iks casque", chance = 500 },
@@ -104,6 +105,7 @@ monster.loot = {
 	{ name = "stoic iks sandals", chance = 500 },
 	{ name = "stoic iks headpiece", chance = 500 },
 	{ name = "stoic iks culet", chance = 500 },
+	{ name = "iks footwraps", chance = 500 },
 }
 
 monster.attacks = {
@@ -119,7 +121,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 64,
 	armor = 0,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Old Beholder")
 local monster = {}
 
 monster.name = "Beholder"
+monster.name = "Old Beholder"
 monster.description = "a beholder"
 monster.experience = 170
 monster.outfit = {

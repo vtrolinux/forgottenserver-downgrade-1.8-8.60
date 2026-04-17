@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Obliverator")
 local monster = {}
 
+monster.name = "The Obliverator"
 monster.description = "The Obliverator"
 monster.experience = 6000
 monster.outfit = {
@@ -82,7 +83,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 45,
 	armor = 40,
-	--	mitigation = ???,
 	{ name = "combat", interval = 4000, chance = 5, type = COMBAT_HEALING, minDamage = 50, maxDamage = 200, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rogue Naga")
 local monster = {}
 
+monster.name = "Rogue Naga"
 monster.description = "a rogue naga"
 monster.experience = 4510
 monster.outfit = {
@@ -78,7 +79,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 110,
 	armor = 0,
-	--	mitigation = ???,
 }
 
 monster.elements = {

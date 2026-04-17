@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Keeper")
 local monster = {}
 
+monster.name = "The Keeper"
 monster.description = "The Keeper"
 monster.experience = 3205
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 40000
 monster.maxHealth = 40000
@@ -78,7 +77,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 35,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 250, maxDamage = 400, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

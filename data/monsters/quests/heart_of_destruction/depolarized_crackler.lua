@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Depolarized Crackler")
 local monster = {}
 
+monster.name = "Depolarized Crackler"
 monster.description = "a depolarized crackler"
 monster.experience = 30000
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -76,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 80,
 	armor = 80,
-	--	mitigation = ???,
 }
 
 monster.elements = {

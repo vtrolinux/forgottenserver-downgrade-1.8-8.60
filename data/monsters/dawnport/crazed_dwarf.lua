@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Crazed Dwarf")
 local monster = {}
 
+monster.name = "Crazed Dwarf"
 monster.description = "a crazed dwarf"
 monster.experience = 50
 monster.outfit = {
@@ -78,7 +79,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 10,
 	armor = 9,
-	--	mitigation = ???,
 }
 
 monster.elements = {

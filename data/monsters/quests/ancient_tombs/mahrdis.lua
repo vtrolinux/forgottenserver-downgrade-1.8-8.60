@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mahrdis")
 local monster = {}
 
+monster.name = "Mahrdis"
 monster.description = "Mahrdis"
 monster.experience = 3050
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 86,
+	bossRace = RARITY_BANE,
+}
+
 monster.health = 3900
 monster.maxHealth = 3900
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 86,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {
@@ -101,7 +102,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 34, type = COMBAT_FIREDAMAGE, minDamage = -80, maxDamage = -800, radius = 3, effect = CONST_ME_EXPLOSIONAREA, target = false },
 	{ name = "firefield", interval = 1000, chance = 12, radius = 4, effect = CONST_ME_BLOCKHIT, target = false },
 	-- fire
-	{ name = "condition", type = CONDITION_FIRE, interval = 2000, chance = 13, minDamage = -50, maxDamage = -500, length = 8, spread = 3, effect = CONST_ME_EXPLOSIONHIT, target = false },
+	{ name = "condition", interval = 2000, chance = 13, target = false, condition =
+	{ type = CONDITION_FIRE, minDamage = -50, maxDamage = -500, length = 8, spread = 3, effect = CONST_ME_EXPLOSIONHITA } },
 }
 
 monster.defenses = {

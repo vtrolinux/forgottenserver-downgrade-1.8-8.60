@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dazed Leaf Golem")
 local monster = {}
 
+monster.name = "Dazed Leaf Golem"
 monster.description = "dazed leaf golem"
 monster.experience = 8000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1578,
+	bossRace = RARITY_BANE,
+}
+
 monster.health = 10000
 monster.maxHealth = 10000
 monster.race = "undead"
@@ -20,16 +26,10 @@ monster.corpse = 19117
 monster.speed = 175
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 0,
 	chance = 0,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1578,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {
@@ -82,7 +82,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

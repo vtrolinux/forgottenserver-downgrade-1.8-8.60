@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Doom Deer")
 local monster = {}
 
+monster.name = "Doom Deer"
 monster.description = "a doom deer"
 monster.experience = 200
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

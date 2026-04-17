@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lava Lurker Attendant")
 local monster = {}
 
+monster.name = "Lava Lurker Attendant"
 monster.description = "a lava lurker attendant"
 monster.experience = 0
 monster.outfit = {

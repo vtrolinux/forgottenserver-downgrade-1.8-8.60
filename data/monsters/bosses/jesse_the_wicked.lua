@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Jesse the Wicked")
 local monster = {}
 
+monster.name = "Jesse the Wicked"
 monster.description = "Jesse the Wicked"
 monster.experience = 180
 monster.outfit = {
@@ -84,7 +85,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 }
 
 monster.elements = {

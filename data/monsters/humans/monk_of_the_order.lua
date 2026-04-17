@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Monk of the Order")
 local monster = {}
 
+monster.name = "Monk of the Order"
 monster.description = "a monk of the order"
 monster.experience = 200
 monster.outfit = {
@@ -68,7 +69,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 0,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 30, maxDamage = 50, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 2000, chance = 15, speedChange = 300, effect = CONST_ME_MAGIC_RED, target = false, duration = 5000 },
 }

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Terrorsleep")
 local monster = {}
 
+monster.name = "Terrorsleep"
 monster.description = "a terrorsleep"
 monster.experience = 6900
 monster.outfit = {
@@ -98,12 +99,14 @@ monster.loot = {
 	{ id = 20029, chance = 1130 }, -- broken dream
 	{ name = "trapped bad dream monster", chance = 13000 },
 	{ name = "bowl of terror sweat", chance = 18000 },
+	{ id = 50152, chance = 560 }, -- collar of orange plasma
 }
 
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -450 },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 20, minDamage = -1000, maxDamage = -1500, radius = 7, effect = CONST_ME_YELLOW_RINGS, target = false },
+	{ name = "condition", interval = 2000, chance = 20, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -1000, maxDamage = -1500, radius = 7, effect = CONST_ME_YELLOW_RINGS } },
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_MANADRAIN, minDamage = -100, maxDamage = -300, radius = 5, effect = CONST_ME_MAGIC_RED, target = false },
 	{ name = "feversleep skill reducer", interval = 2000, chance = 10, target = false },
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_LIFEDRAIN, minDamage = -350, maxDamage = -500, length = 6, spread = 0, effect = CONST_ME_YELLOWENERGY, target = true },

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Nightfiend")
 local monster = {}
 
+monster.name = "Nightfiend"
 monster.description = "a nightfiend"
 monster.experience = 2100
 monster.outfit = {
@@ -62,7 +63,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

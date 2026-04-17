@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Scourge of Oblivion")
 local monster = {}
 
+monster.name = "The Scourge of Oblivion"
 monster.description = "The Scourge Of Oblivion"
 monster.experience = 75000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 3,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1642,
@@ -141,7 +140,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 160,
 	armor = 160,
-	--	mitigation = ???,
 	{ name = "combat", interval = 6000, chance = 25, type = COMBAT_HEALING, minDamage = 2000, maxDamage = 5000, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 1000, chance = 8, speedChange = 1901, effect = CONST_ME_MAGIC_RED, target = false, duration = 5000 },
 	{ name = "invisible", interval = 1000, chance = 4, effect = CONST_ME_MAGIC_BLUE },

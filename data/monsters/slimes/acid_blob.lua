@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Acid Blob")
 local monster = {}
 
+monster.name = "Acid Blob"
 monster.description = "an acid blob"
 monster.experience = 250
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

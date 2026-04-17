@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Enslaved Dwarf")
 local monster = {}
 
+monster.name = "Enslaved Dwarf"
 monster.description = "an enslaved dwarf"
 monster.experience = 2700
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

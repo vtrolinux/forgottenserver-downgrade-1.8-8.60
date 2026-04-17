@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Elite Pirat")
 local monster = {}
 
+monster.name = "Elite Pirat"
 monster.description = "an elite pirat"
 monster.experience = 18000
 monster.outfit = {
@@ -87,7 +88,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 }
 
 monster.elements = {

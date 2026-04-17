@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Cream Blob")
 local monster = {}
 
+monster.name = "Cream Blob"
 monster.description = "a cream blob"
 monster.experience = 21
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

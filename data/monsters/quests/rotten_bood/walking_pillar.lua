@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Walking Pillar")
 local monster = {}
 
+monster.name = "Walking Pillar"
 monster.description = "a walking pillar"
 monster.experience = 24300
 monster.outfit = {
@@ -78,7 +79,7 @@ monster.voices = {
 
 monster.loot = {
 	{ name = "crystal coin", chance = 12186, maxCount = 1 },
-	--{ name = "yellow darklight matter", chance = 5354, maxCount = 1 },
+-- { name = "yellow darklight matter", chance = 5354, maxCount = 1 },
 	{ name = "magma clump", chance = 11440, maxCount = 1 },
 	{ name = "darklight core", chance = 10276, maxCount = 1 },
 	{ id = 12600, chance = 8489, maxCount = 4 }, -- coal

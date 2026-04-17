@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Bony Sea Devil")
 local monster = {}
 
+monster.name = "Bony Sea Devil"
 monster.description = "a bony sea devil"
 monster.experience = 19470
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Ebb and Flow.",
 }
 
-monster.events = {}
 
 monster.health = 24000
 monster.maxHealth = 24000
@@ -137,9 +137,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval)
-	monster:tryTeleportToPlayer("Get out the way!")
-end
 
 mType:register(monster)

@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Dorokoll The Mystic Stop")
 local monster = {}
 
 monster.name = "Dorokoll The Mystic"
+monster.name = "Dorokoll The Mystic Stop"
 monster.description = "Dorokoll The Mystic"
 monster.experience = 0
 monster.outfit = {

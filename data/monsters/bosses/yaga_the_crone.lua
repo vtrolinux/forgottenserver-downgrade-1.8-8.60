@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Yaga the Crone")
 local monster = {}
 
+monster.name = "Yaga the Crone"
 monster.description = "Yaga the Crone"
 monster.experience = 375
 monster.outfit = {
@@ -88,14 +89,14 @@ monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -50 },
 	{ name = "combat", interval = 2500, chance = 50, type = COMBAT_FIREDAMAGE, minDamage = -30, maxDamage = -50, range = 5, shootEffect = CONST_ANI_FIRE, effect = CONST_ME_HITBYFIRE, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 3000, chance = 13, minDamage = -10, maxDamage = -10, range = 5, shootEffect = CONST_ANI_POISON, target = false },
+	{ name = "condition", interval = 3000, chance = 13, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -10, maxDamage = -10, range = 5, shootEffect = CONST_ANI_POISON } },
 	{ name = "firefield", interval = 2000, chance = 13, range = 5, shootEffect = CONST_ANI_FIRE, target = false },
 }
 
 monster.defenses = {
 	defense = 20,
 	armor = 15,
-	--	mitigation = ???,
 	{ name = "invisible", interval = 2000, chance = 18, effect = CONST_ME_MAGIC_RED },
 	{ name = "outfit", interval = 4000, chance = 9, effect = CONST_ME_MAGIC_RED, target = false, duration = 4000, outfitMonster = "green frog" },
 }
@@ -119,19 +120,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

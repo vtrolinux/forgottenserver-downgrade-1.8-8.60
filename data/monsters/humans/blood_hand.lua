@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Blood Hand")
 local monster = {}
 
+monster.name = "Blood Hand"
 monster.description = "a blood hand"
 monster.experience = 750
 monster.outfit = {
@@ -100,7 +101,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_LIFEDRAIN, minDamage = -50, maxDamage = -100, radius = 4, effect = CONST_ME_MAGIC_RED, target = false },
 	{ name = "speed", interval = 2000, chance = 10, speedChange = -600, radius = 4, effect = CONST_ME_BLOCKHIT, target = true, duration = 15000 },
 	-- bleed
-	{ name = "condition", type = CONDITION_BLEEDING, interval = 2000, chance = 15, minDamage = -120, maxDamage = -160, radius = 6, effect = CONST_ME_HITAREA, target = false },
+	{ name = "condition", interval = 2000, chance = 15, target = false, condition =
+	{ type = CONDITION_BLEEDING, minDamage = -120, maxDamage = -160, radius = 6, effect = CONST_ME_HITAREA } },
 }
 
 monster.defenses = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Armored Voidborn")
 local monster = {}
 
+monster.name = "The Armored Voidborn"
 monster.description = "The Armored Voidborn"
 monster.experience = 0
 monster.outfit = {
@@ -79,7 +80,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 50,
-	--	mitigation = ???,
 }
 
 monster.reflects = {

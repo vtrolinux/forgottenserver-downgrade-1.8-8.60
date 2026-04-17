@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Last Planegazer")
 local monster = {}
 
+monster.name = "Last Planegazer"
 monster.description = "Last Planegazer"
 monster.experience = 10000
 monster.outfit = {
@@ -84,7 +85,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

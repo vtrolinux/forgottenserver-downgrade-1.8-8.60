@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Tentacle of the Deep Terror")
 local monster = {}
 
+monster.name = "Tentacle of the Deep Terror"
 monster.description = "a tentacle of the Deep Terror"
 monster.experience = 0
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -76,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 225, maxDamage = 850, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

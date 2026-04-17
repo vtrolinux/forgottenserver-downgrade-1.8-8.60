@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Imperor")
 local monster = {}
 
+monster.name = "The Imperor"
 monster.description = "The Imperor"
 monster.experience = 8000
 monster.outfit = {
@@ -98,7 +99,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 35, type = COMBAT_HEALING, minDamage = 275, maxDamage = 840, effect = CONST_ME_MAGIC_RED, target = false },
 	{ name = "the imperor summon", interval = 2000, chance = 21, target = false },
 	{ name = "speed", interval = 2000, chance = 12, speedChange = 1496, effect = CONST_ME_MAGIC_RED, target = false, duration = 5000 },

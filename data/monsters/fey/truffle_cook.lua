@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Truffle Cook")
 local monster = {}
 
+monster.name = "Truffle Cook"
 monster.description = "a truffle cook"
 monster.experience = 13
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

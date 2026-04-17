@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Scarlett Etzel")
 local monster = {}
 
+monster.name = "Scarlett Etzel"
 monster.description = "Scarlett Etzel"
 monster.experience = 20000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1804,
@@ -108,6 +107,7 @@ monster.loot = {
 	{ name = "cobra sword", chance = 650 },
 	{ name = "cobra wand", chance = 650 },
 	{ name = "cobra amulet", chance = 350 },
+	{ name = "cobra bo", chance = 650 },
 }
 
 monster.attacks = {
@@ -120,7 +120,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 88,
 	armor = 88,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Egg")
 local monster = {}
 
+monster.name = "Egg"
 monster.description = "Egg"
 monster.experience = 0
 monster.outfit = {
@@ -43,7 +44,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

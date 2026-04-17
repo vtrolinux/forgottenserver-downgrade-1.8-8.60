@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Twisted Shaper")
 local monster = {}
 
+monster.name = "Twisted Shaper"
 monster.description = "a twisted shaper"
 monster.experience = 1750
 monster.outfit = {

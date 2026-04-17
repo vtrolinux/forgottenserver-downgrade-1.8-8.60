@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sin Devourer")
 local monster = {}
 
+monster.name = "Sin Devourer"
 monster.description = "a sin devourer"
 monster.experience = 500
 monster.outfit = {
@@ -87,7 +88,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 30,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 13, type = COMBAT_HEALING, minDamage = 60, maxDamage = 130, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "invisible", interval = 2000, chance = 10, effect = CONST_ME_YELLOW_RINGS },
 }

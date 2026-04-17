@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Feroxa")
 local monster = {}
 
+monster.name = "Feroxa"
 monster.description = "Feroxa"
 monster.experience = 0
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1149,
+	bossRace = RARITY_NEMESIS,
+}
+
 monster.health = 100000
 monster.maxHealth = 100000
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 2000,
 	chance = 2,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1149,
-	bossRace = RARITY_NEMESIS,
 }
 
 monster.strategiesTarget = {
@@ -57,7 +58,6 @@ monster.flags = {
 	canWalkOnPoison = false,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

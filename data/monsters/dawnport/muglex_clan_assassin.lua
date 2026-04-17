@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Muglex Clan Assassin")
 local monster = {}
 
+monster.name = "Muglex Clan Assassin"
 monster.description = "a muglex clan assassin"
 monster.experience = 48
 monster.outfit = {
@@ -19,9 +20,6 @@ monster.race = "blood"
 monster.corpse = 6002
 monster.speed = 70
 monster.manaCost = 0
-monster.strategiesTarget = {
-	nearest = 100,
-}
 
 monster.flags = {
 	summonable = false,
@@ -102,3 +100,7 @@ monster.immunities = {
 }
 
 mType:register(monster)
+
+monster.strategiesTarget = {
+	nearest = 100,
+}

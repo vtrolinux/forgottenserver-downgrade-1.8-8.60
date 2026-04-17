@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Neutral Deepling Warrior")
 local monster = {}
 
+monster.name = "Neutral Deepling Warrior"
 monster.description = "a neutral deepling warrior"
 monster.experience = 1500
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 50, maxDamage = 150, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

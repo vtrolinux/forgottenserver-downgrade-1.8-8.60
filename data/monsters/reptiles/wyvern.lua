@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Wyvern")
 local monster = {}
 
+monster.name = "Wyvern"
 monster.description = "a wyvern"
 monster.experience = 515
 monster.outfit = {
@@ -92,7 +93,8 @@ monster.loot = {
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -120, condition = { type = CONDITION_POISON, totalDamage = 480, interval = 4000 } },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 15, minDamage = -240, maxDamage = -240, length = 8, spread = 3, effect = CONST_ME_POISONAREA, target = false },
+	{ name = "condition", interval = 2000, chance = 15, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -240, maxDamage = -240, length = 8, spread = 3, effect = CONST_ME_POISONAREA } },
 	{ name = "drunk", interval = 2000, chance = 10, length = 3, spread = 2, effect = CONST_ME_SOUND_RED, target = false, duration = 5000 },
 }
 

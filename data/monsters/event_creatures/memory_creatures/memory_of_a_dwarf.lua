@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Memory of a Dwarf")
 local monster = {}
 
+monster.name = "Memory of a Dwarf"
 monster.description = "a memory of a dwarf"
 monster.experience = 1460
 monster.outfit = {

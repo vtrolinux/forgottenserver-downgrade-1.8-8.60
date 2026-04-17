@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("An Astral Glyph")
 local monster = {}
 
+monster.name = "An Astral Glyph"
 monster.description = "an astral glyph"
 monster.experience = 0
 monster.outfit = {
@@ -14,7 +15,6 @@ monster.corpse = 0
 monster.speed = 235
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 2000,
@@ -70,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 50,
-	--	mitigation = ???,
 }
 
 monster.elements = {

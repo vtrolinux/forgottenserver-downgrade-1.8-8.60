@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Grimgor Guteater")
 local monster = {}
 
+monster.name = "Grimgor Guteater"
 monster.description = "Grimgor Guteater"
 monster.experience = 670
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 45,
 	armor = 45,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Captured Dwarf")
 local monster = {}
 
+monster.name = "Captured Dwarf"
 monster.description = "a captured dwarf"
 monster.experience = 0
 monster.outfit = {
@@ -67,7 +68,6 @@ monster.loot = {}
 monster.defenses = {
 	defense = 5,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,17 +1,10 @@
 local mType = Game.createMonsterType("Guzzlemaw")
 local monster = {}
 
+monster.name = "Guzzlemaw"
 monster.description = "a guzzlemaw"
 monster.experience = 6050
-monster.outfit = {
-	lookType = 584,
-	lookHead = 0,
-	lookBody = 0,
-	lookLegs = 0,
-	lookFeet = 0,
-	lookAddons = 0,
-	lookMount = 0,
-}
+monster.outfit = { lookType = 584 }
 
 monster.raceId = 1013
 monster.Bestiary = {
@@ -59,7 +52,7 @@ monster.flags = {
 	targetDistance = 1,
 	runHealth = 0,
 	healthHidden = false,
-	isBlockable = false,
+	isBlockable = true,
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
@@ -109,7 +102,8 @@ monster.loot = {
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -499 },
 	-- bleed
-	{ name = "condition", type = CONDITION_BLEEDING, interval = 2000, chance = 10, minDamage = -500, maxDamage = -1000, radius = 3, effect = CONST_ME_DRAWBLOOD, target = false },
+	{ name = "condition", interval = 2000, chance = 10, target = false, condition =
+	{ type = CONDITION_BLEEDING, minDamage = -500, maxDamage = -1000, radius = 3, effect = CONST_ME_DRAWBLOOD } },
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_LIFEDRAIN, minDamage = 0, maxDamage = -900, length = 8, spread = 0, effect = CONST_ME_EXPLOSIONAREA, target = false },
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_PHYSICALDAMAGE, minDamage = 0, maxDamage = -500, radius = 2, shootEffect = CONST_ANI_LARGEROCK, effect = CONST_ME_STONES, target = true },
 	{ name = "speed", interval = 2000, chance = 15, speedChange = -800, radius = 6, effect = CONST_ME_MAGIC_RED, target = false, duration = 15000 },

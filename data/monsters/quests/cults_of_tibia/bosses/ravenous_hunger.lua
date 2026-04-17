@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ravenous Hunger")
 local monster = {}
 
+monster.name = "Ravenous Hunger"
 monster.description = "Ravenous Hunger"
 monster.experience = 0
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1427,
@@ -111,6 +110,7 @@ monster.loot = {
 	{ name = "cobra crown", chance = 400 },
 	{ name = "silver token", chance = 18180 },
 	{ name = "elven mail", chance = 3000 },
+	{ id = 50154, chance = 890 },
 }
 
 monster.attacks = {
@@ -120,7 +120,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 35,
-	--	mitigation = ???,
 }
 
 monster.elements = {

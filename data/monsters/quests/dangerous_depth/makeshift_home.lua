@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Makeshift Home")
 local monster = {}
 
+monster.name = "Makeshift Home"
 monster.description = "a makeshift home"
 monster.experience = 1800
 monster.outfit = {
@@ -14,7 +15,6 @@ monster.corpse = 0
 monster.speed = 0
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 5000,
@@ -68,7 +68,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 5,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

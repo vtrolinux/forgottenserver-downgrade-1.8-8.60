@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Goldhanded Cultist Bride")
 local monster = {}
 
+monster.name = "Goldhanded Cultist Bride"
 monster.description = "a goldhanded cultist bride"
 monster.experience = 2000
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

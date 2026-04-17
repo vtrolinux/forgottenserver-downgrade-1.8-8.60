@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Kroazur")
 local monster = {}
 
+monster.name = "Kroazur"
 monster.description = "Kroazur"
 monster.experience = 2700
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 2,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1515,
@@ -100,7 +99,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 55,
-	--	mitigation = ???,
 	{ name = "combat", interval = 3000, chance = 35, type = COMBAT_HEALING, minDamage = 400, maxDamage = 500, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 2000, chance = 15, speedChange = 320, effect = CONST_ME_MAGIC_RED, target = false, duration = 5000 },
 }

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Hyaena")
 local monster = {}
 
+monster.name = "Hyaena"
 monster.description = "a hyaena"
 monster.experience = 20
 monster.outfit = {

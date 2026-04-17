@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Orc Armor")
 local monster = {}
 
 monster.name = "Orc Warlord"
+monster.name = "Orc Armor"
 monster.description = "an orc warlord"
 monster.experience = 670
 monster.outfit = {

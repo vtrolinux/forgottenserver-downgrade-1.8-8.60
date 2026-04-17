@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Energized Raging Mage")
 local monster = {}
 
+monster.name = "Energized Raging Mage"
 monster.description = "energized raging mage"
 monster.experience = 0
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 3500
 monster.maxHealth = 3500
@@ -89,7 +88,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 30,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 155, maxDamage = 200, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

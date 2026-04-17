@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Shatterer")
 local monster = {}
 
+monster.name = "The Shatterer"
 monster.description = "The Shatterer"
 monster.experience = 58000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1165,
+	bossRace = RARITY_BANE,
+}
 
 monster.health = 220000
 monster.maxHealth = 220000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1165,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rift Spawn")
 local monster = {}
 
+monster.name = "Rift Spawn"
 monster.description = "a rift spawn"
 monster.experience = 0
 monster.outfit = {
@@ -70,7 +71,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mould Phantom")
 local monster = {}
 
+monster.name = "Mould Phantom"
 monster.description = "a mould phantom"
 monster.experience = 18330
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Rotten Wasteland.",
 }
 
-monster.events = {}
 
 monster.health = 28000
 monster.maxHealth = 28000

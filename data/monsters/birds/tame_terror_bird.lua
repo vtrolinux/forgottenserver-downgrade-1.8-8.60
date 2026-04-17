@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Tame Terror Bird")
 local monster = {}
 
+monster.name = "Tame Terror Bird"
 monster.description = "a tame terror bird"
 monster.experience = 0
 monster.outfit = {

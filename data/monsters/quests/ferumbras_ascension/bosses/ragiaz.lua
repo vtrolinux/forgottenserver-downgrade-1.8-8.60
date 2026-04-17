@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ragiaz")
 local monster = {}
 
+monster.name = "Ragiaz"
 monster.description = "Ragiaz"
 monster.experience = 500000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 3,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1180,
@@ -116,7 +115,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 125,
 	armor = 125,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 2000, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 2000, chance = 20, speedChange = 600, effect = CONST_ME_MAGIC_GREEN, target = false, duration = 4000 },
 	{ name = "ragiaz transform", interval = 2000, chance = 8, target = false },

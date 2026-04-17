@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ghulosh")
 local monster = {}
 
+monster.name = "Ghulosh"
 monster.description = "Ghulosh"
 monster.experience = 45000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 3,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1608,
@@ -111,7 +110,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

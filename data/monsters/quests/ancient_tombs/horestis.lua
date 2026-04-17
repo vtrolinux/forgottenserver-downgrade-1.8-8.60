@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Horestis")
 local monster = {}
 
+monster.name = "Horestis"
 monster.description = "Horestis"
 monster.experience = 3500
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 713,
+	bossRace = RARITY_NEMESIS,
+}
+
 monster.health = 6000
 monster.maxHealth = 6000
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 713,
-	bossRace = RARITY_NEMESIS,
 }
 
 monster.strategiesTarget = {
@@ -98,7 +99,8 @@ monster.attacks = {
 	{ name = "drunk", interval = 3000, chance = 11, radius = 6, effect = CONST_ME_POISONAREA, target = false, duration = 25000 },
 	{ name = "speed", interval = 1000, chance = 25, speedChange = -350, length = 7, spread = 3, effect = CONST_ME_POISONAREA, target = false, duration = 30000 },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 30, minDamage = -35, maxDamage = -35, radius = 5, effect = CONST_ME_HITBYPOISON, target = false },
+	{ name = "condition", interval = 2000, chance = 30, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -35, maxDamage = -35, radius = 5, effect = CONST_ME_HITBYPOISON } },
 }
 
 monster.defenses = {

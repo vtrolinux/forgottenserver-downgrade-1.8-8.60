@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Nightmare Beast")
 local monster = {}
 
+monster.name = "The Nightmare Beast"
 monster.description = "The Nightmare Beast"
 monster.experience = 75000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1718,
+	bossRace = RARITY_ARCHFOE,
+}
 
 monster.health = 850000
 monster.maxHealth = 850000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1718,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -87,6 +86,7 @@ monster.loot = {
 	{ name = "chaos mace", chance = 10380 },
 	{ name = "crystal coin", chance = 22580, maxCount = 3 },
 	{ name = "dark whispers", chance = 3230 },
+	{ name = "dark vision bandana", chance = 2830 },
 	{ name = "dragon figurine", chance = 7550 },
 	{ name = "energy bar", chance = 91510 },
 	{ name = "giant emerald", chance = 1890 },
@@ -128,7 +128,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 160,
 	armor = 160,
-	--	mitigation = ???,
 }
 
 monster.elements = {

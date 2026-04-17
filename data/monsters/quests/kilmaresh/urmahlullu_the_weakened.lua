@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Urmahlullu the Weakened")
 local monster = {}
 
+monster.name = "Urmahlullu the Weakened"
 monster.description = "Urmahlullu the Weakened"
 monster.experience = 55000
 monster.outfit = {
@@ -112,6 +113,7 @@ monster.loot = {
 	{ id = 30403, chance = 160 }, -- enchanted theurgic amulet
 	{ name = "sun medal", chance = 160 },
 	{ name = "sunray emblem", chance = 160 },
+	{ id = 50150, chance = 560 }, -- ring of orange plasma
 }
 
 monster.attacks = {
@@ -124,7 +126,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 84,
 	armor = 84,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ice Dragon")
 local monster = {}
 
+monster.name = "Ice Dragon"
 monster.description = "an ice dragon"
 monster.experience = 2300
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {
@@ -97,9 +97,9 @@ monster.loot = {
 
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, skill = 78, attack = 50 },
-	{ name = "speed", interval = 2000, chance = 18, minDamage = 0, maxDamage = -400, range = 7, radius = 4, effect = CONST_ME_ICETORNADO, target = true, duration = 20000 },
+	{ name = "speed", interval = 2000, chance = 18, speedChange = -400, range = 7, radius = 4, effect = CONST_ME_ICETORNADO, target = true, duration = 20000 },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_ICEDAMAGE, minDamage = -50, maxDamage = -120, range = 7, radius = 3, effect = CONST_ME_ICETORNADO, target = false },
-	{ name = "speed", interval = 2000, chance = 12, minDamage = 0, maxDamage = -400, length = 7, spread = 3, effect = CONST_ME_ICEATTACK, target = false, duration = 20000 },
+	{ name = "speed", interval = 2000, chance = 12, speedChange = -400, length = 7, spread = 3, effect = CONST_ME_ICEATTACK, target = false, duration = 20000 },
 	{ name = "combat", interval = 2000, chance = 12, type = COMBAT_LIFEDRAIN, minDamage = -150, maxDamage = -380, length = 8, spread = 3, effect = CONST_ME_POFF, target = false },
 }
 

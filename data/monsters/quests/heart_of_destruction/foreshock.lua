@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Foreshock")
 local monster = {}
 
+monster.name = "Foreshock"
 monster.description = "Foreshock"
 monster.experience = 20000
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -79,7 +79,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 100,
 	armor = 100,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 300, maxDamage = 600, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

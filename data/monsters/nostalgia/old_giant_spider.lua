@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Old Giant Spider")
 local monster = {}
 
 monster.name = "Giant Spider"
+monster.name = "Old Giant Spider"
 monster.description = "a giant spider"
 monster.experience = 900
 monster.outfit = {

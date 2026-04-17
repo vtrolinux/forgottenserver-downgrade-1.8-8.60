@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Worker Golem")
 local monster = {}
 
+monster.name = "Worker Golem"
 monster.description = "a worker golem"
 monster.experience = 1250
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Pillar of Healing")
 local monster = {}
 
+monster.name = "Pillar of Healing"
 monster.description = "a pillar of healing"
 monster.experience = 0
 monster.outfit = {
@@ -14,7 +15,6 @@ monster.corpse = 0
 monster.speed = 0
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 4000,
@@ -63,7 +63,6 @@ monster.loot = {}
 monster.defenses = {
 	defense = 50,
 	armor = 35,
-	--	mitigation = ???,
 }
 
 monster.elements = {

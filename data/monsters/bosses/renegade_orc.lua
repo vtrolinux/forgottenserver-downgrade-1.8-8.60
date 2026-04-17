@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Renegade Orc")
 local monster = {}
 
+monster.name = "Renegade Orc"
 monster.description = "a renegade orc"
 monster.experience = 270
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 450
 monster.maxHealth = 450

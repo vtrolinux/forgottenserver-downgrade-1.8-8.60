@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rabbit")
 local monster = {}
 
+monster.name = "Rabbit"
 monster.description = "a rabbit"
 monster.experience = 0
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {
@@ -79,7 +79,7 @@ monster.loot = {
 }
 
 monster.defenses = {
-	defense = 5,
+	defense = 0,
 	armor = 1,
 	mitigation = 0.05,
 }

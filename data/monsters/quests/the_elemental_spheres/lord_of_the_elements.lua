@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lord of the Elements")
 local monster = {}
 
+monster.name = "Lord of the Elements"
 monster.description = "Lord of the Elements"
 monster.experience = 8000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 454,
@@ -89,6 +88,7 @@ monster.loot = {
 	{ name = "platinum coin", chance = 50000, maxCount = 9 },
 	{ name = "earthborn titan armor", chance = 2063 },
 	{ name = "gold ingot", chance = 25000 },
+	{ name = "jade conical hat", chance = 800 },
 }
 
 monster.attacks = {
@@ -98,7 +98,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 25, type = COMBAT_HEALING, minDamage = 100, maxDamage = 195, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "outfit", interval = 1500, chance = 40, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 3000, outfitMonster = "Energy Overlord" },
 	{ name = "outfit", interval = 1500, chance = 40, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 3000, outfitMonster = "Fire Overlord" },

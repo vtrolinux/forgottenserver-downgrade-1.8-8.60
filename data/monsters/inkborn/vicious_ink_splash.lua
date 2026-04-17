@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vicious Ink Splash")
 local monster = {}
 
+monster.name = "Vicious Ink Splash"
 monster.description = "a blood totem"
 monster.experience = 0
 monster.outfit = {
@@ -15,7 +16,7 @@ monster.outfit = {
 
 monster.health = 1950
 monster.maxHealth = 1950
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 28601
 monster.speed = 200
 monster.manaCost = 0

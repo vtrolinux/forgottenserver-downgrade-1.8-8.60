@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Broodrider Inferniarch")
 local monster = {}
 
+monster.name = "Broodrider Inferniarch"
 monster.description = "a broodrider inferniarch"
 monster.experience = 7850
 monster.outfit = {
@@ -63,8 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyable = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

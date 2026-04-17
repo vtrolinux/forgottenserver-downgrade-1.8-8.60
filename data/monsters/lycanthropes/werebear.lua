@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Werebear")
 local monster = {}
 
+monster.name = "Werebear"
 monster.description = "a werebear"
 monster.experience = 2100
 monster.outfit = {
@@ -103,7 +104,7 @@ monster.loot = {
 
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 50, maxDamage = -485 },
-	{ name = "speed", interval = 4000, chance = 20, minDamage = -0, maxDamage = -400, radius = 7, effect = CONST_ME_POFF, target = true },
+	{ name = "speed", interval = 4000, chance = 20, speedChange = -100, radius = 7, effect = CONST_ME_POFF, target = true },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_LIFEDRAIN, minDamage = -65, maxDamage = -335, radius = 4, effect = CONST_ME_MAGIC_GREEN, target = false },
 }
 

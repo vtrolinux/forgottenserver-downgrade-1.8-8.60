@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mushroom Sniffer")
 local monster = {}
 
+monster.name = "Mushroom Sniffer"
 monster.description = "a mushroom sniffer"
 monster.experience = 0
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

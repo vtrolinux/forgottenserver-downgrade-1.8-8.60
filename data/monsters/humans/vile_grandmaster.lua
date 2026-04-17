@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vile Grandmaster")
 local monster = {}
 
+monster.name = "Vile Grandmaster"
 monster.description = "a vile grandmaster"
 monster.experience = 1500
 monster.outfit = {
@@ -108,7 +109,8 @@ monster.loot = {
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 10, maxDamage = -260 },
 	-- bleed
-	{ name = "condition", type = CONDITION_BLEEDING, interval = 2000, chance = 20, minDamage = -150, maxDamage = -225, radius = 4, shootEffect = CONST_ANI_THROWINGKNIFE, effect = CONST_ME_DRAWBLOOD, target = true },
+	{ name = "condition", interval = 2000, chance = 20, target = true, condition =
+	{ type = CONDITION_BLEEDING, minDamage = -150, maxDamage = -225, radius = 4, shootEffect = CONST_ANI_THROWINGKNIFE, effect = CONST_ME_DRAWBLOOD } },
 }
 
 monster.defenses = {

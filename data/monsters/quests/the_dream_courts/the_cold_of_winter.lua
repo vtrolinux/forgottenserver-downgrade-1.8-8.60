@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Cold of Winter")
 local monster = {}
 
+monster.name = "The Cold of Winter"
 monster.description = "a the cold of winter"
 monster.experience = 0
 monster.outfit = {
@@ -71,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 }
 
 monster.elements = {

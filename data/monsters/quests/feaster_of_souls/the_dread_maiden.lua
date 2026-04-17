@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Dread Maiden")
 local monster = {}
 
+monster.name = "The Dread Maiden"
 monster.description = "The Dread Maiden"
 monster.experience = 72000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1872,
@@ -94,6 +93,7 @@ monster.loot = {
 	{ id = 32619, chance = 730 }, -- pair of nightmare boots
 	{ id = 32631, chance = 730 }, -- ghost claw
 	{ id = 32630, chance = 730 }, -- spooky hood
+	{ id = 50185, chance = 730 }, -- jade legs
 }
 
 monster.attacks = {
@@ -106,7 +106,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 170,
 	armor = 170,
-	--	mitigation = ???,
 	{ name = "speed", interval = 10000, chance = 40, speedChange = 510, effect = CONST_ME_MAGIC_GREEN, target = false, duration = 20000 },
 	{ name = "combat", interval = 5000, chance = 60, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 2500, effect = CONST_ME_MAGIC_BLUE, target = false },
 }

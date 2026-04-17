@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Massive Energy Elemental")
 local monster = {}
 
+monster.name = "Massive Energy Elemental"
 monster.description = "a massive energy elemental"
 monster.experience = 950
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

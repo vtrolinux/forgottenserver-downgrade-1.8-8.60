@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Halloween Hare")
 local monster = {}
 
+monster.name = "The Halloween Hare"
 monster.description = "a The Halloween Hare"
 monster.experience = 0
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Barkless Fanatic")
 local monster = {}
 
+monster.name = "Barkless Fanatic"
 monster.description = "a barkless fanatic"
 monster.experience = 2500
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

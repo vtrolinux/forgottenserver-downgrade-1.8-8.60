@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Massacre")
 local monster = {}
 
+monster.name = "Massacre"
 monster.description = "Massacre"
 monster.experience = 20000
 monster.outfit = {
@@ -97,7 +98,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 45,
-	--	mitigation = ???,
 	{ name = "speed", interval = 2000, chance = 8, speedChange = 790, effect = CONST_ME_MAGIC_RED, target = false, duration = 10000 },
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_HEALING, minDamage = 600, maxDamage = 1090, effect = CONST_ME_HITBYFIRE, target = false },
 }

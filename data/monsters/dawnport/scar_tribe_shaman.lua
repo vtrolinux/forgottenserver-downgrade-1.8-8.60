@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Scar Tribe Shaman")
 local monster = {}
 
+monster.name = "Scar Tribe Shaman"
 monster.description = "a scar tribe shaman"
 monster.experience = 85
 monster.outfit = {
@@ -86,7 +87,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 11,
 	armor = 6,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_HEALING, minDamage = 25, maxDamage = 35, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

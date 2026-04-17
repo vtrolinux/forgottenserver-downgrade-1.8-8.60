@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Kalyassa")
 local monster = {}
 
+monster.name = "Kalyassa"
 monster.description = "kalyassa"
 monster.experience = 9000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1389,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 10000
 monster.maxHealth = 10000
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 2000,
 	chance = 5,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1389,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {

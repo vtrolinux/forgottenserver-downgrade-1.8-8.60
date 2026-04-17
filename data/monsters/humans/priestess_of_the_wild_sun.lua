@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Priestess of the Wild Sun")
 local monster = {}
 
+monster.name = "Priestess of the Wild Sun"
 monster.description = "a priestess of the wild sun"
 monster.experience = 6400
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 1799
 monster.Bestiary = {

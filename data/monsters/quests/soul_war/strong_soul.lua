@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Strong Soul")
 local monster = {}
 
+monster.name = "Strong Soul"
 monster.description = "a strong soul"
 monster.experience = 0
 monster.outfit = {
@@ -20,7 +21,6 @@ monster.corpse = 0
 monster.speed = 80
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 1000,
@@ -86,19 +86,5 @@ monster.immunities = {
 	{ type = "invisible", condition = false },
 	{ type = "bleed", condition = false },
 }
-
-local transformTimeCount = 0
-mType.onThink = function(monster, interval)
-	transformTimeCount = transformTimeCount + interval
-	if transformTimeCount == 8000 then
-		Game.createMonster("Powerful Soul", GreedMonsters[monster:getName()], true, false)
-		monster:remove()
-		transformTimeCount = 0
-	end
-end
-
-mType.onAppear = function(monster)
-	transformTimeCount = 0
-end
 
 mType:register(monster)

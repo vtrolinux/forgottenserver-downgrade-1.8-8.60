@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Supercharged Mazzinor")
 local monster = {}
 
+monster.name = "Supercharged Mazzinor"
 monster.description = "Supercharged Mazzinor"
 monster.experience = 0
 monster.outfit = {
@@ -64,7 +65,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

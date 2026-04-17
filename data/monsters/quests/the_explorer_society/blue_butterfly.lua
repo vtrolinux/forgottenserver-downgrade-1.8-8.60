@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Blue Butterfly")
 local monster = {}
 
 monster.name = "Butterfly"
+monster.name = "Blue Butterfly"
 monster.description = "a butterfly"
 monster.experience = 0
 monster.outfit = {

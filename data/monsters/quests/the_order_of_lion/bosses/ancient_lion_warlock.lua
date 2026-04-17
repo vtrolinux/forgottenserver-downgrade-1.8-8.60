@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ancient Lion Warlock")
 local monster = {}
 
+monster.name = "Ancient Lion Warlock"
 monster.description = "an ancient lion warlock"
 monster.experience = 0
 monster.outfit = {
@@ -72,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 0,
-	--	mitigation = ???,
 }
 
 monster.elements = {

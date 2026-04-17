@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Glooth Bomb")
 local monster = {}
 
+monster.name = "Glooth Bomb"
 monster.description = "a glooth bomb"
 monster.experience = 2600
 monster.outfit = {
@@ -90,7 +91,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 45,
 	armor = 40,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 9, type = COMBAT_HEALING, minDamage = 50, maxDamage = 150, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

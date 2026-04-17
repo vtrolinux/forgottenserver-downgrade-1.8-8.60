@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ghazbaran")
 local monster = {}
 
+monster.name = "Ghazbaran"
 monster.description = "Ghazbaran"
 monster.experience = 15000
 monster.outfit = {
@@ -139,7 +140,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 55,
-	--	mitigation = ???,
 	{ name = "combat", interval = 3000, chance = 35, type = COMBAT_HEALING, minDamage = 300, maxDamage = 800, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 4000, chance = 80, speedChange = 440, effect = CONST_ME_MAGIC_RED, target = false, duration = 6000 },
 }

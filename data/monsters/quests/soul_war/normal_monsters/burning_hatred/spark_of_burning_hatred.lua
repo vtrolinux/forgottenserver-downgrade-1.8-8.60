@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spark of Burning Hatred")
 local monster = {}
 
+monster.name = "Spark of Burning Hatred"
 monster.description = "a spark of burning hatred"
 monster.experience = 0
 monster.outfit = {
@@ -26,8 +27,6 @@ monster.strategiesTarget = {
 	damage = 0,
 	random = 100,
 }
-
-monster.events = {}
 
 monster.flags = {
 	summonable = false,

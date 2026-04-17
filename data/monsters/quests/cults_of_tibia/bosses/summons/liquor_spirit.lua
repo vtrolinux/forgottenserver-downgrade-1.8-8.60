@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Liquor Spirit")
 local monster = {}
 
+monster.name = "Liquor Spirit"
 monster.description = "a liquor spirit"
 monster.experience = 0
 monster.outfit = {
@@ -20,7 +21,6 @@ monster.corpse = 0
 monster.speed = 125
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 4000,
@@ -73,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 35,
-	--	mitigation = ???,
 }
 
 monster.elements = {

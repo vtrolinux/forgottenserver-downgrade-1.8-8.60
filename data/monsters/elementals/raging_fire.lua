@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Raging Fire")
 local monster = {}
 
+monster.name = "Raging Fire"
 monster.description = "a raging fire"
 monster.experience = 1500
 monster.outfit = {
@@ -61,7 +62,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

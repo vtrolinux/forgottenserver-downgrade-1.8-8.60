@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Chicken")
 local monster = {}
 
+monster.name = "Chicken"
 monster.description = "a chicken"
 monster.experience = 0
 monster.outfit = {
@@ -77,14 +78,14 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "meat", chance = 2120, maxCount = 2 },
-	{ id = 3606, chance = 950 }, -- egg
-	{ name = "worm", chance = 10000, maxCount = 3 },
-	{ name = "chicken feather", chance = 20000 },
+	{ name = "meat", chance = 1760, maxCount = 2 },
+	{ id = 3606, chance = 860 }, -- egg
+	{ name = "worm", chance = 8790 },
+	{ name = "chicken feather", chance = 17950 },
 }
 
 monster.defenses = {
-	defense = 5,
+	defense = 0,
 	armor = 1,
 	mitigation = 0.05,
 }

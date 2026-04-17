@@ -1,17 +1,10 @@
 local mType = Game.createMonsterType("Sight of Surrender")
 local monster = {}
 
+monster.name = "Sight of Surrender"
 monster.description = "a sight of surrender"
 monster.experience = 17000
-monster.outfit = {
-	lookType = 583,
-	lookHead = 0,
-	lookBody = 0,
-	lookLegs = 0,
-	lookFeet = 0,
-	lookAddons = 0,
-	lookMount = 0,
-}
+monster.outfit = { lookType = 583 }
 
 monster.raceId = 1012
 monster.Bestiary = {
@@ -60,11 +53,10 @@ monster.flags = {
 	targetDistance = 1,
 	runHealth = 0,
 	healthHidden = false,
-	isBlockable = false,
+	isBlockable = true,
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

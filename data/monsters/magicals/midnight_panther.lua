@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Midnight Panther")
 local monster = {}
 
+monster.name = "Midnight Panther"
 monster.description = "a midnight panther"
 monster.experience = 900
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

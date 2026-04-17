@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dawnfly")
 local monster = {}
 
+monster.name = "Dawnfly"
 monster.description = "a dawnfly"
 monster.experience = 35
 monster.outfit = {
@@ -68,6 +69,7 @@ monster.loot = {
 	{ id = 266, chance = 3630 }, -- health potion
 	{ id = 268, chance = 3800 }, -- mana potion
 	{ id = 3448, chance = 14500, maxCount = 8 }, -- poison arrow
+	{ id = 51119, chance = 4120 }, -- simple jo staff
 }
 
 monster.attacks = {

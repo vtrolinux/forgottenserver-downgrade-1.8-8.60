@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Organic Matter")
 local monster = {}
 
+monster.name = "Organic Matter"
 monster.description = "an organic matter"
 monster.experience = 0
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 10000
 monster.maxHealth = 10000
@@ -69,7 +68,6 @@ monster.loot = {}
 monster.defenses = {
 	defense = 55,
 	armor = 55,
-	--	mitigation = ???,
 }
 
 monster.elements = {

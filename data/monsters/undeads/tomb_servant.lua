@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Tomb Servant")
 local monster = {}
 
+monster.name = "Tomb Servant"
 monster.description = "a tomb servant"
 monster.experience = 215
 monster.outfit = {
@@ -62,7 +63,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,17 +1,10 @@
 local mType = Game.createMonsterType("Shock Head")
 local monster = {}
 
+monster.name = "Shock Head"
 monster.description = "a shock head"
 monster.experience = 2300
-monster.outfit = {
-	lookType = 579,
-	lookHead = 0,
-	lookBody = 0,
-	lookLegs = 0,
-	lookFeet = 0,
-	lookAddons = 0,
-	lookMount = 0,
-}
+monster.outfit = { lookType = 579 }
 
 monster.raceId = 1004
 monster.Bestiary = {
@@ -30,7 +23,7 @@ monster.health = 4200
 monster.maxHealth = 4200
 monster.race = "blood"
 monster.corpse = 20058
-monster.speed = 136
+monster.speed = 140
 monster.manaCost = 0
 
 monster.changeTarget = {
@@ -59,7 +52,7 @@ monster.flags = {
 	targetDistance = 1,
 	runHealth = 0,
 	healthHidden = false,
-	isBlockable = false,
+	isBlockable = true,
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,

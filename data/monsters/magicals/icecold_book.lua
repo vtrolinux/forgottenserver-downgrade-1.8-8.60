@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Icecold Book")
 local monster = {}
 
+monster.name = "Icecold Book"
 monster.description = "an icecold book"
 monster.experience = 12750
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 21000
 monster.maxHealth = 21000
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 28774
 monster.speed = 220
 monster.manaCost = 0

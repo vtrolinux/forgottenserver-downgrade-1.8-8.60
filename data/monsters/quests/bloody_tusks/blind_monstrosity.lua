@@ -1,10 +1,11 @@
-local mType = Game.createMonsterType("Imp Minion")
+local mType = Game.createMonsterType("Blind Monstrosity")
 local monster = {}
 
-monster.description = "an imp minion"
-monster.experience = 20300
+monster.name = "Blind Monstrosity"
+monster.description = "a blind monstrosity"
+monster.experience = 0
 monster.outfit = {
-	lookType = 1804,
+	lookType = 1869,
 	lookHead = 0,
 	lookBody = 0,
 	lookLegs = 0,
@@ -13,18 +14,16 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
-
-monster.health = 32000
-monster.maxHealth = 32000
-monster.race = "undead"
-monster.corpse = 0
-monster.speed = 50
+monster.health = 5650 -- unknown
+monster.maxHealth = 5650 -- unknown
+monster.race = "venom"
+monster.corpse = 6532 -- unknown
+monster.speed = 40
 monster.manaCost = 0
 
 monster.changeTarget = {
 	interval = 4000,
-	chance = 0,
+	chance = 10,
 }
 
 monster.strategiesTarget = {
@@ -36,21 +35,21 @@ monster.strategiesTarget = {
 
 monster.flags = {
 	summonable = false,
-	attackable = false,
-	hostile = false,
+	attackable = true,
+	hostile = true,
 	convinceable = false,
 	pushable = false,
 	rewardBoss = false,
-	illusionable = false,
+	illusionable = true,
 	canPushItems = true,
-	canPushCreatures = false,
-	staticAttackChance = 90,
+	canPushCreatures = true,
+	staticAttackChance = 80,
 	targetDistance = 1,
-	runHealth = 0,
+	runHealth = 85,
 	healthHidden = false,
 	isBlockable = false,
-	canWalkOnEnergy = true,
-	canWalkOnFire = true,
+	canWalkOnEnergy = false,
+	canWalkOnFire = false,
 	canWalkOnPoison = true,
 }
 
@@ -62,38 +61,35 @@ monster.light = {
 monster.voices = {
 	interval = 5000,
 	chance = 10,
-	{ text = "BOOM!", yell = true },
-	{ text = "Lil' imp causing big boom! Hehehehe!", yell = false },
-	{ text = "Making BOOM is much fun!", yell = false },
-	{ text = "Me love destroy toy!", yell = false },
 }
 
-monster.loot = {}
+-- monster.loot = {}
 
+-- Monster doesnt attack.
 monster.attacks = {}
 
 monster.defenses = {
-	defense = 80,
-	armor = 80,
-	mitigation = 2.45,
+	defense = 20,
+	armor = 20,
+	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_HEALING, minDamage = 280, maxDamage = 350, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 20 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = 15 },
-	{ type = COMBAT_EARTHDAMAGE, percent = -10 },
+	{ type = COMBAT_PHYSICALDAMAGE, percent = 0 },
+	{ type = COMBAT_ENERGYDAMAGE, percent = 0 },
+	{ type = COMBAT_EARTHDAMAGE, percent = 0 },
 	{ type = COMBAT_FIREDAMAGE, percent = 0 },
 	{ type = COMBAT_LIFEDRAIN, percent = 0 },
 	{ type = COMBAT_MANADRAIN, percent = 0 },
 	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
-	{ type = COMBAT_ICEDAMAGE, percent = 10 },
+	{ type = COMBAT_ICEDAMAGE, percent = 0 },
 	{ type = COMBAT_HOLYDAMAGE, percent = 0 },
-	{ type = COMBAT_DEATHDAMAGE, percent = -10 },
+	{ type = COMBAT_DEATHDAMAGE, percent = 0 },
 }
 
 monster.immunities = {
 	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = true },
+	{ type = "outfit", condition = false },
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }

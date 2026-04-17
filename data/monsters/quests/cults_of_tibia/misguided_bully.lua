@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Misguided Bully")
 local monster = {}
 
+monster.name = "Misguided Bully"
 monster.description = "a misguided bully"
 monster.experience = 1800
 monster.outfit = {
@@ -44,8 +45,6 @@ monster.strategiesTarget = {
 	damage = 10,
 	random = 10,
 }
-
-monster.events = {}
 
 monster.flags = {
 	summonable = false,
@@ -96,7 +95,7 @@ monster.defenses = {
 	defense = 35,
 	armor = 30,
 	mitigation = 1.32,
-	{ name = "heal monster", interval = 2000, chance = 20, effect = CONST_ME_MAGIC_BLUE, target = false },
+	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 228, maxDamage = 449, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 
 monster.elements = {

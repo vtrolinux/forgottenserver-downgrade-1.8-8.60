@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Knowledge Elemental")
 local monster = {}
 
+monster.name = "Knowledge Elemental"
 monster.description = "a knowledge elemental"
 monster.experience = 10603
 monster.outfit = {

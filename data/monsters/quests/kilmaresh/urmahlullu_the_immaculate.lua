@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Urmahlullu the Immaculate")
 local monster = {}
 
+monster.name = "Urmahlullu the Immaculate"
 monster.description = "Urmahlullu the Immaculate"
 monster.experience = 0
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1811,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 512000
 monster.maxHealth = 512000
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1811,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -57,7 +58,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 monster.light = {
 	level = 0,
 	color = 0,
@@ -83,7 +83,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 84,
 	armor = 84,
-	--	mitigation = ???,
 }
 
 monster.elements = {

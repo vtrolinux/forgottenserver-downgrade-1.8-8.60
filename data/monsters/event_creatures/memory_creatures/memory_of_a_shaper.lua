@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Memory of a Shaper")
 local monster = {}
 
+monster.name = "Memory of a Shaper"
 monster.description = "a memory of a shaper"
 monster.experience = 1750
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Jagged Earth Elemental")
 local monster = {}
 
+monster.name = "Jagged Earth Elemental"
 monster.description = "a jagged earth elemental"
 monster.experience = 1300
 monster.outfit = {
@@ -83,7 +84,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 }
 
 monster.elements = {

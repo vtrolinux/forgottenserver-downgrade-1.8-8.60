@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Old Widow")
 local monster = {}
 
+monster.name = "The Old Widow"
 monster.description = "The Old Widow"
 monster.experience = 4200
 monster.outfit = {
@@ -96,7 +97,8 @@ monster.attacks = {
 monster.defenses = {
 	defense = 21,
 	armor = 45,
-	--	mitigation = 1.54,
+	mitigation = 1.54,
+	--
 	{ name = "combat", interval = 1000, chance = 17, type = COMBAT_HEALING, minDamage = 225, maxDamage = 275, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 1000, chance = 8, speedChange = 345, effect = CONST_ME_MAGIC_RED, target = false, duration = 6000 },
 }

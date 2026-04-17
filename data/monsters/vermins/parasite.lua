@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Parasite")
 local monster = {}
 
+monster.name = "Parasite"
 monster.description = "a parasite"
 monster.experience = 0
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 550
 monster.maxHealth = 550

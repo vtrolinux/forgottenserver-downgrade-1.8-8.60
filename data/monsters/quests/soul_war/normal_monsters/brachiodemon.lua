@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Brachiodemon")
 local monster = {}
 
+monster.name = "Brachiodemon"
 monster.description = "a brachiodemon"
 monster.experience = 15770
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Claustrophobic Inferno.",
 }
 
-monster.events = {}
 
 monster.health = 25000
 monster.maxHealth = 25000
@@ -138,9 +138,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval)
-	monster:tryTeleportToPlayer("Burn in hell!")
-end
 
 mType:register(monster)

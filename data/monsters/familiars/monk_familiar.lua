@@ -1,10 +1,11 @@
 local mType = Game.createMonsterType("Monk familiar")
 local monster = {}
 
+monster.name = "Monk familiar"
 monster.description = "a monk familiar"
 monster.experience = 0
 monster.outfit = {
-	lookType = 1818,
+	--lookType = 1818,
 	lookHead = 0,
 	lookBody = 0,
 	lookLegs = 0,
@@ -69,13 +70,12 @@ monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -200 },
 	{ name = "combat", interval = 2000, chance = 45, type = COMBAT_ENERGYDAMAGE, minDamage = -200, maxDamage = -250, range = 5, radius = 3, effect = CONST_ME_PINK_ENERGYPULSE, target = true },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_PHYSICALDAMAGE, minDamage = -300, maxDamage = -350, range = 5, effect = CONST_ME_WHITE_TIGERCLASH, target = true },
-	{ name = "monk familiar wave", interval = 2000, chance = 30, minDamage = -200, maxDamage = -250, target = false },
+	--{ name = "monk familiar wave", interval = 2000, chance = 30, minDamage = -200, maxDamage = -250, target = false },
 }
 
 monster.defenses = {
 	defense = 55,
 	armor = 55,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 75, type = COMBAT_HEALING, minDamage = 450, maxDamage = 450, effect = CONST_ME_MAGIC_GREEN, target = false },
 }
 

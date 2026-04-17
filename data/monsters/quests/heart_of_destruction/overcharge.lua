@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Overcharge")
 local monster = {}
 
+monster.name = "Overcharge"
 monster.description = "an overcharge"
 monster.experience = 0
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = false,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -76,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 80,
 	armor = 80,
-	--	mitigation = ???,
 }
 
 monster.elements = {

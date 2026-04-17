@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Cloak of Terror")
 local monster = {}
 
+monster.name = "Cloak of Terror"
 monster.description = "a cloak of terror"
 monster.experience = 19700
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Furious Crater.",
 }
 
-monster.events = {}
 
 monster.health = 28000
 monster.maxHealth = 28000
@@ -132,9 +132,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval)
-	monster:tryTeleportToPlayer("I am your terror!")
-end
 
 mType:register(monster)

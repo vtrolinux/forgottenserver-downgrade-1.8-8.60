@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lesser Splinter of Madness")
 local monster = {}
 
+monster.name = "Lesser Splinter of Madness"
 monster.description = "a lesser splinter of madness"
 monster.experience = 0
 monster.outfit = {
@@ -93,14 +94,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onAppear = function(monsterCallback)
-	addEvent(function(monsterId)
-		local eventMonster = Monster(monsterId)
-		if eventMonster then
-			eventMonster:setType("Greater Splinter of Madness", true)
-		end
-	end, 120000, monsterCallback:getId())
-end
 
 mType:register(monster)

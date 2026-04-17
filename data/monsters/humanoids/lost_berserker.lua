@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lost Berserker")
 local monster = {}
 
+monster.name = "Lost Berserker"
 monster.description = "a lost berserker"
 monster.experience = 4800
 monster.outfit = {

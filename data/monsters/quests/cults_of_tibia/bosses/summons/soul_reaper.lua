@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Soul Reaper")
 local monster = {}
 
+monster.name = "Soul Reaper"
 monster.description = "a soul reaper"
 monster.experience = 2200
 monster.outfit = {
@@ -74,7 +75,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 52,
 	armor = 52,
-	--	mitigation = ???,
 }
 
 monster.elements = {

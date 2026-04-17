@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Damned Soul")
 local monster = {}
 
+monster.name = "Damned Soul"
 monster.description = "a damned soul"
 monster.experience = 300
 monster.outfit = {
@@ -70,7 +71,6 @@ monster.attacks = {}
 monster.defenses = {
 	defense = 35,
 	armor = 25,
-	--	mitigation = ???,
 }
 
 monster.elements = {

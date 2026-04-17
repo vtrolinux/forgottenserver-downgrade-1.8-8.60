@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Cliff Strider")
 local monster = {}
 
+monster.name = "Cliff Strider"
 monster.description = "a cliff strider"
 monster.experience = 7100
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

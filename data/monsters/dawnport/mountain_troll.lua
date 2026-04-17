@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mountain Troll")
 local monster = {}
 
+monster.name = "Mountain Troll"
 monster.description = "a mountain troll"
 monster.experience = 12
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 30
 monster.maxHealth = 30

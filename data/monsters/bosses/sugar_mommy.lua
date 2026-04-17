@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sugar Mommy")
 local monster = {}
 
+monster.name = "Sugar Mommy"
 monster.description = "Sugar Mommy"
 monster.experience = 45000
 monster.outfit = {
@@ -100,7 +101,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 55,
-	--	mitigation = ???,
 	{ name = "combat", interval = 3000, chance = 25, type = COMBAT_HEALING, minDamage = 1400, maxDamage = 1600, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

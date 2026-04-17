@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Cosmic Energy Prism B")
 local monster = {}
 
+monster.name = "Cosmic Energy Prism B"
 monster.description = "a cosmic energy prism B"
 monster.experience = 840
 monster.outfit = {
@@ -14,7 +15,6 @@ monster.corpse = 0
 monster.speed = 0
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 2000,

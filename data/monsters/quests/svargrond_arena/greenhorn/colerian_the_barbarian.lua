@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Colerian the Barbarian")
 local monster = {}
 
+monster.name = "Colerian the Barbarian"
 monster.description = "Colerian the Barbarian"
 monster.experience = 90
 monster.outfit = {
@@ -75,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 0,
 	armor = 8,
-	--	mitigation = ???,
 }
 
 monster.elements = {

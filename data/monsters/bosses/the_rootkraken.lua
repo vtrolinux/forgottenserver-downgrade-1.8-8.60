@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Rootkraken")
 local monster = {}
 
+monster.name = "The Rootkraken"
 monster.description = "the rootkraken"
 monster.experience = 700000
 monster.outfit = {
@@ -12,7 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 2528,
@@ -91,7 +91,9 @@ monster.loot = {
 	{ id = 47377, chance = 300 }, -- amber crossbow
 	{ id = 47372, chance = 300 }, -- amber wand
 	{ id = 47373, chance = 300 }, -- amber rod
+	{ id = 50239, chance = 300 }, -- amber kusarigama
 	{ id = 48514, chance = 250 }, -- strange inedible fruit
+	{ id = 50152, chance = 560 }, -- collar of orange plasma
 }
 
 monster.attacks = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rift Breacher")
 local monster = {}
 
+monster.name = "Rift Breacher"
 monster.description = "a rift breacher"
 monster.experience = 0
 monster.outfit = {
@@ -70,7 +71,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

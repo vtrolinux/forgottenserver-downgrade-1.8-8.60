@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ancient Lion Archer")
 local monster = {}
 
+monster.name = "Ancient Lion Archer"
 monster.description = "an ancient lion archer"
 monster.experience = 0
 monster.outfit = {
@@ -72,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 86,
 	armor = 0,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sister Hetai")
 local monster = {}
 
+monster.name = "Sister Hetai"
 monster.description = "Sister Hetai"
 monster.experience = 20500
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 2104,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 25000
 monster.maxHealth = 25000
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 2104,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {

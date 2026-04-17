@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Custodian")
 local monster = {}
 
+monster.name = "Custodian"
 monster.description = "Custodian"
 monster.experience = 27500
 monster.outfit = {
@@ -68,16 +69,13 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "throwing star", chance = 65000, maxCount = 6 },
-	{ name = "hunting spear", chance = 62000 },
-	{ name = "gold ingot", chance = 48000 },
-	{ name = "blue gem", chance = 31000 },
-	{ name = "yellow gem", chance = 31000 },
-	{ name = "green crystal shard", chance = 8600 },
-	{ id = 281, chance = 28000 }, -- giant shimmering pearl (green)
-	{ name = "cobra crest", chance = 11000 },
-	{ name = "skull helmet", chance = 7500 },
-	{ name = "cobra club", chance = 100 },
+	{ name = "small sapphire", chance = 100000 },
+	{ name = "platinum coin", chance = 100000, maxCount = 23 },
+	{ name = "cobra crest", chance = 8510 },
+	{ id = 3093, chance = 4260 }, -- club ring
+	{ id = 23533, chance = 4260 }, -- ring of red plasma
+	{ name = "fire axe", chance = 10530 },
+	{ name = "cobra axe", chance = 2130 },
 }
 
 monster.attacks = {
@@ -90,7 +88,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 86,
 	armor = 86,
-	--	mitigation = ???,
 }
 
 monster.elements = {

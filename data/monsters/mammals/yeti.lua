@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Yeti")
 local monster = {}
 
+monster.name = "Yeti"
 monster.description = "a yeti"
 monster.experience = 460
 monster.outfit = {
@@ -61,7 +62,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

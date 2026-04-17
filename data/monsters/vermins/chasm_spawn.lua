@@ -1,8 +1,9 @@
 local mType = Game.createMonsterType("Chasm Spawn")
 local monster = {}
 
+monster.name = "Chasm Spawn"
 monster.description = "a chasm spawn"
-monster.experience = 2700
+monster.experience = 3600
 monster.outfit = {
 	lookType = 1037,
 	lookHead = 0,
@@ -89,7 +90,7 @@ monster.loot = {
 	{ name = "green crystal shard", chance = 7850 },
 	{ name = "violet crystal shard", chance = 4690 },
 	{ name = "mushroom backpack", chance = 610 },
-	{ name = "suspicious device", chance = 520 },
+	{ name = "suspicious device", chance = 850 },
 }
 
 monster.attacks = {

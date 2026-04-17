@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spirit of Water")
 local monster = {}
 
+monster.name = "Spirit of Water"
 monster.description = "a spirit of water"
 monster.experience = 850
 monster.outfit = {
@@ -74,7 +75,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 0,
 	armor = 0,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Disgusting Ooze")
 local monster = {}
 
+monster.name = "Disgusting Ooze"
 monster.description = "a disgusting ooze"
 monster.experience = 3700
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -89,16 +89,17 @@ monster.attacks = {
 	{ name = "defiler paralyze 1", interval = 2000, chance = 6, target = false },
 	{ name = "defiler paralyze 2", interval = 2000, chance = 8, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -300, maxDamage = -500, radius = 8, effect = CONST_ME_HITBYPOISON, target = false },
+	{ name = "condition", interval = 2000, chance = 10, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -300, maxDamage = -500, radius = 8, effect = CONST_ME_HITBYPOISON } },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -400, maxDamage = -725, length = 8, spread = 0, effect = CONST_ME_SMALLPLANTS, target = false },
+	{ name = "condition", interval = 2000, chance = 10, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -400, maxDamage = -725, length = 8, spread = 0, effect = CONST_ME_SMALLPLANTS } },
 	{ name = "combat", interval = 2000, chance = 14, type = COMBAT_EARTHDAMAGE, minDamage = -120, maxDamage = -170, radius = 3, effect = CONST_ME_POISONAREA, target = false },
 }
 
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 250, maxDamage = 450, effect = CONST_ME_MAGIC_GREEN, target = false },
 }
 

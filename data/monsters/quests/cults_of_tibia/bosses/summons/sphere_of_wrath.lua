@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sphere of Wrath")
 local monster = {}
 
+monster.name = "Sphere of Wrath"
 monster.description = "a sphere of wrath"
 monster.experience = 0
 monster.outfit = {
@@ -72,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 }
 
 monster.elements = {

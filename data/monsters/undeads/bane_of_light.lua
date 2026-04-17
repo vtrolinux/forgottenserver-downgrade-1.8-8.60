@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Bane of Light")
 local monster = {}
 
+monster.name = "Bane of Light"
 monster.description = "a bane of light"
 monster.experience = 750
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

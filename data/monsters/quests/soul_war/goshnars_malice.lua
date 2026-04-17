@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Goshnar's Malice")
 local monster = {}
 
+monster.name = "Goshnar's Malice"
 monster.description = "Goshnar's Malice"
 monster.experience = 75000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1901,
+	bossRace = RARITY_ARCHFOE,
+}
 
 monster.health = 300000
 monster.maxHealth = 300000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 2000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1901,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -129,4 +128,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
+
 mType:register(monster)

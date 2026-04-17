@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Robby the Reckless")
 local monster = {}
 
+monster.name = "Robby the Reckless"
 monster.description = "Robby the Reckless"
 monster.experience = 110
 monster.outfit = {
@@ -83,7 +84,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Armenius (Creature)")
 local monster = {}
 
+monster.name = "Armenius (Creature)"
 monster.description = "Armenius"
 monster.experience = 500
 monster.outfit = {
@@ -65,6 +66,8 @@ monster.voices = {
 
 monster.loot = {
 	{ id = 3434, chance = 5230 }, -- vampire shield
+	{ name = "gold coin", chance = 80000, maxCount = 23 },
+	{ name = "vampire lord token", chance = 10000 },
 }
 
 monster.attacks = {
@@ -76,7 +79,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 	{ name = "outfit", interval = 2000, chance = 10, effect = CONST_ME_GROUNDSHAKER, target = false, duration = 5000, outfitMonster = "bat" },
 	{ name = "speed", interval = 2000, chance = 15, speedChange = 300, effect = CONST_ME_MAGIC_RED, target = false, duration = 3000 },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 15, maxDamage = 25, target = false },
@@ -101,19 +103,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

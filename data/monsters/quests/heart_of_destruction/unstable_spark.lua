@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Unstable Spark")
 local monster = {}
 
+monster.name = "Unstable Spark"
 monster.description = "an unstable spark"
 monster.experience = 1500
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -76,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 80,
 	armor = 70,
-	--	mitigation = ???,
 }
 
 monster.elements = {

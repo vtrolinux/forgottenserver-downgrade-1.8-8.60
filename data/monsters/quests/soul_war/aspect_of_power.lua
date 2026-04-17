@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Aspect of Power")
 local monster = {}
 
+monster.name = "Aspect of Power"
 monster.description = "an aspect of power"
 monster.experience = 0
 monster.outfit = {
@@ -24,8 +25,6 @@ monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
 }
-
-monster.events = {}
 
 monster.strategiesTarget = {
 	nearest = 100,

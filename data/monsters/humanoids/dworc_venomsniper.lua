@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dworc Venomsniper")
 local monster = {}
 
+monster.name = "Dworc Venomsniper"
 monster.description = "a dworc venomsniper"
 monster.experience = 35
 monster.outfit = {
@@ -91,7 +92,8 @@ monster.loot = {
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -15 },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 15, minDamage = -20, maxDamage = -40, range = 5, shootEffect = CONST_ANI_POISON, target = false },
+	{ name = "condition", interval = 2000, chance = 15, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -20, maxDamage = -40, range = 5, shootEffect = CONST_ANI_POISON } },
 }
 
 monster.defenses = {

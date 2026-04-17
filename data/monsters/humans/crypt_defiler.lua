@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Crypt Defiler")
 local monster = {}
 
+monster.name = "Crypt Defiler"
 monster.description = "a crypt defiler"
 monster.experience = 70
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

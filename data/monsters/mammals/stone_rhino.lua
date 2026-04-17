@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Stone Rhino")
 local monster = {}
 
+monster.name = "Stone Rhino"
 monster.description = "a stone rhino"
 monster.experience = 1800
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

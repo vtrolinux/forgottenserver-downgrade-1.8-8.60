@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Forgemaster")
 local monster = {}
 
+monster.name = "The Forgemaster"
 monster.description = "the forgemaster"
 monster.experience = 0
 monster.outfit = {
@@ -50,7 +51,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.voices = {

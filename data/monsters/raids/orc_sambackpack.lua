@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Orc Sambackpack")
 local monster = {}
 
 monster.name = "Orc"
+monster.name = "Orc Sambackpack"
 monster.description = "an orc"
 monster.experience = 25
 monster.outfit = {
@@ -24,10 +25,6 @@ monster.manaCost = 300
 monster.changeTarget = {
 	interval = 4000,
 	chance = 0,
-}
-
-monster.strategiesTarget = {
-	nearest = 100,
 }
 
 monster.flags = {

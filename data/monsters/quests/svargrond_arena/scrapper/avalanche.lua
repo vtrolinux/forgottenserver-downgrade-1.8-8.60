@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Avalanche")
 local monster = {}
 
+monster.name = "Avalanche"
 monster.description = "Avalanche"
 monster.experience = 305
 monster.outfit = {
@@ -77,7 +78,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 27,
 	armor = 26,
-	--	mitigation = ???,
 }
 
 monster.elements = {

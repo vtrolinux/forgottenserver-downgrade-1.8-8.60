@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Malkhar Deathbringer Stop")
 local monster = {}
 
 monster.name = "Malkhar Deathbringer"
+monster.name = "Malkhar Deathbringer Stop"
 monster.description = "Malkhar Deathbringer"
 monster.experience = 0
 monster.outfit = {

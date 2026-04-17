@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Bluebeak")
 local monster = {}
 
+monster.name = "Bluebeak"
 monster.description = "a bluebeak"
 monster.experience = 2070
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 2430
 monster.maxHealth = 2430
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 51505
 monster.speed = 120
 monster.manaCost = 0

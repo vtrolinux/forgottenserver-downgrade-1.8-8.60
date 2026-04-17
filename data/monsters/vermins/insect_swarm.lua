@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Insect Swarm")
 local monster = {}
 
+monster.name = "Insect Swarm"
 monster.description = "an insect swarm"
 monster.experience = 40
 monster.outfit = {
@@ -61,7 +62,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Paiz the Pauperizer")
 local monster = {}
 
+monster.name = "Paiz the Pauperizer"
 monster.description = "Paiz the Pauperizer"
 monster.experience = 6300
 monster.outfit = {
@@ -99,7 +100,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 12, type = COMBAT_EARTHDAMAGE, minDamage = -280, maxDamage = -450, range = 4, radius = 4, shootEffect = CONST_ANI_EARTH, effect = CONST_ME_POFF, target = true },
 	{ name = "soulfire rune", interval = 2000, chance = 10, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 11, minDamage = -20, maxDamage = -20, range = 7, shootEffect = CONST_ANI_POISON, target = false },
+	{ name = "condition", interval = 2000, chance = 11, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -20, maxDamage = -20, range = 7, shootEffect = CONST_ANI_POISON } },
 }
 
 monster.defenses = {

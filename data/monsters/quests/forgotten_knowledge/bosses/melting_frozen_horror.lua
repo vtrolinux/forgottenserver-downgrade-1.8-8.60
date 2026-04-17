@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Melting Frozen Horror")
 local monster = {}
 
+monster.name = "Melting Frozen Horror"
 monster.description = "a melting frozen horror"
 monster.experience = 65000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1336,
+	bossRace = RARITY_ARCHFOE,
+}
 
 monster.health = 70000
 monster.maxHealth = 70000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 2000,
 	chance = 5,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1336,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -107,7 +106,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 60,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, radius = 7, effect = CONST_ME_BLOCKHIT, target = false },
 }
 

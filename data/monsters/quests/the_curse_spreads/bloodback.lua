@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Bloodback")
 local monster = {}
 
+monster.name = "Bloodback"
 monster.description = "Bloodback"
 monster.experience = 4000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1560,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 5200
 monster.maxHealth = 5200
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1560,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -108,7 +109,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 45,
 	armor = 40,
-	--	mitigation = ???,
 	{ name = "combat", interval = 4000, chance = 15, type = COMBAT_HEALING, minDamage = 150, maxDamage = 345, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

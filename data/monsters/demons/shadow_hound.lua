@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Shadow Hound")
 local monster = {}
 
+monster.name = "Shadow Hound"
 monster.description = "a shadow hound"
 monster.experience = 600
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

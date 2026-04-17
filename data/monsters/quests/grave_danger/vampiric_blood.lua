@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vampiric Blood")
 local monster = {}
 
+monster.name = "Vampiric Blood"
 monster.description = "a vampiric blood"
 monster.experience = 0
 monster.outfit = {
@@ -70,7 +71,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 45,
-	--	mitigation = ???,
 }
 
 monster.elements = {

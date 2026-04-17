@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ichgahal")
 local monster = {}
 
+monster.name = "Ichgahal"
 monster.description = "Ichgahal"
 monster.experience = 3250000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 2364,
@@ -95,8 +94,8 @@ monster.loot = {
 	{ name = "gold ingot", chance = 11421, maxCount = 1 },
 	{ name = "blue gem", chance = 8394, maxCount = 1 },
 	{ name = "bullseye potion", chance = 13783, maxCount = 36 },
-	--{ name = "putrefactive figurine", chance = 11416, maxCount = 1 },
-	--{ name = "ichgahal's fungal infestation", chance = 7902, maxCount = 1 },
+-- { name = "putrefactive figurine", chance = 11416, maxCount = 1 },
+-- { name = "ichgahal's fungal infestation", chance = 7902, maxCount = 1 },
 	{ name = "white gem", chance = 13559, maxCount = 3 },
 	{ id = 43895, chance = 360 }, -- Bag you covet
 	{ id = 43899, chance = 500 }, -- cursed wood
@@ -135,19 +134,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

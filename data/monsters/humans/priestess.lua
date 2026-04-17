@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Priestess")
 local monster = {}
 
+monster.name = "Priestess"
 monster.description = "a priestess"
 monster.experience = 420
 monster.outfit = {
@@ -109,7 +110,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_DEATHDAMAGE, minDamage = -55, maxDamage = -120, range = 7, shootEffect = CONST_ANI_SUDDENDEATH, effect = CONST_ME_MORTAREA, target = false },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_MANADRAIN, minDamage = -2, maxDamage = -170, range = 7, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 15, range = 7, shootEffect = CONST_ANI_POISON, target = false },
+	{ name = "condition", interval = 2000, chance = 15, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -150, maxDamage = -200, range = 7, shootEffect = CONST_ANI_POISON } },
 }
 
 monster.defenses = {

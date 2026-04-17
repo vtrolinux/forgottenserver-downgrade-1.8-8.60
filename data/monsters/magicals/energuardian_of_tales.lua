@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Energuardian of Tales")
 local monster = {}
 
+monster.name = "Energuardian of Tales"
 monster.description = "an energuardian of tales"
 monster.experience = 11361
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Minotaur Invader")
 local monster = {}
 
+monster.name = "Minotaur Invader"
 monster.description = "a minotaur invader"
 monster.experience = 1600
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

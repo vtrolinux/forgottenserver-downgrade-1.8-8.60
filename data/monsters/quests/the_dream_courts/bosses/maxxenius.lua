@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Maxxenius")
 local monster = {}
 
+monster.name = "Maxxenius"
 monster.description = "Maxxenius"
 monster.experience = 55000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1697,
+	bossRace = RARITY_NEMESIS,
+}
 
 monster.health = 320000
 monster.maxHealth = 320000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1697,
-	bossRace = RARITY_NEMESIS,
 }
 
 monster.strategiesTarget = {

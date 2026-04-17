@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Soul of Dragonking Zyrtarch")
 local monster = {}
 
+monster.name = "Soul of Dragonking Zyrtarch"
 monster.description = "soul of Dragonking Zyrtarch"
 monster.experience = 70000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1289,
@@ -105,6 +104,7 @@ monster.loot = {
 	{ id = 11692, chance = 300, unique = true }, -- snake god's sceptre
 	{ id = 3035, chance = 90000, maxCount = 6 }, -- platinum coin
 	{ id = 3030, chance = 3000, maxCount = 5 }, -- small ruby
+	{ name = "zaoan monk robe", chance = 500 },
 }
 
 monster.attacks = {
@@ -121,7 +121,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 64,
 	armor = 52,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 450, maxDamage = 550, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

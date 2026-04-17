@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Honour Guard")
 local monster = {}
 
+monster.name = "Honour Guard"
 monster.description = "a honour guard"
 monster.experience = 55
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

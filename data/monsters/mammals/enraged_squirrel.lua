@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Enraged Squirrel")
 local monster = {}
 
+monster.name = "Enraged Squirrel"
 monster.description = "an enraged squirrel"
 monster.experience = 15
 monster.outfit = {
@@ -71,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 5,
 	armor = 1,
-	--	mitigation = ???,
 }
 
 monster.elements = {

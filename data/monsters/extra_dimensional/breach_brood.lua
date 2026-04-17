@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Breach Brood")
 local monster = {}
 
+monster.name = "Breach Brood"
 monster.description = "a breach brood"
 monster.experience = 1760
 monster.outfit = {
@@ -95,6 +96,8 @@ monster.loot = {
 	{ id = 16121, chance = 4100 }, -- green crystal shard
 	{ id = 23544, chance = 470 }, -- collar of red plasma
 	{ id = 23542, chance = 470 }, -- collar of blue plasma
+	{ id = 50150, chance = 560 }, -- ring of orange plasma
+	{ id = 50152, chance = 560 }, -- collar of orange plasma
 	{ name = "spark sphere", chance = 14870 },
 }
 

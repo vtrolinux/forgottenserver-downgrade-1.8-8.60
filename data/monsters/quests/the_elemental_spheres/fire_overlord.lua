@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Fire Overlord")
 local monster = {}
 
+monster.name = "Fire Overlord"
 monster.description = "Fire Overlord"
 monster.experience = 2800
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 4000
 monster.maxHealth = 4000
@@ -82,7 +81,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 }
 
 monster.elements = {

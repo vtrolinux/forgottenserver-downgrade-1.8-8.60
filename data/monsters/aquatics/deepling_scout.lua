@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Deepling Scout")
 local monster = {}
 
+monster.name = "Deepling Scout"
 monster.description = "a deepling scout"
 monster.experience = 160
 monster.outfit = {
@@ -83,15 +84,15 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 75000, maxCount = 50 },
-	{ name = "hunting spear", chance = 15185, maxCount = 3 },
-	{ id = 3052, chance = 2127 }, -- life ring
-	{ name = "rusted armor", chance = 925 },
-	{ name = "heavy trident", chance = 505 },
-	{ name = "eye of a deepling", chance = 310 },
-	{ name = "fish fin", chance = 310 },
-	{ name = "small emerald", chance = 121 },
-	{ name = "flask of rust remover", chance = 111 },
+	{ name = "gold coin", chance = 75950, maxCount = 50 },
+	{ name = "hunting spear", chance = 15000, maxCount = 3 },
+	{ id = 3052, chance = 2020 }, -- life ring
+	{ name = "rusted armor", chance = 960 },
+	{ name = "heavy trident", chance = 480 },
+	{ name = "eye of a deepling", chance = 300 },
+	{ name = "fish fin", chance = 300 },
+	{ name = "small emerald", chance = 120 },
+	{ name = "flask of rust remover", chance = 110 },
 }
 
 monster.attacks = {

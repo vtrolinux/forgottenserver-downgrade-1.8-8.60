@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Demon Parrot")
 local monster = {}
 
+monster.name = "Demon Parrot"
 monster.description = "a demon parrot"
 monster.experience = 225
 monster.outfit = {
@@ -78,7 +79,7 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 81630, maxCount = 99 },
+	{ name = "gold coin", chance = 80110, maxCount = 100 },
 }
 
 monster.attacks = {

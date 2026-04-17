@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lesser Swarmer")
 local monster = {}
 
+monster.name = "Lesser Swarmer"
 monster.description = "a lesser swarmer"
 monster.experience = 0
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 5,
 	armor = 5,
-	--	mitigation = ???,
 }
 
 monster.elements = {

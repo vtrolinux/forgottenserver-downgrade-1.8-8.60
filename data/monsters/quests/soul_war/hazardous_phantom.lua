@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Hazardous Phantom")
 local monster = {}
 
+monster.name = "Hazardous Phantom"
 monster.description = "a hazardous phantom"
 monster.experience = 66000
 monster.outfit = {
@@ -20,7 +21,6 @@ monster.corpse = 34125
 monster.speed = 100
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 4000,

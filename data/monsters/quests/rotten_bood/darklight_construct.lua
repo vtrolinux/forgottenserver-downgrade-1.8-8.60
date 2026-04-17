@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Darklight Construct")
 local monster = {}
 
+monster.name = "Darklight Construct"
 monster.description = "a darklight construct"
 monster.experience = 22050
 monster.outfit = {
@@ -77,7 +78,7 @@ monster.loot = {
 	{ name = "small emerald", chance = 6646, maxCount = 3 },
 	{ name = "zaoan shoes", chance = 8614, maxCount = 1 },
 	{ name = "darklight core", chance = 5659, maxCount = 1 },
-	--{ name = "darklight obsidian axe", chance = 11129, maxCount = 1 },
+-- { name = "darklight obsidian axe", chance = 11129, maxCount = 1 },
 	{ name = "magma amulet", chance = 13240, maxCount = 1 },
 	{ name = "small ruby", chance = 12458, maxCount = 3 },
 }

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Hell Hole")
 local monster = {}
 
+monster.name = "Hell Hole"
 monster.description = "a hell hole"
 monster.experience = 0
 monster.outfit = {

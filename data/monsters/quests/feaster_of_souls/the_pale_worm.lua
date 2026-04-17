@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Pale Worm")
 local monster = {}
 
+monster.name = "The Pale Worm"
 monster.description = "The Pale Worm"
 monster.experience = 30000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1881,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 420000
 monster.maxHealth = 420000
 monster.race = "undead"
@@ -20,16 +26,10 @@ monster.corpse = 32702
 monster.speed = 125
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 60000,
 	chance = 0,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1881,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -98,8 +98,9 @@ monster.loot = {
 	{ name = "fabulous legs", chance = 150 },
 	{ name = "phantasmal axe", chance = 150 },
 	{ name = "ghost backpack", chance = 150 },
-	{ id = 32621, chance = 400 }, -- Ring of souls
 	{ name = "soulful legs", chance = 150 },
+	{ id = 32621, chance = 400 }, -- ring of souls
+	{ id = 50185, chance = 730 }, -- jade legs
 }
 
 monster.attacks = {
@@ -116,7 +117,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 150,
 	armor = 150,
-	--	mitigation = ???,
 	{ name = "speed", interval = 10000, chance = 40, speedChange = 510, effect = CONST_ME_MAGIC_GREEN, target = false, duration = 20000 },
 	{ name = "combat", interval = 5000, chance = 60, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 2500, effect = CONST_ME_MAGIC_BLUE, target = false },
 }

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Headwalker")
 local monster = {}
 
+monster.name = "Headwalker"
 monster.description = "a headwalker"
 monster.experience = 2050
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 2460
 monster.maxHealth = 2460
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 51552
 monster.speed = 165
 monster.manaCost = 0

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Enraged Soul")
 local monster = {}
 
+monster.name = "Enraged Soul"
 monster.description = "an enraged soul"
 monster.experience = 120
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rotten Man-Maggot")
 local monster = {}
 
+monster.name = "Rotten Man-Maggot"
 monster.description = "a rotten man-maggot"
 monster.experience = 22625
 monster.outfit = {
@@ -78,13 +79,13 @@ monster.voices = {
 monster.loot = {
 	{ name = "crystal coin", chance = 10340, maxCount = 1 },
 	{ name = "small amethyst", chance = 7364, maxCount = 2 },
-	--{ name = "lichen gobbler", chance = 8391, maxCount = 1 },
+-- { name = "lichen gobbler", chance = 8391, maxCount = 1 },
 	{ name = "rotten roots", chance = 11619, maxCount = 1 },
 	{ id = 6299, chance = 12591, maxCount = 1 }, -- death ring
 	{ name = "wood cape", chance = 14371, maxCount = 1 },
 	{ id = 3039, chance = 5155, maxCount = 1 }, -- red gem
 	{ name = "yellow gem", chance = 9564, maxCount = 1 },
-	--{ name = "blooded worm", chance = 5096, maxCount = 1 },
+-- { name = "blooded worm", chance = 5096, maxCount = 1 },
 }
 
 monster.attacks = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Chakoya Toolshaper")
 local monster = {}
 
+monster.name = "Chakoya Toolshaper"
 monster.description = "a chakoya toolshaper"
 monster.experience = 40
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Wrath of the Emperor")
 local monster = {}
 
+monster.name = "Wrath of the Emperor"
 monster.description = "Wrath of the Emperor"
 monster.experience = 600
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 55000
 monster.maxHealth = 55000
@@ -88,7 +87,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 45,
-	--	mitigation = ???,
 }
 
 monster.elements = {

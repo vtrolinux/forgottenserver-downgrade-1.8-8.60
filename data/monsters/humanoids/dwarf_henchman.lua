@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dwarf Henchman")
 local monster = {}
 
+monster.name = "Dwarf Henchman"
 monster.description = "a dwarf henchman"
 monster.experience = 15
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

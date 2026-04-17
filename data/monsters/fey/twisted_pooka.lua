@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Twisted Pooka")
 local monster = {}
 
+monster.name = "Twisted Pooka"
 monster.description = "a twisted pooka"
 monster.experience = 600
 monster.outfit = {
@@ -98,7 +99,9 @@ monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -120 },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_EARTHDAMAGE, minDamage = 0, maxDamage = -50, range = 4, shootEffect = CONST_ANI_SMALLSTONE, effect = CONST_ME_STONES, target = true },
 	-- earth damage
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 15, minDamage = -50, maxDamage = -100, range = 3, effect = CONST_ME_POISONAREA, target = true },
+	{ name = "condition", interval = 2000, chance = 15, target = true, condition =
+	{ type = CONDITION_POISON, minDamage = -50, maxDamage = -100, range = 3, effect = CONST_ME_POISONAREA } },
+
 	{ name = "drunk", interval = 2000, chance = 11, length = 4, spread = 2, effect = CONST_ME_STUN, target = false, duration = 5000 },
 }
 

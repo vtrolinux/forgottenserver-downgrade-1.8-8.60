@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Twisterror")
 local monster = {}
 
+monster.name = "Twisterror"
 monster.description = "Twisterror"
 monster.experience = 24000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 2605,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 35000
 monster.maxHealth = 35000
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 2605,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -114,91 +115,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = true },
 }
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
-
-mType:register(monster)
-
-local maxMonsters = 6
-local aditionalMonsters = {
-	{ name = "Spellreaper Inferniarch", pos = Position(33821, 32303, 9) },
-	{ name = "Spellreaper Inferniarch", pos = Position(33822, 32303, 9) },
-	{ name = "Spellreaper Inferniarch", pos = Position(33823, 32303, 9) },
-	{ name = "Spellreaper Inferniarch", pos = Position(33824, 32303, 9) },
-	{ name = "Spellreaper Inferniarch", pos = Position(33825, 32303, 9) },
-	{ name = "Spellreaper Inferniarch", pos = Position(33826, 32303, 9) },
-}
-
-local areaTopLeft = Position(33815, 32288, 9)
-local areaBottomRight = Position(33833, 32304, 9)
-
-local accumulatedTime = 0
-local summonInterval = 0
-local activeSummons = {}
-
-local function countMonstersInArea(monsterName)
-	local count = 0
-	for x = areaTopLeft.x, areaBottomRight.x do
-		for y = areaTopLeft.y, areaBottomRight.y do
-			local tile = Tile(Position(x, y, areaTopLeft.z))
-			if tile then
-				local creatures = tile:getCreatures()
-				for _, creature in ipairs(creatures) do
-					if creature:isMonster() and creature:getName():lower() == monsterName:lower() then
-						count = count + 1
-					end
-				end
-			end
-		end
-	end
-	return count
-end
-
-local function validateAndSummonCreatures()
-	for i = #activeSummons, 1, -1 do
-		if not Creature(activeSummons[i]) then
-			table.remove(activeSummons, i)
-		end
-	end
-
-	local currentCount = countMonstersInArea("Spellreaper Inferniarch")
-
-	if currentCount >= maxMonsters then
-		return
-	end
-
-	local missingMonsters = maxMonsters - currentCount
-
-	local summoned = 0
-	for _, monsterData in ipairs(aditionalMonsters) do
-		if summoned >= missingMonsters then
-			break
-		end
-		local summon = Game.createMonster(monsterData.name, monsterData.pos)
-		if summon then
-			table.insert(activeSummons, summon:getId())
-			summoned = summoned + 1
-		end
-	end
-end
-
-mType.onThink = function(monster, interval)
-	accumulatedTime = accumulatedTime + interval
-	if accumulatedTime >= summonInterval then
-		validateAndSummonCreatures()
-		accumulatedTime = 0
-		summonInterval = math.random(8000, 12000)
-	end
-end
 
 mType:register(monster)

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Fallen Mooh'tah Master Ghar")
 local monster = {}
 
+monster.name = "Fallen Mooh'tah Master Ghar"
 monster.description = "Fallen Mooh'Tah Master Ghar"
 monster.experience = 4400
 monster.outfit = {
@@ -73,7 +74,8 @@ monster.attacks = {
 	{ name = "combat", interval = 3000, chance = 45, type = COMBAT_FIREDAMAGE, minDamage = -80, maxDamage = -400, radius = 5, shootEffect = CONST_ANI_FIRE, effect = CONST_ME_FIREAREA, target = true },
 	{ name = "combat", interval = 4000, chance = 30, type = COMBAT_DEATHDAMAGE, minDamage = -80, maxDamage = -270, shootEffect = CONST_ANI_DEATH, effect = CONST_ME_MORTAREA, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 4500, chance = 40, minDamage = -10, maxDamage = -200, range = 10, shootEffect = CONST_ANI_POISON, target = false },
+	{ name = "condition", interval = 4500, chance = 40, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -10, maxDamage = -200, shootEffect = CONST_ANI_POISON } },
 	{ name = "combat", interval = 5000, chance = 30, type = COMBAT_EARTHDAMAGE, minDamage = -60, maxDamage = -300, length = 8, spread = 0, effect = CONST_ME_POISONAREA, target = false },
 }
 

@@ -1,8 +1,9 @@
 local mType = Game.createMonsterType("Quara Constrictor")
 local monster = {}
 
+monster.name = "Quara Constrictor"
 monster.description = "a quara constrictor"
-monster.experience = 250
+monster.experience = 380
 monster.outfit = {
 	lookType = 46,
 	lookHead = 0,
@@ -77,13 +78,13 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 87500, maxCount = 100 },
-	{ name = "quara tentacle", chance = 14520 },
-	{ name = "longsword", chance = 6931 },
-	{ name = "shrimp", chance = 5140, maxCount = 5 },
-	{ name = "brass armor", chance = 4810 },
-	{ name = "small amethyst", chance = 3060 },
-	{ name = "fish fin", chance = 490 },
+	{ name = "gold coin", chance = 87680, maxCount = 100 },
+	{ name = "quara tentacle", chance = 14530 },
+	{ name = "longsword", chance = 6960 },
+	{ name = "shrimp", chance = 5160, maxCount = 5 },
+	{ name = "brass armor", chance = 4860 },
+	{ name = "small amethyst", chance = 2960 },
+	{ name = "fish fin", chance = 500 },
 }
 
 monster.attacks = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Thawing Dragon Lord")
 local monster = {}
 
+monster.name = "Thawing Dragon Lord"
 monster.description = "a thawing dragon lord"
 monster.experience = 2100
 monster.outfit = {
@@ -82,7 +83,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 80,
-	--	mitigation = ???,
 }
 
 monster.elements = {

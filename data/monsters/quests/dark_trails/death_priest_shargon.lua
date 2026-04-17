@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Death Priest Shargon")
 local monster = {}
 
+monster.name = "Death Priest Shargon"
 monster.description = "Death Priest Shargon"
 monster.experience = 20000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 3,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1047,
@@ -98,7 +97,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 120,
 	armor = 120,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 0, maxDamage = 699, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

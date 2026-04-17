@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Concentrated Death")
 local monster = {}
 
+monster.name = "Concentrated Death"
 monster.description = "Concentrated Death"
 monster.experience = 0
 monster.outfit = {
@@ -20,7 +21,6 @@ monster.corpse = 28601
 monster.speed = 175
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 5000,
@@ -75,7 +75,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

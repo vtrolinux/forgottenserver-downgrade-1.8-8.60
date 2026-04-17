@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Imp Intruder")
 local monster = {}
 
+monster.name = "Imp Intruder"
 monster.description = "an imp intruder"
 monster.experience = 100
 monster.outfit = {
@@ -70,7 +71,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

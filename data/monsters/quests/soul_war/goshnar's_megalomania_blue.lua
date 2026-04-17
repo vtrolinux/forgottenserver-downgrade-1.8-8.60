@@ -2,10 +2,16 @@ local mType = Game.createMonsterType("Goshnar's Megalomania Blue")
 local monster = {}
 
 monster.name = "Goshnar's Megalomania"
+monster.name = "Goshnar's Megalomania Blue"
 monster.description = "Goshnar's Megalomania"
 monster.experience = 3000000
 monster.outfit = {
 	lookType = 1337,
+}
+
+monster.bosstiary = {
+	bossRaceId = 1969,
+	bossRace = RARITY_NEMESIS,
 }
 
 monster.health = 620000
@@ -16,10 +22,6 @@ monster.speed = 0
 monster.manaCost = 0
 monster.maxSummons = 4
 
-monster.bosstiary = {
-	bossRaceId = 1969,
-	bossRace = RARITY_NEMESIS,
-}
 
 monster.changeTarget = {
 	interval = 4000,
@@ -31,8 +33,6 @@ monster.strategiesTarget = {
 	health = 10,
 	damage = 10,
 }
-
-monster.events = {}
 
 monster.flags = {
 	summonable = false,
@@ -95,7 +95,7 @@ monster.loot = {
 
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = -400, maxDamage = -2225 },
-	{ name = "megalomania blue", interval = 6000, chance = 100, target = true },
+	--{ name = "megalomania blue", interval = 6000, chance = 100, target = true },
 	{ name = "combat", interval = 30000, chance = 100, type = COMBAT_LIFEDRAIN, minDamage = -1000, maxDamage = -1500, length = 8, radius = 5, spread = 0, effect = CONST_ME_PINK_ENERGY_SPARK, target = true },
 }
 

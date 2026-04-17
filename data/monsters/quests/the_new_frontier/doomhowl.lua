@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Doomhowl")
 local monster = {}
 
+monster.name = "Doomhowl"
 monster.description = "Doomhowl"
 monster.experience = 3750
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 55,
 	armor = 50,
-	--	mitigation = ???,
 	{ name = "speed", interval = 2000, chance = 10, speedChange = 390, effect = CONST_ME_MAGIC_RED, target = false, duration = 6000 },
 }
 

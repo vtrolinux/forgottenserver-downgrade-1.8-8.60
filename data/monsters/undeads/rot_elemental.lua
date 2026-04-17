@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rot Elemental")
 local monster = {}
 
+monster.name = "Rot Elemental"
 monster.description = "a rot elemental"
 monster.experience = 750
 monster.outfit = {
@@ -98,7 +99,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 13, type = COMBAT_EARTHDAMAGE, minDamage = -150, maxDamage = -250, range = 7, radius = 3, shootEffect = CONST_ANI_GLOOTHSPEAR, effect = CONST_ME_POISONAREA, target = true },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_EARTHDAMAGE, minDamage = -150, maxDamage = -230, length = 6, spread = 0, effect = CONST_ME_POISONAREA, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -200, maxDamage = -300, range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POISONAREA, target = true },
+	{ name = "condition", interval = 2000, chance = 10, target = true, condition =
+	{ type = CONDITION_POISON, minDamage = -200, maxDamage = -300,  range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POISONAREA } },
 	{ name = "rot elemental paralyze", interval = 2000, chance = 11, target = false },
 }
 

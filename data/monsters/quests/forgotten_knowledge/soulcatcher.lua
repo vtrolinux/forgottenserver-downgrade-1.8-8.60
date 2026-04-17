@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Soulcatcher")
 local monster = {}
 
+monster.name = "Soulcatcher"
 monster.description = "a soulcatcher"
 monster.experience = 320
 monster.outfit = {
@@ -43,7 +44,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Black Sphinx Acolyte")
 local monster = {}
 
+monster.name = "Black Sphinx Acolyte"
 monster.description = "a black sphinx acolyte"
 monster.experience = 7200
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Chagorz")
 local monster = {}
 
+monster.name = "Chagorz"
 monster.description = "Chagorz"
 monster.experience = 3250000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 2366,
@@ -76,21 +75,26 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "crystal coin", chance = 5441, maxCount = 108 },
-	{ name = "mastermind potion", chance = 5530, maxCount = 28 },
-	{ name = "supreme health potion", chance = 5044, maxCount = 154 },
-	{ name = "giant sapphire", chance = 10546, maxCount = 1 },
-	{ name = "ultimate mana potion", chance = 5752, maxCount = 107 },
-	{ name = "violet gem", chance = 13217, maxCount = 4 },
-	{ id = 3039, chance = 13465, maxCount = 1 }, -- red gem
-	{ name = "yellow gem", chance = 14071, maxCount = 1 },
-	{ name = "blue gem", chance = 11156, maxCount = 3 },
-	{ name = "bullseye potion", chance = 6792, maxCount = 21 },
-	{ name = "giant amethyst", chance = 11603, maxCount = 1 },
-	{ name = "giant topaz", chance = 12280, maxCount = 1 },
-	{ name = "green gem", chance = 8348, maxCount = 1 },
-	{ name = "ultimate spirit potion", chance = 10934, maxCount = 18 },
-	{ name = "white gem", chance = 9600, maxCount = 3 },
+	{ name = "crystal coin", chance = 100000, maxCount = 100 },
+	{ name = "supreme health potion", chance = 61111, maxCount = 164 },
+	{ id = 3039, chance = 44444, maxCount = 1 }, -- red gem
+	{ name = "ultimate mana potion", chance = 44444, maxCount = 98 },
+	{ name = "green gem", chance = 38889, maxCount = 1 },
+	{ name = "ultimate spirit potion", chance = 38889, maxCount = 127 },
+	{ name = "yellow gem", chance = 33333, maxCount = 1 },
+	{ name = "mastermind potion", chance = 27778, maxCount = 27 },
+	{ name = "violet gem", chance = 27778, maxCount = 1 },
+	{ name = "giant sapphire", chance = 22222, maxCount = 1 },
+	{ name = "berserk potion", chance = 16667, maxCount = 40 },
+	{ name = "bullseye potion", chance = 16667, maxCount = 31 },
+	{ name = "giant topaz", chance = 16667, maxCount = 1 },
+	{ name = "blue gem", chance = 11111, maxCount = 1 },
+	{ name = "white gem", chance = 11111, maxCount = 3 },
+-- { name = "darklight figurine", chance = 5560, maxCount = 1 },
+	{ name = "gold ingot", chance = 5560, maxCount = 1 },
+	{ name = "raw watermelon tourmaline", chance = 1050, maxCount = 1 },
+-- { name = "the essence of chagorz", chance = 1050, maxCount = 1 },
+	{ name = "unicorn figurine", chance = 500 },
 	{ id = 43895, chance = 360 }, -- Bag you covet
 	{ name = "darklight geode", chance = 500 },
 }
@@ -129,19 +133,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

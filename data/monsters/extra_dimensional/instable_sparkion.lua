@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Instable Sparkion")
 local monster = {}
 
+monster.name = "Instable Sparkion"
 monster.description = "an instable sparkion"
 monster.experience = 1350
 monster.outfit = {
@@ -98,7 +99,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_PHYSICALDAMAGE, minDamage = -250, maxDamage = -350, length = 6, spread = 0, effect = CONST_ME_GROUNDSHAKER, target = false },
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_ENERGYDAMAGE, minDamage = -150, maxDamage = -200, range = 5, shootEffect = CONST_ANI_ENERGYBALL, effect = CONST_ME_ENERGYHIT, target = true },
 	-- energy damage
-	{ name = "condition", type = CONDITION_ENERGY, interval = 2000, chance = 20, minDamage = -300, maxDamage = -600, range = 6, radius = 4, shootEffect = CONST_ANI_ENERGY, effect = CONST_ME_PURPLEENERGY, target = true },
+	{ name = "condition", interval = 2000, chance = 20, target = true, condition =
+	{ type = CONDITION_ENERGY, minDamage = -300, maxDamage = -600, range = 6, radius = 4, shootEffect = CONST_ANI_ENERGY, effect = CONST_ME_PURPLEENERGY } },
 }
 
 monster.defenses = {

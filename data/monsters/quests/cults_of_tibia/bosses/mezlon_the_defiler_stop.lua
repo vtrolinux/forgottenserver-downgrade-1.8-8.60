@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Mezlon The Defiler Stop")
 local monster = {}
 
 monster.name = "Mezlon The Defiler"
+monster.name = "Mezlon The Defiler Stop"
 monster.description = "Mezlon The Defiler"
 monster.experience = 0
 monster.outfit = {
@@ -72,7 +73,7 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 35,
-	{ name = "heal monster 9x9", interval = 2000, chance = 40, effect = CONST_ME_MAGIC_RED, target = false },
+	{ name = "combat", interval = 2000, chance = 40, type = COMBAT_HEALING, minDamage = 449, maxDamage = 899, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 
 monster.elements = {

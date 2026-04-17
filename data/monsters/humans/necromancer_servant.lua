@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Necromancer Servant")
 local monster = {}
 
+monster.name = "Necromancer Servant"
 monster.description = "a necromancer servant"
 monster.experience = 590
 monster.outfit = {
@@ -19,8 +20,6 @@ monster.race = "blood"
 monster.corpse = 18174
 monster.speed = 105
 monster.manaCost = 0
-
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 5000,

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Greater Canopic Jar")
 local monster = {}
 
+monster.name = "Greater Canopic Jar"
 monster.description = "a greater canopic jar"
 monster.experience = 0
 monster.outfit = {
@@ -31,6 +32,7 @@ monster.strategiesTarget = {
 	damage = 10,
 	random = 10,
 }
+
 
 monster.summon = {
 	maxSummons = 1,
@@ -75,7 +77,6 @@ monster.attacks = {}
 monster.defenses = {
 	defense = 35,
 	armor = 35,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 50, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 1500, radius = 7, effect = CONST_ME_MAGIC_GREEN, target = false },
 }
 

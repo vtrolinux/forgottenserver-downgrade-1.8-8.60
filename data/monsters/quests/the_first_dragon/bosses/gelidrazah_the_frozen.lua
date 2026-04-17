@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Gelidrazah the Frozen")
 local monster = {}
 
+monster.name = "Gelidrazah the Frozen"
 monster.description = "Gelidrazah the Frozen"
 monster.experience = 9000
 monster.outfit = {
@@ -98,7 +99,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 64,
 	armor = 52,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 150, maxDamage = 450, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

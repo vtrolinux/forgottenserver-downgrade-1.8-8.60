@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Splasher")
 local monster = {}
 
+monster.name = "Splasher"
 monster.description = "Splasher"
 monster.experience = 1500
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 1700
 monster.maxHealth = 1700
@@ -84,7 +83,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_HEALING, minDamage = 100, maxDamage = 120, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

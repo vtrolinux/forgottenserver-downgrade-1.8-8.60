@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Psychic Spirit Elemental")
 local monster = {}
 
+monster.name = "Psychic Spirit Elemental"
 monster.description = "a psychic spirit elemental"
 monster.experience = 1300
 monster.outfit = {
@@ -67,7 +68,7 @@ monster.loot = {
 	{ name = "gold coin", chance = 44000, maxCount = 120 },
 	{ name = "holy ash", chance = 10800 },
 	{ name = "small topaz", chance = 4500, maxCount = 2 },
-	--{ name = "spirited soil", chance = 2100 },
+-- { name = "spirited soil", chance = 2100 },
 	{ name = "moonlight rod", chance = 1935 },
 }
 

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Wandering Pillar")
 local monster = {}
 
+monster.name = "Wandering Pillar"
 monster.description = "a wandering pillar"
 monster.experience = 23200
 monster.outfit = {
@@ -80,8 +81,8 @@ monster.voices = {
 
 monster.loot = {
 	{ name = "crystal coin", chance = 6629, maxCount = 1 },
-	--{ name = "darklight obsidian axe", chance = 14652, maxCount = 1 },
-	--{ name = "basalt crumbs", chance = 8184, maxCount = 1 },
+-- { name = "darklight obsidian axe", chance = 14652, maxCount = 1 },
+-- { name = "basalt crumbs", chance = 8184, maxCount = 1 },
 	{ name = "sulphurous stone", chance = 5873, maxCount = 1 },
 	{ name = "magma boots", chance = 5080, maxCount = 1 },
 	{ id = 12600, chance = 9802, maxCount = 4 }, -- coal
@@ -93,7 +94,7 @@ monster.loot = {
 	{ name = "magma clump", chance = 6260, maxCount = 1 },
 	{ id = 3039, chance = 9915, maxCount = 1 }, -- red gem
 	{ name = "green gem", chance = 12864, maxCount = 1 },
-	--{ name = "basalt core", chance = 9037, maxCount = 1 },
+-- { name = "basalt core", chance = 9037, maxCount = 1 },
 }
 
 monster.attacks = {

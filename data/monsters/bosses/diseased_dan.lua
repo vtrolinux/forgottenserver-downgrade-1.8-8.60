@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Diseased Dan")
 local monster = {}
 
+monster.name = "Diseased Dan"
 monster.description = "Diseased Dan"
 monster.experience = 300
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 486,
@@ -74,7 +73,7 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 28000, maxCount = 21 },
+	{ name = "gold coin", chance = 39650, maxCount = 25 },
 }
 
 monster.attacks = {
@@ -87,7 +86,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 10,
-	--	mitigation = ???,
 	{ name = "speed", interval = 10000, chance = 40, speedChange = 310, effect = CONST_ME_MAGIC_GREEN, target = false, duration = 20000 },
 	{ name = "combat", interval = 5000, chance = 60, type = COMBAT_HEALING, minDamage = 50, maxDamage = 80, effect = CONST_ME_MAGIC_BLUE, target = false },
 }

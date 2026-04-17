@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spite of the Emperor")
 local monster = {}
 
+monster.name = "Spite of the Emperor"
 monster.description = "Spite of the Emperor"
 monster.experience = 500
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 48000
 monster.maxHealth = 48000
@@ -84,7 +83,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 45,
-	--	mitigation = ???,
 }
 
 monster.elements = {

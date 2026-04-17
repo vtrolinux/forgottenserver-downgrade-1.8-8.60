@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Shulgrax")
 local monster = {}
 
+monster.name = "Shulgrax"
 monster.description = "Shulgrax"
 monster.experience = 500000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1191,
+	bossRace = RARITY_ARCHFOE,
+}
 
 monster.health = 40000
 monster.maxHealth = 40000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1191,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {

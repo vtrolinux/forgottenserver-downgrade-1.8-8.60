@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Jaul")
 local monster = {}
 
+monster.name = "Jaul"
 monster.description = "Jaul"
 monster.experience = 30000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 773,
@@ -97,7 +96,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 	{ name = "combat", interval = 5000, chance = 7, type = COMBAT_HEALING, minDamage = 12000, maxDamage = 19000, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Orcus the Cruel")
 local monster = {}
 
+monster.name = "Orcus the Cruel"
 monster.description = "Orcus the Cruel"
 monster.experience = 280
 monster.outfit = {
@@ -74,7 +75,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 39,
-	--	mitigation = ???,
 }
 
 monster.elements = {

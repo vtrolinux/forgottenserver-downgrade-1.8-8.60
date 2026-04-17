@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Undead Mine Worker")
 local monster = {}
 
+monster.name = "Undead Mine Worker"
 monster.description = "an undead mine worker"
 monster.experience = 45
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mirror Image")
 local monster = {}
 
+monster.name = "Mirror Image"
 monster.description = "a mirror image"
 monster.experience = 27000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 35000
 monster.maxHealth = 35000
@@ -81,7 +80,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 75,
 	armor = 0,
-	--	mitigation = ???,
 }
 
 monster.elements = {
@@ -103,38 +101,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-monster.events = {}
-
-mType.onPlayerAttack = function(monster, attackerPlayer)
-
-	local apparitionType = ""
-
-	local sameVocationProbability = 70 -- 70% chance for create monster of first player attack vocation
-	if attackerPlayer:isDruid() then
-		apparitionType = "Druid's Apparition"
-	elseif attackerPlayer:isKnight() then
-		apparitionType = "Knight's Apparition"
-	elseif attackerPlayer:isPaladin() then
-		apparitionType = "Paladin's Apparition"
-	elseif attackerPlayer:isSorcerer() then
-		apparitionType = "Sorcerer's Apparition"
-	elseif attackerPlayer:isMonk() then
-		apparitionType = "Monk's Apparition"
-	end
-
-	if math.random(100) > sameVocationProbability then
-		repeat
-			local randomIndex = math.random(#SoulWarQuest.apparitionNames)
-			if SoulWarQuest.apparitionNames[randomIndex] ~= apparitionType then
-				apparitionType = SoulWarQuest.apparitionNames[randomIndex]
-				break
-			end
-		until false
-	end
-
-	Game.createMonster(apparitionType, monster:getPosition(), true, true)
-	monster:remove()
-end
 
 mType:register(monster)

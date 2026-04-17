@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Freed Soul")
 local monster = {}
 
+monster.name = "Freed Soul"
 monster.description = "a Freed Soul"
 monster.experience = 0
 monster.outfit = {
@@ -75,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 50,
-	--	mitigation = ???,
 }
 
 monster.elements = {

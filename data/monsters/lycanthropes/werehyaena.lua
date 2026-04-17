@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Werehyaena")
 local monster = {}
 
+monster.name = "Werehyaena"
 monster.description = "a werehyaena"
 monster.experience = 2200
 monster.outfit = {
@@ -101,7 +102,7 @@ monster.attacks = {
 }
 
 monster.defenses = {
-	{ name = "speed", chance = 15, interval = 2 * 1000, speed = 200, duration = 5 * 1000, effect = CONST_ME_MAGIC_BLUE },
+	{ name = "speed", chance = 15, interval = 2 * 1000, speedChange = 200, duration = 5 * 1000, effect = CONST_ME_MAGIC_BLUE },
 	defense = 0,
 	armor = 36,
 	mitigation = 0.88,

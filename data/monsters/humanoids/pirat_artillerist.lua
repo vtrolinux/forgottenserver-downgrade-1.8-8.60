@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Pirat Artillerist")
 local monster = {}
 
+monster.name = "Pirat Artillerist"
 monster.description = "a pirat artillerist"
 monster.experience = 2800
 monster.outfit = {
@@ -88,7 +89,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 65,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_HEALING, minDamage = 30, maxDamage = 60, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

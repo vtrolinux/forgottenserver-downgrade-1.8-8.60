@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Candy Horror")
 local monster = {}
 
+monster.name = "Candy Horror"
 monster.description = "a candy horror"
 monster.experience = 3000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 2535
 monster.Bestiary = {

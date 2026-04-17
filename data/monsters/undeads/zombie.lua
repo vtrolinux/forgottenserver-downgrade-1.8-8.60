@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Zombie")
 local monster = {}
 
+monster.name = "Zombie"
 monster.description = "a zombie"
 monster.experience = 280
 monster.outfit = {

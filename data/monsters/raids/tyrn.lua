@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Tyrn")
 local monster = {}
 
+monster.name = "Tyrn"
 monster.description = "Tyrn"
 monster.experience = 6900
 monster.outfit = {
@@ -105,7 +106,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 68,
 	armor = 58,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 33, type = COMBAT_HEALING, minDamage = 200, maxDamage = 300, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "invisible", interval = 2000, chance = 11, effect = CONST_ME_ENERGYHIT },
 	{ name = "tyrn heal", interval = 1000, chance = 100, target = false },

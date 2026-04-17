@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Brutus Bloodbeard")
 local monster = {}
 
+monster.name = "Brutus Bloodbeard"
 monster.description = "Brutus Bloodbeard"
 monster.experience = 795
 monster.outfit = {
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 0,
 	lookAddons = 0,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 274,
+	bossRace = RARITY_NEMESIS,
 }
 
 monster.health = 1555

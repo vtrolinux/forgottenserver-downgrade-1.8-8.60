@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Cosmic Energy Prism B Invu")
 local monster = {}
 
 monster.name = "Cosmic Energy Prism B"
+monster.name = "Cosmic Energy Prism B Invu"
 monster.description = "cosmic energy prism B"
 monster.experience = 840
 monster.outfit = {

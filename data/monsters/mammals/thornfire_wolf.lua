@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Thornfire Wolf")
 local monster = {}
 
+monster.name = "Thornfire Wolf"
 monster.description = "a thornfire wolf"
 monster.experience = 200
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Stolen Soul")
 local monster = {}
 
+monster.name = "Stolen Soul"
 monster.description = "a stolen soul"
 monster.experience = 0
 monster.outfit = {
@@ -67,7 +68,6 @@ monster.loot = {}
 monster.defenses = {
 	defense = 50,
 	armor = 50,
-	--	mitigation = ???,
 }
 
 monster.elements = {

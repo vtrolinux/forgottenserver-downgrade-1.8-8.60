@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Reality Reaver")
 local monster = {}
 
+monster.name = "Reality Reaver"
 monster.description = "a reality reaver"
 monster.experience = 2480
 monster.outfit = {
@@ -99,6 +100,8 @@ monster.loot = {
 	{ id = 23529, chance = 370 }, -- ring of blue plasma
 	{ id = 23544, chance = 300 }, -- collar of red plasma
 	{ id = 23531, chance = 220 }, -- ring of green plasma
+	{ id = 50150, chance = 560 }, -- ring of orange plasma
+	{ id = 50152, chance = 560 }, -- collar of orange plasma
 }
 
 monster.attacks = {
@@ -106,7 +109,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_ENERGYDAMAGE, minDamage = -180, maxDamage = -400, range = 5, radius = 5, shootEffect = CONST_ANI_ENERGYBALL, effect = CONST_ME_PURPLEENERGY, target = true },
 	{ name = "reality reaver wave", interval = 2000, chance = 20, minDamage = -200, maxDamage = -500, target = false },
 	-- energy damage
-	{ name = "condition", type = CONDITION_ENERGY, interval = 2000, chance = 20, minDamage = -400, maxDamage = -800, radius = 5, effect = CONST_ME_STUN, target = false },
+	{ name = "condition", interval = 2000, chance = 20, target = false, condition =
+	{ type = CONDITION_ENERGY, minDamage = -400, maxDamage = -800, radius = 5, effect = CONST_ME_STUN } },
 }
 
 monster.defenses = {

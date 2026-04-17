@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Unbound Demon")
 local monster = {}
 
+monster.name = "Unbound Demon"
 monster.description = "an unbound demon"
 monster.experience = 5000
 monster.outfit = {

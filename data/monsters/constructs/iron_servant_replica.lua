@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Iron Servant Replica")
 local monster = {}
 
+monster.name = "Iron Servant Replica"
 monster.description = "an iron servant replica"
 monster.experience = 210
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

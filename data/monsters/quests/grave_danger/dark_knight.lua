@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dark Knight")
 local monster = {}
 
+monster.name = "Dark Knight"
 monster.description = "a dark knight"
 monster.experience = 0
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Plunder Patriarch")
 local monster = {}
 
+monster.name = "Plunder Patriarch"
 monster.description = "plunder patriarch"
 monster.experience = 0
 monster.outfit = {
@@ -87,6 +88,8 @@ monster.loot = {
 	{ name = "alicorn quiver", chance = 100 },
 	{ name = "arcanomancer regalia", chance = 100 },
 	{ name = "arcanomancer folio", chance = 100 },
+	{ name = "ethereal coned hat", chance = 100 },
+	{ id = 50147, chance = 100 },
 	{ id = 39183, chance = 100 }, -- name = "charged arcanomancer sigil"
 	{ id = 39186, chance = 100 }, -- name = "charged arboreal ring"
 	{ id = 39180, chance = 100 }, -- name = "charged alicorn ring"
@@ -102,7 +105,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 0,
-	--	mitigation = ???,
 	{ name = "combat", interval = 3000, chance = 35, type = COMBAT_HEALING, minDamage = 400, maxDamage = 500, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 2000, chance = 15, speedChange = 320, effect = CONST_ME_MAGIC_RED, target = false, duration = 5000 },
 }

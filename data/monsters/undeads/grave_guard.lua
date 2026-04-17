@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Grave Guard")
 local monster = {}
 
+monster.name = "Grave Guard"
 monster.description = "a grave guard"
 monster.experience = 485
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

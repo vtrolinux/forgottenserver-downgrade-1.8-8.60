@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Amenef the Burning")
 local monster = {}
 
+monster.name = "Amenef the Burning"
 monster.description = "Amenef the Burning"
 monster.experience = 21500
 monster.outfit = {
@@ -107,7 +108,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 82,
-	--	mitigation = ???,
 }
 
 monster.elements = {

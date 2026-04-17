@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Grand Mother Foulscale")
 local monster = {}
 
+monster.name = "Grand Mother Foulscale"
 monster.description = "Grand Mother Foulscale"
 monster.experience = 1400
 monster.outfit = {
@@ -106,7 +107,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 20,
 	armor = 27,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 17, type = COMBAT_HEALING, minDamage = 34, maxDamage = 66, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

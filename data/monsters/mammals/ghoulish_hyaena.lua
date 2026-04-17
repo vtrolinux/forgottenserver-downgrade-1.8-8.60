@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ghoulish Hyaena")
 local monster = {}
 
+monster.name = "Ghoulish Hyaena"
 monster.description = "a ghoulish hyaena"
 monster.experience = 195
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Katex Blood Tongue")
 local monster = {}
 
+monster.name = "Katex Blood Tongue"
 monster.description = "Katex Blood Tongue"
 monster.experience = 5000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1981,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 6300
 monster.maxHealth = 6300
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 0,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1981,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -109,7 +110,7 @@ monster.attacks = {
 }
 
 monster.defenses = {
-	{ name = "speed", interval = 2000, chance = 15, speed = 200, duration = 5000, effect = CONST_ME_MAGIC_BLUE },
+	{ name = "speed", interval = 2000, chance = 15, speedChange = 200, duration = 5000, effect = CONST_ME_MAGIC_BLUE },
 	defense = 0,
 	armor = 38,
 }

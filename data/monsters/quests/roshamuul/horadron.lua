@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Horadron")
 local monster = {}
 
+monster.name = "Horadron"
 monster.description = "Horadron"
 monster.experience = 18000
 monster.outfit = {
@@ -113,13 +114,13 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 30, type = COMBAT_EARTHDAMAGE, minDamage = -100, maxDamage = -235, range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_HITBYPOISON, target = true },
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_EARTHDAMAGE, minDamage = -100, maxDamage = -250, radius = 3, effect = CONST_ME_POISONAREA, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 25, minDamage = -300, maxDamage = -450, radius = 3, effect = CONST_ME_HITBYPOISON, target = false },
+	{ name = "condition", interval = 2000, chance = 25, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -300, maxDamage = -450,  radius = 3, effect = CONST_ME_HITBYPOISON } },
 }
 
 monster.defenses = {
 	defense = 65,
 	armor = 72,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 35, type = COMBAT_HEALING, minDamage = 400, maxDamage = 700, target = false },
 }
 

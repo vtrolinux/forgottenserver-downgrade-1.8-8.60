@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spirit of Fertility")
 local monster = {}
 
+monster.name = "Spirit of Fertility"
 monster.description = "a spirit of fertility"
 monster.experience = 1100
 monster.outfit = {
@@ -72,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 60, maxDamage = 75, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

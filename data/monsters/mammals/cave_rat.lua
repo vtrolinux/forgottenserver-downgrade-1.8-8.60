@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Cave Rat")
 local monster = {}
 
+monster.name = "Cave Rat"
 monster.description = "a cave rat"
 monster.experience = 10
 monster.outfit = {
@@ -88,7 +89,7 @@ monster.attacks = {
 }
 
 monster.defenses = {
-	defense = 5,
+	defense = 0,
 	armor = 1,
 	mitigation = 0.10,
 }

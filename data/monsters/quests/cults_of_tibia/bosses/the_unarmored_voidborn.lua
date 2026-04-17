@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Unarmored Voidborn")
 local monster = {}
 
+monster.name = "The Unarmored Voidborn"
 monster.description = "The Unarmored Voidborn"
 monster.experience = 15000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1406,
@@ -111,7 +110,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 50,
-	--	mitigation = ???,
 }
 
 monster.elements = {

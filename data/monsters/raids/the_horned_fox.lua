@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Horned Fox")
 local monster = {}
 
+monster.name = "The Horned Fox"
 monster.description = "the Horned Fox"
 monster.experience = 4400
 monster.outfit = {
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 0,
 	lookAddons = 0,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 202,
+	bossRace = RARITY_NEMESIS,
 }
 
 monster.health = 7990
@@ -95,7 +101,8 @@ monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -525 },
 	{ name = "combat", interval = 1000, chance = 25, type = COMBAT_PHYSICALDAMAGE, minDamage = 0, maxDamage = -20, range = 7, shootEffect = CONST_ANI_BOLT, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 1000, chance = 40, minDamage = -10, maxDamage = -200, range = 10, shootEffect = CONST_ANI_POISON, target = false },
+	{ name = "condition", interval = 1000, chance = 40, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -10, maxDamage = -200, range = 10, shootEffect = CONST_ANI_POISON } },
 }
 
 monster.defenses = {

@@ -1,19 +1,10 @@
 local mType = Game.createMonsterType("Silencer")
 local monster = {}
 
+monster.name = "Silencer"
 monster.description = "a silencer"
 monster.experience = 5100
-monster.outfit = {
-	lookType = 585,
-	lookHead = 0,
-	lookBody = 0,
-	lookLegs = 0,
-	lookFeet = 0,
-	lookAddons = 0,
-	lookMount = 0,
-}
-
-monster.events = {}
+monster.outfit = { lookType = 585 }
 
 monster.raceId = 1014
 monster.Bestiary = {
@@ -61,7 +52,7 @@ monster.flags = {
 	targetDistance = 1,
 	runHealth = 0,
 	healthHidden = false,
-	isBlockable = false,
+	isBlockable = true,
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,

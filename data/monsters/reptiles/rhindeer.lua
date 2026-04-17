@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rhindeer")
 local monster = {}
 
+monster.name = "Rhindeer"
 monster.description = "a rhindeer"
 monster.experience = 5600
 monster.outfit = {
@@ -25,7 +26,6 @@ monster.Bestiary = {
 	Occurrence = 1,
 	Locations = "Ingol",
 }
-
 monster.health = 8650
 monster.maxHealth = 8650
 monster.race = "blood"

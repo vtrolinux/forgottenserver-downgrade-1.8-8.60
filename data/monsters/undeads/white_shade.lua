@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("White Shade")
 local monster = {}
 
+monster.name = "White Shade"
 monster.description = "a white shade"
 monster.experience = 120
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

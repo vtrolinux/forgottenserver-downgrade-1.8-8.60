@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Gingerbread Man")
 local monster = {}
 
+monster.name = "Gingerbread Man"
 monster.description = "a gingerbread man"
 monster.experience = 22
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

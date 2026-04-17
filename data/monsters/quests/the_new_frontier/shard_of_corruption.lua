@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Shard of Corruption")
 local monster = {}
 
+monster.name = "Shard of Corruption"
 monster.description = "Shard of Corruption"
 monster.experience = 5
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 600
 monster.maxHealth = 600
@@ -74,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 20,
 	armor = 20,
-	--	mitigation = ???,
 }
 
 monster.elements = {

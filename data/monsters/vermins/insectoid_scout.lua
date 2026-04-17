@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Insectoid Scout")
 local monster = {}
 
+monster.name = "Insectoid Scout"
 monster.description = "an insectoid scout"
 monster.experience = 150
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

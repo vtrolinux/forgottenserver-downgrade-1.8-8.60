@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Cinder Wyrmling")
 local monster = {}
 
+monster.name = "Cinder Wyrmling"
 monster.description = "a cinder wyrmling"
 monster.experience = 1950
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 2350
 monster.maxHealth = 2350
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 51509
 monster.speed = 125
 monster.manaCost = 0

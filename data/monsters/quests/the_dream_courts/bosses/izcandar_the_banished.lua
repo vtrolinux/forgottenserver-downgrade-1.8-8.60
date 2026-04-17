@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Izcandar the Banished")
 local monster = {}
 
+monster.name = "Izcandar the Banished"
 monster.description = "Izcandar the Banished"
 monster.experience = 55000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 2,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1699,
@@ -126,7 +125,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 60,
-	--	mitigation = ???,
 }
 
 monster.elements = {

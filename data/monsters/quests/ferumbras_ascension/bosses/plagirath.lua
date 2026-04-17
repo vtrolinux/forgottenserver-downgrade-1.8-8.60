@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Plagirath")
 local monster = {}
 
+monster.name = "Plagirath"
 monster.description = "Plagirath"
 monster.experience = 500000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 1,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1199,
@@ -112,7 +111,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 125,
 	armor = 125,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 3000, maxDamage = 4000, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 2000, chance = 30, speedChange = 440, effect = CONST_ME_MAGIC_RED, target = false, duration = 6000 },
 	{ name = "plagirath summon", interval = 2000, chance = 15, target = false },

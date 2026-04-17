@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Infernal Demon")
 local monster = {}
 
+monster.name = "Infernal Demon"
 monster.description = "an infernal demon"
 monster.experience = 17430
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Claustrophobic Inferno.",
 }
 
-monster.events = {}
 
 monster.health = 32000
 monster.maxHealth = 32000

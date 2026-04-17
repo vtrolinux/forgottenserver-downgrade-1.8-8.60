@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Gnome Pack Crawler")
 local monster = {}
 
+monster.name = "Gnome Pack Crawler"
 monster.description = "a gnome pack crawler"
 monster.experience = 0
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.loot = {
 monster.defenses = {
 	defense = 45,
 	armor = 45,
-	--	mitigation = ???,
 }
 
 monster.elements = {

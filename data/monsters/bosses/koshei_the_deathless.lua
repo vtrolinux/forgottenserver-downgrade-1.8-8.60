@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Koshei the Deathless")
 local monster = {}
 
+monster.name = "Koshei the Deathless"
 monster.description = "Koshei the Deathless"
 monster.experience = 0
 monster.outfit = {
@@ -85,14 +86,14 @@ monster.attacks = {
 	{ name = "combat", interval = 1000, chance = 11, type = COMBAT_LIFEDRAIN, minDamage = -70, maxDamage = -135, radius = 3, effect = CONST_ME_MAGIC_RED, target = false },
 	{ name = "combat", interval = 2000, chance = 9, type = COMBAT_DEATHDAMAGE, minDamage = -50, maxDamage = -140, length = 8, spread = 0, effect = CONST_ME_MORTAREA, target = false },
 	-- curse
-	{ name = "condition", type = CONDITION_CURSED, interval = 3000, chance = 15, minDamage = -54, maxDamage = -54, range = 1, target = false },
+	{ name = "condition", interval = 3000, chance = 15, target = false, condition =
+	{ type = CONDITION_CURSED, minDamage = -54, maxDamage = -54, range = 1, effect = CONST_ME_HITBYPOISON } },
 	{ name = "speed", interval = 2000, chance = 15, speedChange = -900, range = 7, effect = CONST_ME_MAGIC_RED, target = false, duration = 30000 },
 }
 
 monster.defenses = {
 	defense = 20,
 	armor = 20,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 30, type = COMBAT_HEALING, minDamage = 150, maxDamage = 300, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 
@@ -115,19 +116,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

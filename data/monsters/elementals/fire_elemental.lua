@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Fire Elemental")
 local monster = {}
 
+monster.name = "Fire Elemental"
 monster.description = "a fire elemental"
 monster.experience = 220
 monster.outfit = {
@@ -62,7 +63,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

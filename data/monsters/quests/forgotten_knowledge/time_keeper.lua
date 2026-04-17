@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Time Keeper")
 local monster = {}
 
+monster.name = "Time Keeper"
 monster.description = "a time keeper"
 monster.experience = 0
 monster.outfit = {

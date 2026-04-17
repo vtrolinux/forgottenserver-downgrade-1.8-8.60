@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Tarnished Spirit")
 local monster = {}
 
+monster.name = "Tarnished Spirit"
 monster.description = "a tarnished spirit"
 monster.experience = 120
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

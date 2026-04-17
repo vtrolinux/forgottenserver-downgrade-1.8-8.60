@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lion Commander")
 local monster = {}
 
+monster.name = "Lion Commander"
 monster.description = "a lion commander"
 monster.experience = 0
 monster.outfit = {
@@ -31,8 +32,6 @@ monster.changeTarget = {
 monster.strategiesTarget = {
 	nearest = 100,
 }
-
-monster.events = {}
 
 monster.flags = {
 	summonable = false,
@@ -86,7 +85,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 86,
 	armor = 86,
-	--	mitigation = ???,
 }
 
 monster.elements = {

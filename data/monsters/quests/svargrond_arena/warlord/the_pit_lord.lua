@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Pit Lord")
 local monster = {}
 
+monster.name = "The Pit Lord"
 monster.description = "The Pit Lord"
 monster.experience = 2500
 monster.outfit = {
@@ -75,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 44,
 	armor = 46,
-	--	mitigation = ???,
 	{ name = "speed", interval = 5000, chance = 100, speedChange = 500, effect = CONST_ME_MAGIC_RED, target = false, duration = 2500 },
 	{ name = "combat", interval = 6000, chance = 65, type = COMBAT_HEALING, minDamage = 20, maxDamage = 50, effect = CONST_ME_MAGIC_BLUE, target = false },
 }

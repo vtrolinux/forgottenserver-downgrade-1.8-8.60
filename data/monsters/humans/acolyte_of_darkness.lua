@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Acolyte of Darkness")
 local monster = {}
 
+monster.name = "Acolyte of Darkness"
 monster.description = "an acolyte of darkness"
 monster.experience = 200
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

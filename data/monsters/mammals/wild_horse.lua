@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Wild Horse")
 local monster = {}
 
+monster.name = "Wild Horse"
 monster.description = "a wild horse"
 monster.experience = 0
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

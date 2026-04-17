@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The First Dragon")
 local monster = {}
 
+monster.name = "The First Dragon"
 monster.description = "the first dragon"
 monster.experience = 9000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1368,
+	bossRace = RARITY_NEMESIS,
+}
+
 monster.health = 50000
 monster.maxHealth = 50000
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 0,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1368,
-	bossRace = RARITY_NEMESIS,
 }
 
 monster.strategiesTarget = {
@@ -56,8 +57,6 @@ monster.flags = {
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
 }
-
-monster.events = {}
 
 monster.light = {
 	level = 0,

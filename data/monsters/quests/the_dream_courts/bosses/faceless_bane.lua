@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Faceless Bane")
 local monster = {}
 
+monster.name = "Faceless Bane"
 monster.description = "Faceless Bane"
 monster.experience = 20000
 monster.outfit = {
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 97,
 	lookAddons = 0,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 1727,
+	bossRace = RARITY_ARCHFOE,
 }
 
 monster.health = 35000
@@ -25,20 +31,15 @@ monster.changeTarget = {
 	chance = 20,
 }
 
-monster.reflects = {
-	{ type = COMBAT_DEATHDAMAGE, percent = 90 },
-}
-
-monster.bosstiary = {
-	bossRaceId = 1727,
-	bossRace = RARITY_ARCHFOE,
-}
-
 monster.strategiesTarget = {
 	nearest = 70,
 	health = 10,
 	damage = 10,
 	random = 10,
+}
+
+monster.reflects = {
+	{ type = COMBAT_DEATHDAMAGE, percent = 90 },
 }
 
 monster.flags = {

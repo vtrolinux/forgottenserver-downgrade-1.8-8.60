@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Weakened Arbaziloth")
 local monster = {}
 
+monster.name = "Weakened Arbaziloth"
 monster.description = "Weakened Arbaziloth"
 monster.experience = 500000
 monster.outfit = {
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 0,
 	lookAddons = 0,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 2594,
+	bossRace = RARITY_ARCHFOE,
 }
 
 monster.health = 360000
@@ -25,18 +31,11 @@ monster.changeTarget = {
 	chance = 10,
 }
 
-monster.bosstiary = {
-	bossRaceId = 2594,
-	bossRace = RARITY_ARCHFOE,
-}
-
 monster.strategiesTarget = {
 	nearest = 80,
 	health = 10,
 	damage = 10,
 }
-
-monster.events = {}
 
 monster.flags = {
 	summonable = false,
@@ -174,172 +173,4 @@ monster.immunities = {
 	{ type = "bleed", condition = true },
 }
 
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
-
-local aditionalMonsters = {
-	{ name = "Overcharged Demon", pos = Position(34029, 32328, 14) },
-	{ name = "Overcharged Demon", pos = Position(34037, 32328, 14) },
-}
-
-local areaTopLeft = Position(34026, 32325, 14)
-local areaBottomRight = Position(34042, 32340, 14)
-
-local effectInterval = 2000
-local effectDuration = 5000
-
-local forgemasterAreaTopLeft = Position(34026, 32325, 14)
-local forgemasterAreaBottomRight = Position(34042, 32340, 14)
-
-local function countMonstersInArea(fromPos, toPos, monsterName)
-	for x = fromPos.x, toPos.x do
-		for y = fromPos.y, toPos.y do
-			local tile = Tile(Position(x, y, fromPos.z))
-			if tile then
-				local creatures = tile:getCreatures()
-				for _, creature in ipairs(creatures) do
-					if creature:isMonster() and creature:getName():lower() == monsterName:lower() then
-						return true
-					end
-				end
-			end
-		end
-	end
-	return false
-end
-
-local function healMaster(monster)
-	if not monster or not monster:isMonster() then
-		return
-	end
-
-	local healCount = Game.getStorageValue("globalArbazilothHeal") or 0
-	if healCount >= 1 then
-		return
-	end
-	monster:addHealth(monster:getMaxHealth() - monster:getHealth())
-	monster:getPosition():sendMagicEffect(CONST_ME_MAGIC_BLUE)
-	Game.setStorageValue("globalArbazilothHeal", healCount + 1)
-end
-
-local function replaceMaster(monster)
-	if monster and monster:isMonster() then
-		local pos = monster:getPosition()
-		monster:remove()
-		Game.createMonster("Weakened Arbaziloth", pos)
-	end
-end
-
-local function countDemonsInArea(fromPos, toPos)
-	local count = 0
-	for x = fromPos.x, toPos.x do
-		for y = fromPos.y, toPos.y do
-			local tile = Tile(Position(x, y, fromPos.z))
-			if tile then
-				local creatures = tile:getCreatures()
-				for _, creature in ipairs(creatures) do
-					if creature:isMonster() and creature:getName():lower() == "overcharged demon" then
-						count = count + 1
-						if count >= 2 then
-							return count
-						end
-					end
-				end
-			end
-		end
-	end
-	return count
-end
-
-local function showEffectsAndSummon(monster)
-	local times = 0
-
-	local function effectLoop()
-		if times < (effectDuration / effectInterval) then
-			for _, monsterData in ipairs(aditionalMonsters) do
-				if countDemonsInArea(areaTopLeft, areaBottomRight) < 2 then
-					monsterData.pos:sendMagicEffect(CONST_ME_TELEPORT)
-				end
-			end
-			times = times + 1
-			addEvent(effectLoop, effectInterval)
-		else
-			local currentCount = countDemonsInArea(areaTopLeft, areaBottomRight)
-			if currentCount < 2 then
-				local demonsToSummon = 2 - currentCount
-				for i = 1, demonsToSummon do
-					local monsterData = aditionalMonsters[i]
-					if monsterData then
-						Game.createMonster(monsterData.name, monsterData.pos)
-					end
-				end
-			end
-		end
-	end
-
-	effectLoop()
-end
-
-local fireSpawnTopLeft = Position(34027, 32328, 14)
-local fireSpawnBottomRight = Position(34029, 32336, 14)
-
-local function getRandomPosition(fromPos, toPos)
-	local x = math.random(fromPos.x, toPos.x)
-	local y = math.random(fromPos.y, toPos.y)
-	local z = fromPos.z
-	return Position(x, y, z)
-end
-
-local function createItemInRandomPosition(itemId, fromPos, toPos)
-	local maxAttempts = 10
-	for _ = 1, maxAttempts do
-		local pos = getRandomPosition(fromPos, toPos)
-		local tile = Tile(pos)
-		if tile and not tile:getItemById(itemId) then
-			if Game.getStorageValue("globalArbazilothFire") >= 1 then
-			else
-				Game.createItem(itemId, 1, pos)
-			end
-			return true
-		end
-	end
-	return false
-end
-
-mType.onThink = function(monster, interval)
-	if countDemonsInArea(areaTopLeft, areaBottomRight) < 2 then
-		showEffectsAndSummon(monster)
-	end
-	if Game.getStorageValue("globalArbazilothHeal") < 1 then
-		if monster:getHealth() > 295000 and monster:getHealth() < 300000 then
-			monster:registerEvent("ArbazilothImmunity")
-			createItemInRandomPosition(49362, fireSpawnTopLeft, fireSpawnBottomRight)
-			Game.setStorageValue("globalArbazilothFire", 1)
-		elseif monster:getHealth() > 220000 and monster:getHealth() < 225000 then
-			monster:registerEvent("ArbazilothImmunity")
-			monster:setOutfit({ lookType = 1800 })
-			createItemInRandomPosition(49362, fireSpawnTopLeft, fireSpawnBottomRight)
-			Game.setStorageValue("globalArbazilothFire", 1)
-		elseif monster:getHealth() > 145000 and monster:getHealth() < 150000 then
-			monster:registerEvent("ArbazilothImmunity")
-			monster:setOutfit({ lookType = 1801 })
-			createItemInRandomPosition(49362, fireSpawnTopLeft, fireSpawnBottomRight)
-			Game.setStorageValue("globalArbazilothFire", 1)
-		elseif monster:getHealth() > 70000 and monster:getHealth() < 75000 then
-			monster:registerEvent("ArbazilothImmunity")
-			monster:setOutfit({ lookType = 1802 })
-			createItemInRandomPosition(49362, fireSpawnTopLeft, fireSpawnBottomRight)
-			Game.setStorageValue("globalArbazilothFire", 1)
-		end
-	end
-end
 mType:register(monster)

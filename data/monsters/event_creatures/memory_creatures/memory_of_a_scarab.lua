@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Memory of a Scarab")
 local monster = {}
 
+monster.name = "Memory of a Scarab"
 monster.description = "a memory of a scarab"
 monster.experience = 1590
 monster.outfit = {
@@ -85,7 +86,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_EARTHDAMAGE, minDamage = -15, maxDamage = -145, range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POISONAREA, target = false },
 	{ name = "speed", interval = 2000, chance = 15, speedChange = -700, range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POISONAREA, target = false, duration = 25000 },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 30, minDamage = -70, maxDamage = -150, radius = 5, effect = CONST_ME_POISONAREA, target = false },
+	{ name = "condition", interval = 2000, chance = 30, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -70, maxDamage = -150, radius = 5, effect = CONST_ME_POISONAREA } },
 }
 
 monster.defenses = {

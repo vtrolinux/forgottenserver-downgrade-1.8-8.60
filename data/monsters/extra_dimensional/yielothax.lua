@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Yielothax")
 local monster = {}
 
+monster.name = "Yielothax"
 monster.description = "a yielothax"
 monster.experience = 1250
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 717
 monster.Bestiary = {

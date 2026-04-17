@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Somewhat Beatable")
 local monster = {}
 
+monster.name = "Somewhat Beatable"
 monster.description = "a somewhat beatable"
 monster.experience = 0
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = false,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

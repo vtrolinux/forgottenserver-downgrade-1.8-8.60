@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Blood Beast")
 local monster = {}
 
+monster.name = "Blood Beast"
 monster.description = "a blood beast"
 monster.experience = 1000
 monster.outfit = {
@@ -96,7 +97,8 @@ monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, skill = 82, attack = 50, condition = { type = CONDITION_POISON, totalDamage = 260, interval = 4000 } },
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_EARTHDAMAGE, minDamage = -65, maxDamage = -105, range = 5, shootEffect = CONST_ANI_GREENSTAR, effect = CONST_ME_POISONAREA, target = true },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 17, minDamage = -300, maxDamage = -400, radius = 4, effect = CONST_ME_MAGIC_GREEN, target = false },
+	{ name = "condition", interval = 2000, chance = 17, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -300, maxDamage = -400, radius = 4, effect = CONST_ME_MAGIC_GREEN } },
 }
 
 monster.defenses = {

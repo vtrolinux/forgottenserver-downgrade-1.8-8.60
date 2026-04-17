@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Animated Clomp")
 local monster = {}
 
+monster.name = "Animated Clomp"
 monster.description = "an animated clomp"
 monster.experience = 475
 monster.outfit = {
@@ -78,7 +79,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 20,
 	armor = 20,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_HEALING, minDamage = 80, maxDamage = 95, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

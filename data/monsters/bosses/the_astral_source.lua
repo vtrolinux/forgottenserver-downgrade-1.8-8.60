@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Astral Source")
 local monster = {}
 
+monster.name = "The Astral Source"
 monster.description = "the astral source"
 monster.experience = 3000
 monster.outfit = {
@@ -46,8 +47,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
-
 monster.light = {
 	level = 0,
 	color = 0,
@@ -71,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 50,
-	--	mitigation = ???,
 }
 
 monster.elements = {

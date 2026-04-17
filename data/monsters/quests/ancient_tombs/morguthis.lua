@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Morguthis")
 local monster = {}
 
+monster.name = "Morguthis"
 monster.description = "Morguthis"
 monster.experience = 3000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 84,
+	bossRace = RARITY_BANE,
+}
+
 monster.health = 4800
 monster.maxHealth = 4800
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 84,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {

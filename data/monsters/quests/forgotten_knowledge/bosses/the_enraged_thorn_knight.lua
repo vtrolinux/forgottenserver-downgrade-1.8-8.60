@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Enraged Thorn Knight")
 local monster = {}
 
+monster.name = "The Enraged Thorn Knight"
 monster.description = "the enraged Thorn Knight"
 monster.experience = 30000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 3,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1297,
@@ -120,7 +119,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 60,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 1550, maxDamage = 2550, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 1000, chance = 12, speedChange = 620, effect = CONST_ME_MAGIC_RED, target = false, duration = 4000 },
 }

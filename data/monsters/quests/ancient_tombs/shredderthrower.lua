@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Shredderthrower")
 local monster = {}
 
+monster.name = "Shredderthrower"
 monster.description = "a shredderthrower"
 monster.experience = 18
 monster.outfit = {
@@ -62,7 +63,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 1,
 	armor = 1,
-	--	mitigation = ???,
 }
 
 monster.elements = {

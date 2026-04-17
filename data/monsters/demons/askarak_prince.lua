@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Askarak Prince")
 local monster = {}
 
+monster.name = "Askarak Prince"
 monster.description = "an askarak prince"
 monster.experience = 1700
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

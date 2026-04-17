@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lizard Magistratus")
 local monster = {}
 
+monster.name = "Lizard Magistratus"
 monster.description = "a lizard magistratus"
 monster.experience = 2000
 monster.outfit = {
@@ -13,7 +14,6 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
 
 monster.raceId = 655
 monster.Bestiary = {
@@ -62,7 +62,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

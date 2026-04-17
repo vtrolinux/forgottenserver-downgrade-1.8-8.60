@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Modified Gnarlhound")
 local monster = {}
 
+monster.name = "Modified Gnarlhound"
 monster.description = "a modified gnarlhound"
 monster.experience = 0
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

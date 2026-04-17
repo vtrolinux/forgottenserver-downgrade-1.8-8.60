@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Hellgorak")
 local monster = {}
 
+monster.name = "Hellgorak"
 monster.description = "Hellgorak"
 monster.experience = 10000
 monster.outfit = {
@@ -11,10 +12,6 @@ monster.outfit = {
 	lookFeet = 80,
 	lookAddons = 0,
 	lookMount = 0,
-}
-
-monster.events = {
-	"InquisitionBossDeath",
 }
 
 monster.bosstiary = {
@@ -135,7 +132,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 70,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 11, type = COMBAT_HEALING, minDamage = 400, maxDamage = 900, effect = CONST_ME_MAGIC_GREEN, target = false },
 }
 

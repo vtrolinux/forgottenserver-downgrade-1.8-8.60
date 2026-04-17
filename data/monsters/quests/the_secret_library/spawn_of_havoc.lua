@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spawn of Havoc")
 local monster = {}
 
+monster.name = "Spawn of Havoc"
 monster.description = "a spawn of havoc"
 monster.experience = 0
 monster.outfit = {
@@ -70,7 +71,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

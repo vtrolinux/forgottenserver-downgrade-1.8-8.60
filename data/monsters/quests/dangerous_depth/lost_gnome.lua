@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lost Gnome")
 local monster = {}
 
+monster.name = "Lost Gnome"
 monster.description = "a lost gnome"
 monster.experience = 0
 monster.outfit = {
@@ -72,7 +73,6 @@ monster.loot = {
 monster.defenses = {
 	defense = 33,
 	armor = 45,
-	--	mitigation = ???,
 }
 
 monster.elements = {

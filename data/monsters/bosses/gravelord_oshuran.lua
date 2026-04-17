@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Gravelord Oshuran")
 local monster = {}
 
+monster.name = "Gravelord Oshuran"
 monster.description = "Gravelord Oshuran"
 monster.experience = 2400
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 426,
+	bossRace = RARITY_NEMESIS,
+}
+
 monster.health = 3100
 monster.maxHealth = 3100
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 426,
-	bossRace = RARITY_NEMESIS,
 }
 
 monster.strategiesTarget = {
@@ -76,15 +77,15 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ id = 3031, chance = 100000, maxCount = 115 }, -- gold coin
-	{ id = 237, chance = 17500 }, -- strong mana potion
-	{ id = 3027, chance = 15960 }, -- black pearl
-	{ id = 3026, chance = 15000 }, -- white pearl
-	{ id = 3098, chance = 15040 }, -- ring of healing
-	{ id = 3567, chance = 500 }, -- blue robe
-	{ id = 820, chance = 900 }, -- lightning boots
-	{ id = 8076, chance = 300 }, -- spellscroll of prophecies
-	{ id = 3059, chance = 4650 }, -- spellbook
+	{ id = 3031, chance = 88460, maxCount = 115 }, -- gold coin
+	{ id = 237, chance = 8750 }, -- strong mana potion
+	{ id = 3027, chance = 11540 }, -- black pearl
+	{ id = 3026, chance = 7690 }, -- white pearl
+	{ id = 3098, chance = 19230 }, -- ring of healing
+	{ id = 3567, chance = 3850 }, -- blue robe
+	{ id = 820, chance = 7690 }, -- lightning boots
+	{ id = 8076, chance = 15380 }, -- spellscroll of prophecies
+	{ id = 3059, chance = 19230 }, -- spellbook
 }
 
 monster.attacks = {
@@ -120,19 +121,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

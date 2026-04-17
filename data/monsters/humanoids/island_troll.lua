@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Island Troll")
 local monster = {}
 
+monster.name = "Island Troll"
 monster.description = "an island troll"
 monster.experience = 20
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

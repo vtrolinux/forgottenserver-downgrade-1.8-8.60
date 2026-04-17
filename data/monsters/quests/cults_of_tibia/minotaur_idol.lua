@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Minotaur Idol")
 local monster = {}
 
+monster.name = "Minotaur Idol"
 monster.description = "a minotaur idol"
 monster.experience = 0
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 50, maxDamage = 100, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

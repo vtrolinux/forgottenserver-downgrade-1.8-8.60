@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Burning Gladiator")
 local monster = {}
 
+monster.name = "Burning Gladiator"
 monster.description = "a burning gladiator"
 monster.experience = 7350
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 1,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 1798
 monster.Bestiary = {

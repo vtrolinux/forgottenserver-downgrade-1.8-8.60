@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Prince Drazzak")
 local monster = {}
 
+monster.name = "Prince Drazzak"
 monster.description = "Prince Drazzak"
 monster.experience = 210000
 monster.outfit = {
@@ -102,7 +103,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 55,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 1500, maxDamage = 3000, effect = CONST_ME_MAGIC_RED, target = false },
 }
 

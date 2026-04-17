@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Goshnar's Greed")
 local monster = {}
 
+monster.name = "Goshnar's Greed"
 monster.description = "Goshnar's Greed"
 monster.experience = 150000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1905,
+	bossRace = RARITY_ARCHFOE,
+}
 
 monster.health = 300000
 monster.maxHealth = 300000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 2000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1905,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -131,56 +130,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-local immuneTimeCount = 0
-local isImmune = nil
-local createdSoulSphere = nil
-mType.onThink = function(monsterCallback, interval)
-	if GreedbeastKills >= 5 and isImmune == nil then
-		isImmune = monsterCallback:immune(false)
-		monsterCallback:teleportTo(Position(33741, 31659, 14))
-		monsterCallback:setSpeed(0)
-		createdSoulSphere = Game.createMonster("Soul Sphere", Position(33752, 31659, 14), true, true)
-	end
-	if isImmune ~= nil then
-		immuneTimeCount = immuneTimeCount + interval
-		logger.info("Immune time count {}", immuneTimeCount)
-		if immuneTimeCount >= 45000 then
-			monsterCallback:immune(true)
-			monsterCallback:setSpeed(monster.speed)
-			monsterCallback:teleportTo(Position(33746, 31666, 14))
-			immuneTimeCount = 0
-			GreedbeastKills = 0
-			isImmune = nil
-			if createdSoulSphere then
-				createdSoulSphere:remove()
-			end
-		end
-	end
-end
-
-mType.onAppear = function(monster)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-
-	isImmune = nil
-	monster:immune(true)
-	immuneTimeCount = 0
-	GreedbeastKills = 0
-end
-
-mType.onDisappear = function(monster, creature)
-	if creature:getName() == "Greedbeast" then
-		logger.debug("GreedbeastKills {}", GreedbeastKills)
-	end
-	if creature:getName() == "Goshnar's Greed" then
-		logger.debug("Killed goshnar's greed")
-		if createdSoulSphere then
-			logger.debug("Found soul sphere, remove it")
-			createdSoulSphere:remove()
-		end
-	end
-end
 
 mType:register(monster)

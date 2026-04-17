@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Flying Book")
 local monster = {}
 
+monster.name = "Flying Book"
 monster.description = "a flying book"
 monster.experience = 200
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 500
 monster.maxHealth = 500
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 28586
 monster.speed = 120
 monster.manaCost = 0
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

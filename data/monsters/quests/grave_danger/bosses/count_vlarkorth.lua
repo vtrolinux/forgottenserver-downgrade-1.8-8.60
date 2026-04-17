@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Count Vlarkorth")
 local monster = {}
 
+monster.name = "Count Vlarkorth"
 monster.description = "Count Vlarkorth"
 monster.experience = 55000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1753,
+	bossRace = RARITY_ARCHFOE,
+}
 
 monster.health = 75000
 monster.maxHealth = 75000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1753,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -116,7 +115,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 78,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 14, type = COMBAT_HEALING, minDamage = 150, maxDamage = 350, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

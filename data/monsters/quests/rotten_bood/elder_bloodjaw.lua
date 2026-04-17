@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Elder Bloodjaw")
 local monster = {}
 
+monster.name = "Elder Bloodjaw"
 monster.description = "an elder bloodjaw"
 monster.experience = 0
 monster.outfit = {
@@ -26,9 +27,10 @@ monster.changeTarget = {
 }
 
 monster.strategiesTarget = {
-	nearest = 80,
+	nearest = 70,
 	health = 10,
 	damage = 10,
+	random = 10,
 }
 
 monster.flags = {

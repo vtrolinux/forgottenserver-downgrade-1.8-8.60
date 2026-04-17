@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Unaz the Mean")
 local monster = {}
 
+monster.name = "Unaz the Mean"
 monster.description = "Unaz the Mean"
 monster.experience = 22000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1891,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 28000
 monster.maxHealth = 28000
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1891,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -90,7 +91,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 82,
-	--	mitigation = ???,
 }
 
 monster.elements = {

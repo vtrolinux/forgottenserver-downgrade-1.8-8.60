@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Muglex Clan Footman")
 local monster = {}
 
+monster.name = "Muglex Clan Footman"
 monster.description = "a muglex clan footman"
 monster.experience = 25
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 50
 monster.maxHealth = 50

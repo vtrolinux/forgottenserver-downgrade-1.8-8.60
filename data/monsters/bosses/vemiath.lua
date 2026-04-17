@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vemiath")
 local monster = {}
 
+monster.name = "Vemiath"
 monster.description = "Vemiath"
 monster.experience = 3250000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 2365,
@@ -93,7 +92,7 @@ monster.loot = {
 	{ id = 3039, chance = 8945, maxCount = 1 }, -- red gem
 	{ name = "dragon figurine", chance = 11502, maxCount = 1 },
 	{ name = "raw watermelon tourmaline", chance = 9302, maxCount = 1 },
-	--{ name = "vemiath's infused basalt", chance = 7914, maxCount = 1 },
+-- { name = "vemiath's infused basalt", chance = 7914, maxCount = 1 },
 	{ name = "violet gem", chance = 7210, maxCount = 1 },
 	{ id = 43895, chance = 360 }, -- Bag you covet
 	{ name = "darklight geode", chance = 500 },
@@ -133,19 +132,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

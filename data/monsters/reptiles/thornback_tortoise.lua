@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Thornback Tortoise")
 local monster = {}
 
+monster.name = "Thornback Tortoise"
 monster.description = "a thornback tortoise"
 monster.experience = 150
 monster.outfit = {

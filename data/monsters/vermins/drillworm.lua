@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Drillworm")
 local monster = {}
 
+monster.name = "Drillworm"
 monster.description = "a drillworm"
 monster.experience = 1200
 monster.outfit = {
@@ -13,7 +14,6 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
 
 monster.raceId = 878
 monster.Bestiary = {

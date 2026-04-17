@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Turbulent Elemental")
 local monster = {}
 
+monster.name = "Turbulent Elemental"
 monster.description = "a turbulent elemental"
 monster.experience = 19360
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Ebb and Flow.",
 }
 
-monster.events = {}
 
 monster.health = 28000
 monster.maxHealth = 28000

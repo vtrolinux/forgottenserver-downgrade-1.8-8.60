@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Giant Spider Wyda")
 local monster = {}
 
 monster.name = "Giant Spider"
+monster.name = "Giant Spider Wyda"
 monster.description = "a giant spider"
 monster.experience = 12
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = false,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

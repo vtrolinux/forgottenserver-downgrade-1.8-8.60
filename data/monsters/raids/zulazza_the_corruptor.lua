@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Zulazza the Corruptor")
 local monster = {}
 
+monster.name = "Zulazza the Corruptor"
 monster.description = "Zulazza the Corruptor"
 monster.experience = 10000
 monster.outfit = {
@@ -108,7 +109,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 119,
 	armor = 96,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 2000, maxDamage = 3000, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vok the Freakish")
 local monster = {}
 
+monster.name = "Vok the Freakish"
 monster.description = "Vok the Freakish"
 monster.experience = 27000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1892,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 32000
 monster.maxHealth = 32000
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1892,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -88,7 +89,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 82,
-	--	mitigation = ???,
 }
 
 monster.elements = {

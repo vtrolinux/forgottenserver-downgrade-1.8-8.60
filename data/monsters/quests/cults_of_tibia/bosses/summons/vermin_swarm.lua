@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vermin Swarm")
 local monster = {}
 
+monster.name = "Vermin Swarm"
 monster.description = "a vermin swarm"
 monster.experience = 0
 monster.outfit = {

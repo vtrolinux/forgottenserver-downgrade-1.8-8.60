@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Schiach")
 local monster = {}
 
+monster.name = "Schiach"
 monster.description = "a schiach"
 monster.experience = 580
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ember Beast")
 local monster = {}
 
+monster.name = "Ember Beast"
 monster.description = "an ember beast"
 monster.experience = 0
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 5,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

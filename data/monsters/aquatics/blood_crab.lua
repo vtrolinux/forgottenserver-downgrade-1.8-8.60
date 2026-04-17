@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Blood Crab")
 local monster = {}
 
+monster.name = "Blood Crab"
 monster.description = "a blood crab"
 monster.experience = 160
 monster.outfit = {
@@ -74,12 +75,12 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 85750, maxCount = 20 },
-	{ id = 3578, chance = 14300 }, -- fish
-	{ name = "bloody pincers", chance = 6190 },
-	{ name = "chain armor", chance = 5240 },
-	{ name = "brass legs", chance = 2120 },
-	{ name = "white pearl", chance = 530 },
+	{ name = "gold coin", chance = 85680, maxCount = 20 },
+	{ id = 3578, chance = 15670 }, -- fish
+	{ name = "bloody pincers", chance = 5960 },
+	{ name = "chain armor", chance = 5070 },
+	{ name = "brass legs", chance = 2100 },
+	{ name = "white pearl", chance = 540 },
 }
 
 monster.attacks = {

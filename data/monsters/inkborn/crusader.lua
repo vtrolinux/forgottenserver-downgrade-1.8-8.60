@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Crusader")
 local monster = {}
 
+monster.name = "Crusader"
 monster.description = "a crusader"
 monster.experience = 3050
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 3400
 monster.maxHealth = 3400
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 51497
 monster.speed = 120
 monster.manaCost = 0

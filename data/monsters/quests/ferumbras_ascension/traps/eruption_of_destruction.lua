@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Eruption of Destruction")
 local monster = {}
 
+monster.name = "Eruption of Destruction"
 monster.description = "an eruption of destruction"
 monster.experience = 0
 monster.outfit = {
@@ -66,7 +67,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 }
 
 monster.elements = {

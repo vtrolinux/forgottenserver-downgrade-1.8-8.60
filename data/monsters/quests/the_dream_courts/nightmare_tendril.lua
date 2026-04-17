@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Nightmare Tendril")
 local monster = {}
 
+monster.name = "Nightmare Tendril"
 monster.description = "a nightmare tendril"
 monster.experience = 0
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 10,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

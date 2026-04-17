@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Insectoid Worker")
 local monster = {}
 
+monster.name = "Insectoid Worker"
 monster.description = "an insectoid worker"
 monster.experience = 650
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Black Vixen")
 local monster = {}
 
+monster.name = "Black Vixen"
 monster.description = "a black vixen"
 monster.experience = 3200
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1559,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 3200
 monster.maxHealth = 3200
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1559,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {

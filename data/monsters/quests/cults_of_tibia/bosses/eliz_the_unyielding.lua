@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Eliz the Unyielding")
 local monster = {}
 
+monster.name = "Eliz the Unyielding"
 monster.description = "Eliz the Unyielding"
 monster.experience = 50000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 2,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 30000
 monster.maxHealth = 30000
@@ -73,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 35,
-	--	mitigation = ???,
 	{ name = "cults of tibia armor buff", interval = 2000, chance = 40, radius = 8, effect = CONST_ME_MAGIC_GREEN, target = false },
 }
 

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("a carved stone tile")
 local monster = {}
 
+monster.name = "a carved stone tile"
 monster.description = "a carved stone tile"
 monster.experience = 0
 monster.outfit = {

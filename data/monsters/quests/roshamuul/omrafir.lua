@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Omrafir")
 local monster = {}
 
+monster.name = "Omrafir"
 monster.description = "Omrafir"
 monster.experience = 50000
 monster.outfit = {
@@ -122,7 +123,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 165,
 	armor = 155,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 22, type = COMBAT_HEALING, minDamage = 440, maxDamage = 800, target = false },
 	{ name = "omrafir summon", interval = 2000, chance = 50, target = false },
 	{ name = "omrafir healing 2", interval = 2000, chance = 20, target = false },

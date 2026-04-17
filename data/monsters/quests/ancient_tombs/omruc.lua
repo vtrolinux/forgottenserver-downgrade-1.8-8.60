@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Omruc")
 local monster = {}
 
+monster.name = "Omruc"
 monster.description = "Omruc"
 monster.experience = 2950
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 90,
+	bossRace = RARITY_BANE,
+}
+
 monster.health = 4300
 monster.maxHealth = 4300
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 90,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {

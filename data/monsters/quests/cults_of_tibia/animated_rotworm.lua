@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Animated Rotworm")
 local monster = {}
 
+monster.name = "Animated Rotworm"
 monster.description = "an animated rotworm"
 monster.experience = 40
 monster.outfit = {
@@ -79,7 +80,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 10,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

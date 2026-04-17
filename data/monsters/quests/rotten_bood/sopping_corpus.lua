@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sopping Corpus")
 local monster = {}
 
+monster.name = "Sopping Corpus"
 monster.description = "a sopping corpus"
 monster.experience = 22465
 monster.outfit = {
@@ -81,7 +82,7 @@ monster.loot = {
 	{ name = "ultimate mana potion", chance = 42860, minCount = 2, maxCount = 3 },
 	{ id = 7385, chance = 14290 }, -- crimson sword
 	{ name = "ultimate health potion", chance = 14290, maxCount = 2 },
-	--{ name = "organic acid", chance = 7678, maxCount = 1 },
+-- { name = "organic acid", chance = 7678, maxCount = 1 },
 	{ name = "rotten roots", chance = 13133, maxCount = 1 },
 	{ name = "emerald bangle", chance = 8558, maxCount = 1 },
 	{ name = "underworld rod", chance = 8380, maxCount = 1 },

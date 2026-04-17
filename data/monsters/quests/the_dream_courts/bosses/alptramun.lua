@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Alptramun")
 local monster = {}
 
+monster.name = "Alptramun"
 monster.description = "Alptramun"
 monster.experience = 55000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1698, -- or 1715 need test
+	bossRace = RARITY_NEMESIS,
+}
 
 monster.health = 320000
 monster.maxHealth = 320000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1698, -- or 1715 need test
-	bossRace = RARITY_NEMESIS,
 }
 
 monster.strategiesTarget = {
@@ -124,7 +123,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 60,
-	--	mitigation = ???,
 }
 
 monster.elements = {

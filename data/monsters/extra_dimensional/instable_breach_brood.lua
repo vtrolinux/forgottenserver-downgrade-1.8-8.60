@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Instable Breach Brood")
 local monster = {}
 
+monster.name = "Instable Breach Brood"
 monster.description = "an instable breach brood"
 monster.experience = 1100
 monster.outfit = {

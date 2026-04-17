@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Cult Scholar")
 local monster = {}
 
+monster.name = "Cult Scholar"
 monster.description = "a cult scholar"
 monster.experience = 1100
 monster.outfit = {
@@ -13,7 +14,6 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
 
 monster.raceId = 1514
 monster.Bestiary = {

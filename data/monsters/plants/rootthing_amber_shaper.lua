@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rootthing Amber Shaper")
 local monster = {}
 
+monster.name = "Rootthing Amber Shaper"
 monster.description = "a rootthing amber shaper"
 monster.experience = 12400
 monster.outfit = {

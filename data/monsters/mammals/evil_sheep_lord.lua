@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Evil Sheep Lord")
 local monster = {}
 
+monster.name = "Evil Sheep Lord"
 monster.description = "an evil sheep lord"
 monster.experience = 340
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

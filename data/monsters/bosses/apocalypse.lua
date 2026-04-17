@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Apocalypse")
 local monster = {}
 
+monster.name = "Apocalypse"
 monster.description = "Apocalypse"
 monster.experience = 30000
 monster.outfit = {
@@ -112,14 +113,14 @@ monster.attacks = {
 	{ name = "combat", interval = 3000, chance = 8, type = COMBAT_MANADRAIN, minDamage = -600, maxDamage = -700, radius = 10, effect = CONST_ME_ENERGYAREA, target = false },
 	{ name = "combat", interval = 2000, chance = 9, type = COMBAT_ENERGYDAMAGE, minDamage = -400, maxDamage = -800, length = 8, spread = 0, effect = CONST_ME_MAGIC_RED, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 5000, chance = 18, minDamage = -800, maxDamage = -1000, effect = CONST_ME_HITBYPOISON, target = false },
+	{ name = "condition", interval = 5000, chance = 18, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -800, maxDamage = -1000, effect = CONST_ME_HITBYPOISON } },
 	{ name = "combat", interval = 2000, chance = 6, type = COMBAT_LIFEDRAIN, minDamage = -600, maxDamage = -1200, radius = 14, effect = CONST_ME_MAGIC_GREEN, target = false },
 }
 
 monster.defenses = {
 	defense = 145,
 	armor = 188,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 15, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 3000, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 2000, chance = 8, speedChange = 480, effect = CONST_ME_MAGIC_RED, target = false, duration = 6000 },
 }

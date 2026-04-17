@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Meadow Strider")
 local monster = {}
 
+monster.name = "Meadow Strider"
 monster.description = "a meadow strider"
 monster.experience = 50
 monster.outfit = {
@@ -81,7 +82,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 2,
 	armor = 1,
-	--	mitigation = ???,
 	{ name = "speed", interval = 2000, chance = 13, speedChange = 192, effect = CONST_ME_HITAREA, target = false, duration = 5000 },
 }
 

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Minion of Gaz'haragoth")
 local monster = {}
 
+monster.name = "Minion of Gaz'haragoth"
 monster.description = "a minion of Gaz'haragoth"
 monster.experience = 0
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = false,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

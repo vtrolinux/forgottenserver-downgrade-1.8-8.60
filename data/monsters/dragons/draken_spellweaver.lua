@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Draken Spellweaver")
 local monster = {}
 
+monster.name = "Draken Spellweaver"
 monster.description = "a draken spellweaver"
 monster.experience = 3100
 monster.outfit = {
@@ -105,7 +106,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_EARTHDAMAGE, minDamage = -200, maxDamage = -380, radius = 4, effect = CONST_ME_POFF, target = true },
 	{ name = "soulfire rune", interval = 2000, chance = 10, target = false },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -280, maxDamage = -360, shootEffect = CONST_ANI_POISON, target = true },
+	{ name = "condition", interval = 2000, chance = 10, target = true, condition =
+	{ type = CONDITION_POISON, minDamage = -280, maxDamage = -360, shootEffect = CONST_ANI_POISON } },
 }
 
 monster.defenses = {

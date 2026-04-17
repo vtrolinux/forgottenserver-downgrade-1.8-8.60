@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Diremaw")
 local monster = {}
 
+monster.name = "Diremaw"
 monster.description = "a diremaw"
 monster.experience = 2770
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 1532
 monster.Bestiary = {
@@ -99,7 +98,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_EARTHDAMAGE, minDamage = -150, maxDamage = -200, range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POISONAREA, target = false },
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_EARTHDAMAGE, minDamage = -150, maxDamage = -250, range = 7, radius = 4, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POFF, target = true },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 21, minDamage = -200, maxDamage = -310, radius = 4, effect = CONST_ME_GREEN_RINGS, target = false },
+	{ name = "condition", interval = 2000, chance = 21, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -200, maxDamage = -310, radius = 4, effect = CONST_ME_POISONAREA } },
 }
 
 monster.defenses = {

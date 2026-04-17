@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Nomad")
 local monster = {}
 
+monster.name = "Nomad"
 monster.description = "a nomad"
 monster.experience = 60
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 3,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 310
 monster.Bestiary = {

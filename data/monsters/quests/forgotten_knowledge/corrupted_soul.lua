@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Corrupted Soul")
 local monster = {}
 
+monster.name = "Corrupted Soul"
 monster.description = "a corrupted soul"
 monster.experience = 1300
 monster.outfit = {
@@ -49,7 +50,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

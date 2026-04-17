@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Hawk Hopper")
 local monster = {}
 
+monster.name = "Hawk Hopper"
 monster.description = "a hawk hopper"
 monster.experience = 1770
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 2180
 monster.maxHealth = 2180
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 51560
 monster.speed = 150
 monster.manaCost = 0

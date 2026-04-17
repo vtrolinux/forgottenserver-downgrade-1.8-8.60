@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Little Corym Charlatan")
 local monster = {}
 
+monster.name = "Little Corym Charlatan"
 monster.description = "a little corym charlatan"
 monster.experience = 40
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

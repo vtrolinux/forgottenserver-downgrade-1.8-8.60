@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Dreadorian")
 local monster = {}
 
+monster.name = "The Dreadorian"
 monster.description = "The Dreadorian"
 monster.experience = 4000
 monster.outfit = {
@@ -71,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 25,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 50, type = COMBAT_HEALING, minDamage = 100, maxDamage = 150, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

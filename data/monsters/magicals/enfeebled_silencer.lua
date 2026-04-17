@@ -1,19 +1,10 @@
 local mType = Game.createMonsterType("Enfeebled Silencer")
 local monster = {}
 
+monster.name = "Enfeebled Silencer"
 monster.description = "an enfeebled silencer"
 monster.experience = 1100
-monster.outfit = {
-	lookType = 585,
-	lookHead = 0,
-	lookBody = 0,
-	lookLegs = 0,
-	lookFeet = 0,
-	lookAddons = 0,
-	lookMount = 0,
-}
-
-monster.events = {}
+monster.outfit = { lookType = 585 }
 
 monster.raceId = 1443
 monster.Bestiary = {
@@ -61,7 +52,7 @@ monster.flags = {
 	targetDistance = 1,
 	runHealth = 0,
 	healthHidden = false,
-	isBlockable = false,
+	isBlockable = true,
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,

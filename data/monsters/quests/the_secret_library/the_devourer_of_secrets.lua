@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Devourer of Secrets")
 local monster = {}
 
+monster.name = "The Devourer of Secrets"
 monster.description = "The Devourer of Secrets"
 monster.experience = 0
 monster.outfit = {
@@ -70,7 +71,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Goblin Leader")
 local monster = {}
 
+monster.name = "Goblin Leader"
 monster.description = "a goblin leader"
 monster.experience = 75
 monster.outfit = {
@@ -42,8 +43,6 @@ monster.strategiesTarget = {
 	nearest = 100,
 }
 
-monster.events = {}
-
 monster.flags = {
 	summonable = true,
 	attackable = true,
@@ -62,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

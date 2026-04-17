@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Eye of the Seven")
 local monster = {}
 
+monster.name = "Eye of the Seven"
 monster.description = "an eye of the seven"
 monster.experience = 0
 monster.outfit = {
@@ -71,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 1,
 	armor = 1,
-	--	mitigation = ???,
 }
 
 monster.elements = {

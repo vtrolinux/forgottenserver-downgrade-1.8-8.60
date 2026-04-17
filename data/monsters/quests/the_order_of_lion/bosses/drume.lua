@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Drume")
 local monster = {}
 
+monster.name = "Drume"
 monster.description = "Drume"
 monster.experience = 25000
 monster.outfit = {
@@ -123,6 +124,7 @@ monster.loot = {
 	{ name = "lion wand", chance = 300 },
 	{ name = "lion amulet", chance = 300 },
 	{ name = "lion rod", chance = 300 },
+	{ name = "lion claws", chance = 300 },
 }
 
 monster.attacks = {
@@ -137,7 +139,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 82,
-	--	mitigation = ???,
 	{ name = "combat", interval = 4000, chance = 40, type = COMBAT_HEALING, minDamage = 300, maxDamage = 800, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Blazing Fire Elemental")
 local monster = {}
 
+monster.name = "Blazing Fire Elemental"
 monster.description = "a blazing fire elemental"
 monster.experience = 450
 monster.outfit = {
@@ -77,7 +78,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 20,
 	armor = 20,
-	--	mitigation = ???,
 }
 
 monster.elements = {

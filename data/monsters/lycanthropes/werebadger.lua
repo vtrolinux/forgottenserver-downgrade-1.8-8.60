@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Werebadger")
 local monster = {}
 
+monster.name = "Werebadger"
 monster.description = "a werebadger"
 monster.experience = 1600
 monster.outfit = {
@@ -102,7 +103,7 @@ monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, skill = 50, attack = 60, condition = { type = CONDITION_POISON, totalDamage = 140, interval = 4000 } },
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_LIFEDRAIN, minDamage = -21, maxDamage = -150, range = 7, shootEffect = CONST_ANI_EARTH, effect = CONST_ME_CARNIPHILA, target = true },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_EARTHDAMAGE, minDamage = -10, maxDamage = -100, length = 8, spread = 0, effect = CONST_ME_CARNIPHILA, target = false },
-	{ name = "speed", interval = 4000, chance = 20, minDamage = -0, maxDamage = -300, radius = 7, effect = CONST_ME_POFF, target = true },
+	{ name = "speed", interval = 4000, chance = 20, speedChange = -100, radius = 7, effect = CONST_ME_POFF, target = true },
 }
 
 monster.defenses = {

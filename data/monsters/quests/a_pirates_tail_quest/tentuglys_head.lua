@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Tentugly's Head")
 local monster = {}
 
+monster.name = "Tentugly's Head"
 monster.description = "Tentugly's Head"
 monster.experience = 40000
 monster.outfit = {
@@ -19,7 +20,6 @@ monster.corpse = 35600
 monster.speed = 0
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 4000,
@@ -96,7 +96,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 82,
-	--	mitigation = ???,
 }
 
 monster.elements = {

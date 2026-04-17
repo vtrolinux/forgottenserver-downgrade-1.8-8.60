@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Time Waster")
 local monster = {}
 
+monster.name = "Time Waster"
 monster.description = "a time waster"
 monster.experience = 0
 monster.outfit = {
@@ -67,7 +68,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 10,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

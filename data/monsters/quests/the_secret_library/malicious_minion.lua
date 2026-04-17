@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Malicious Minion")
 local monster = {}
 
+monster.name = "Malicious Minion"
 monster.description = "a malicious minion"
 monster.experience = 0
 monster.outfit = {
@@ -70,7 +71,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

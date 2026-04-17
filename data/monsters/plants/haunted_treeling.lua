@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Haunted Treeling")
 local monster = {}
 
+monster.name = "Haunted Treeling"
 monster.description = "a haunted treeling"
 monster.experience = 310
 monster.outfit = {

@@ -1,17 +1,10 @@
 local mType = Game.createMonsterType("Grimeleech")
 local monster = {}
 
+monster.name = "Grimeleech"
 monster.description = "a grimeleech"
 monster.experience = 7216
-monster.outfit = {
-	lookType = 855,
-	lookHead = 0,
-	lookBody = 0,
-	lookLegs = 0,
-	lookFeet = 0,
-	lookAddons = 0,
-	lookMount = 0,
-}
+monster.outfit = { lookType = 855 }
 
 monster.raceId = 1196
 monster.Bestiary = {
@@ -25,7 +18,6 @@ monster.Bestiary = {
 	Occurrence = 0,
 	Locations = "Grounds of Damnation, Grounds of Deceit, Grounds of Despair, Grounds of Fire, Grounds of Plague, Halls of Ascension and Hell Hub.",
 }
-
 monster.health = 9500
 monster.maxHealth = 9500
 monster.race = "undead"
@@ -113,7 +105,7 @@ monster.loot = {
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, skill = 70, attack = 80 },
 	{ name = "melee", interval = 2000, chance = 2, skill = 153, attack = 100 },
-	{ name = "combat", interval = 2000, chance = 14, type = COMBAT_LIFEDRAIN, minDamage = 100, maxDamage = -565, range = 7, shootEffect = CONST_ANI_DEATH, effect = CONST_ME_MORTAREA, target = true },
+	{ name = "combat", interval = 2000, chance = 14, type = COMBAT_LIFEDRAIN, minDamage = -100, maxDamage = -565, range = 7, shootEffect = CONST_ANI_DEATH, effect = CONST_ME_MORTAREA, target = true },
 	{ name = "combat", interval = 2000, chance = 12, type = COMBAT_LIFEDRAIN, minDamage = -150, maxDamage = -220, length = 8, spread = 0, effect = CONST_ME_MAGIC_GREEN, target = false },
 	{ name = "combat", interval = 2000, chance = 13, type = COMBAT_DEATHDAMAGE, minDamage = -225, maxDamage = -375, radius = 4, effect = CONST_ME_MORTAREA, target = false },
 	{ name = "combat", interval = 2000, chance = 9, type = COMBAT_MANADRAIN, minDamage = 0, maxDamage = -300, length = 8, spread = 3, effect = CONST_ME_MAGIC_RED, target = false },

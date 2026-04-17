@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Strange Slime")
 local monster = {}
 
+monster.name = "Strange Slime"
 monster.description = "a strange slime"
 monster.experience = 0
 monster.outfit = {
@@ -67,7 +68,6 @@ monster.loot = {}
 monster.defenses = {
 	defense = 0,
 	armor = 0,
-	--	mitigation = ???,
 }
 
 monster.elements = {

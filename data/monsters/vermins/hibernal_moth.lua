@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Hibernal Moth")
 local monster = {}
 
+monster.name = "Hibernal Moth"
 monster.description = "a hibernal moth"
 monster.experience = 700
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Force Field")
 local monster = {}
 
+monster.name = "Force Field"
 monster.description = "a force field"
 monster.experience = 0
 monster.outfit = {
@@ -58,7 +59,6 @@ monster.loot = {}
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.reflects = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Destroyed Pillar")
 local monster = {}
 
+monster.name = "Destroyed Pillar"
 monster.description = "a destroyed pillar"
 monster.experience = 0
 monster.outfit = {
@@ -61,7 +62,6 @@ monster.loot = {}
 monster.defenses = {
 	defense = 35,
 	armor = 35,
-	--	mitigation = ???,
 }
 
 monster.elements = {

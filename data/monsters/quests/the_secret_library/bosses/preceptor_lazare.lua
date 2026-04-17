@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Preceptor Lazare")
 local monster = {}
 
+monster.name = "Preceptor Lazare"
 monster.description = "Preceptor Lazare"
 monster.experience = 10000
 monster.outfit = {
@@ -25,7 +26,6 @@ monster.corpse = 28643
 monster.speed = 105
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 2000,
@@ -104,7 +104,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 86,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1500, chance = 20, type = COMBAT_HEALING, minDamage = 200, maxDamage = 800, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Energy Overlord")
 local monster = {}
 
+monster.name = "Energy Overlord"
 monster.description = "Energy Overlord"
 monster.experience = 2800
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 4000
 monster.maxHealth = 4000
@@ -80,7 +79,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 90, maxDamage = 150, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

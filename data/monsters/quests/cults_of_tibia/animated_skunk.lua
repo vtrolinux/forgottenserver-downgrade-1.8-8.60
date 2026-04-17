@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Animated Skunk")
 local monster = {}
 
+monster.name = "Animated Skunk"
 monster.description = "an animated skunk"
 monster.experience = 3
 monster.outfit = {
@@ -75,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 5,
 	armor = 5,
-	--	mitigation = ???,
 }
 
 monster.elements = {

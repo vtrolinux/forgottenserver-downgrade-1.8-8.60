@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Manta Ray")
 local monster = {}
 
+monster.name = "Manta Ray"
 monster.description = "a manta ray"
 monster.experience = 125
 monster.outfit = {
@@ -74,7 +75,7 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 63000, maxCount = 39 },
+	{ name = "gold coin", chance = 64730, maxCount = 40 },
 }
 
 monster.attacks = {

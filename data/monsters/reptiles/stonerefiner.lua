@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Stonerefiner")
 local monster = {}
 
+monster.name = "Stonerefiner"
 monster.description = "a stonerefiner"
 monster.experience = 500
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

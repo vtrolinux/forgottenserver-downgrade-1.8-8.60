@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mitmah Seer")
 local monster = {}
 
+monster.name = "Mitmah Seer"
 monster.description = "a mitmah seer"
 monster.experience = 4900
 monster.outfit = {
@@ -82,12 +83,12 @@ monster.voices = {
 monster.loot = {
 	{ name = "platinum coin", chance = 100000, maxCount = 15 },
 	{ name = "great mana potion", chance = 11880 },
-	--{ name = "crystal of the mitmah", chance = 11410 }, -- 280gp yasir
+-- { name = "crystal of the mitmah", chance = 11410 }, -- 280gp yasir
 	{ name = "strong health potion", chance = 5810, maxCount = 3 },
 	{ name = "opal", chance = 4990 },
 	{ name = "wand of cosmic energy", chance = 3920 },
 	{ id = 3039, chance = 2280 }, -- red gem
-	--{ name = "gold-brocaded cloth", chance = 1450 },
+-- { name = "gold-brocaded cloth", chance = 1450 },
 	{ name = "gold ring", chance = 1190 },
 	{ name = "ruby necklace", chance = 1100 },
 	{ id = 3038, chance = 570 }, -- green gem

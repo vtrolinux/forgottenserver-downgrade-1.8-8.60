@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dragonling")
 local monster = {}
 
+monster.name = "Dragonling"
 monster.description = "a dragonling"
 monster.experience = 2200
 monster.outfit = {
@@ -64,7 +65,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

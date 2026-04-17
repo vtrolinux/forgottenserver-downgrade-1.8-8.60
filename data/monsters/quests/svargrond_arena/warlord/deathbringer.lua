@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Deathbringer")
 local monster = {}
 
+monster.name = "Deathbringer"
 monster.description = "Deathbringer"
 monster.experience = 5100
 monster.outfit = {
@@ -80,7 +81,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 }
 
 monster.elements = {

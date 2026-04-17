@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Soul Scourge")
 local monster = {}
 
+monster.name = "Soul Scourge"
 monster.description = "a soul scourge"
 monster.experience = 0
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 45,
 	armor = 45,
-	--	mitigation = ???,
 }
 
 monster.elements = {

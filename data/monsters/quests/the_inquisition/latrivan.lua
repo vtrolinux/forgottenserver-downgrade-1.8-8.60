@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Latrivan")
 local monster = {}
 
+monster.name = "Latrivan"
 monster.description = "Latrivan"
 monster.experience = 10000
 monster.outfit = {
@@ -13,8 +14,9 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {
-	"InquisitionBossDeath",
+monster.bosstiary = {
+	bossRaceId = 417,
+	bossRace = RARITY_BANE,
 }
 
 monster.health = 25000
@@ -27,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 417,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {

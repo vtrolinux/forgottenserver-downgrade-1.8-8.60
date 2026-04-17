@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Death Priest")
 local monster = {}
 
+monster.name = "Death Priest"
 monster.description = "a death priest"
 monster.experience = 750
 monster.outfit = {
@@ -62,7 +63,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

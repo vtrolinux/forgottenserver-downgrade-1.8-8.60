@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Voidshard")
 local monster = {}
 
+monster.name = "Voidshard"
 monster.description = "a voidshard"
 monster.experience = 0
 monster.outfit = {
@@ -69,13 +70,14 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_ENERGYDAMAGE, minDamage = -168, maxDamage = -400, range = 6, radius = 4, shootEffect = CONST_ANI_ENERGY, effect = CONST_ME_PURPLEENERGY, target = true },
 	{ name = "energy strike", interval = 2000, chance = 30, minDamage = -50, maxDamage = -180, range = 1, target = false },
 	-- energy damage
-	{ name = "condition", type = CONDITION_ENERGY, interval = 1000, chance = 15, radius = 3, effect = CONST_ME_YELLOWENERGY, target = false },
+	{ name = "condition", interval = 1000, chance = 15, target = false, condition =
+	{ type = CONDITION_ENERGY, minDamage = -10, maxDamage = -120, radius = 3, effect = CONST_ME_YELLOWENERGY } },	
+
 }
 
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Incineron")
 local monster = {}
 
+monster.name = "Incineron"
 monster.description = "Incineron"
 monster.experience = 3500
 monster.outfit = {
@@ -72,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 }
 
 monster.elements = {

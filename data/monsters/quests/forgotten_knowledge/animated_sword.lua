@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Animated Sword")
 local monster = {}
 
+monster.name = "Animated Sword"
 monster.description = "an animated sword"
 monster.experience = 0
 monster.outfit = {
@@ -68,7 +69,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 }
 
 monster.elements = {

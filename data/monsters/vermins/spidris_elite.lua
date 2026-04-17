@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spidris Elite")
 local monster = {}
 
+monster.name = "Spidris Elite"
 monster.description = "a spidris elite"
 monster.experience = 4000
 monster.outfit = {
@@ -61,7 +62,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

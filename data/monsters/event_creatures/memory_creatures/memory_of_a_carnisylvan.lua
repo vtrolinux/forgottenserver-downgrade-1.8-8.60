@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Memory of a Carnisylvan")
 local monster = {}
 
+monster.name = "Memory of a Carnisylvan"
 monster.description = "a memory of a carnisylvan"
 monster.experience = 1850
 monster.outfit = {
@@ -47,7 +48,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	pet = false,
 }
 
 monster.light = {

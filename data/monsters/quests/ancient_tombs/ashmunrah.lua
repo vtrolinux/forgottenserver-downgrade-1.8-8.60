@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ashmunrah")
 local monster = {}
 
+monster.name = "Ashmunrah"
 monster.description = "Ashmunrah"
 monster.experience = 3100
 monster.outfit = {
@@ -102,7 +103,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 25,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 20, type = COMBAT_HEALING, minDamage = 200, maxDamage = 400, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "invisible", interval = 1000, chance = 7, effect = CONST_ME_MAGIC_BLUE },
 	{ name = "outfit", interval = 1000, chance = 3, effect = CONST_ME_MAGIC_BLUE, target = false, duration = 6000, outfitMonster = "ancient scarab" },

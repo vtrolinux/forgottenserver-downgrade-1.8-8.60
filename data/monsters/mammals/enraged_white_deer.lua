@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Enraged White Deer")
 local monster = {}
 
+monster.name = "Enraged White Deer"
 monster.description = "an enraged white deer"
 monster.experience = 165
 monster.outfit = {
@@ -49,7 +50,6 @@ monster.flags = {
 	canWalkOnPoison = false,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

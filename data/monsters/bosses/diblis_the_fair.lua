@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Diblis the Fair")
 local monster = {}
 
+monster.name = "Diblis the Fair"
 monster.description = "Diblis The Fair"
 monster.experience = 1800
 monster.outfit = {
@@ -79,15 +80,16 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 100000 },
+	{ name = "gold coin", chance = 100000, maxCount = 100 },
 	{ name = "vampire lord token", chance = 100000 },
-	{ name = "blood preservation", chance = 94000 },
-	{ name = "vampire shield", chance = 22000 },
+	{ name = "blood preservation", chance = 91090 },
+	{ name = "vampire shield", chance = 15840 },
 	{ name = "strong health potion", chance = 18000 },
 	{ name = "platinum coin", chance = 12000, maxCount = 5 },
-	{ id = 3098, chance = 12000 }, -- ring of healing
-	{ id = 3114, chance = 12000 }, -- skull
-	{ name = "spellbook of lost souls", chance = 2000 },
+	{ name = "black pearl", chance = 990 },
+	{ id = 3098, chance = 10890 }, -- ring of healing
+	{ id = 3114, chance = 11880 }, -- skull
+	{ name = "spellbook of lost souls", chance = 1980 },
 }
 
 monster.attacks = {
@@ -98,7 +100,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 12, type = COMBAT_HEALING, minDamage = 100, maxDamage = 235, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "invisible", interval = 3000, chance = 25, effect = CONST_ME_MAGIC_BLUE },
 }
@@ -122,19 +123,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

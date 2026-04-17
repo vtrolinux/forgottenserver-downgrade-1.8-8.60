@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mutated Zalamon")
 local monster = {}
 
+monster.name = "Mutated Zalamon"
 monster.description = "Mutated Zalamon"
 monster.experience = 10980
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 155000
 monster.maxHealth = 155000
@@ -76,7 +75,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 70,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 9, type = COMBAT_HEALING, minDamage = 20, maxDamage = 560, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "outfit", interval = 2000, chance = 10, effect = CONST_ME_ENERGYHIT, target = false, duration = 10000, outfitMonster = "Lizard Snakecharmer" },
 	{ name = "outfit", interval = 2000, chance = 10, effect = CONST_ME_ENERGYHIT, target = false, duration = 10000, outfitMonster = "Lizard Abomination" },

@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Eliz The Unyielding Stop")
 local monster = {}
 
 monster.name = "Eliz The Unyielding"
+monster.name = "Eliz The Unyielding Stop"
 monster.description = "Eliz The Unyielding"
 monster.experience = 0
 monster.outfit = {

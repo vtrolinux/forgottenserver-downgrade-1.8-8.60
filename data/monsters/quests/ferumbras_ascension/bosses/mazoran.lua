@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mazoran")
 local monster = {}
 
+monster.name = "Mazoran"
 monster.description = "Mazoran"
 monster.experience = 500000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 3,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1186,
@@ -113,7 +112,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 125,
 	armor = 125,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_HEALING, minDamage = 2090, maxDamage = 4500, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 2000, chance = 35, speedChange = 700, effect = CONST_ME_MAGIC_GREEN, target = false, duration = 6000 },
 	{ name = "mazoran fire", interval = 30000, chance = 45, target = false },

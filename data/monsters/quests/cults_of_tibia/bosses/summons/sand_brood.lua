@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sand Brood")
 local monster = {}
 
+monster.name = "Sand Brood"
 monster.description = "a sand brood"
 monster.experience = 0
 monster.outfit = {
@@ -71,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 10,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

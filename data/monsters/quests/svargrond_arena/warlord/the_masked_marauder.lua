@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Masked Marauder")
 local monster = {}
 
+monster.name = "The Masked Marauder"
 monster.description = "The Masked Marauder"
 monster.experience = 3500
 monster.outfit = {
@@ -76,7 +77,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 25,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 50, type = COMBAT_HEALING, minDamage = 75, maxDamage = 125, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

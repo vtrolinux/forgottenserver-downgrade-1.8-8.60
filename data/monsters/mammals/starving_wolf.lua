@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Starving Wolf")
 local monster = {}
 
+monster.name = "Starving Wolf"
 monster.description = "a starving wolf"
 monster.experience = 65
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

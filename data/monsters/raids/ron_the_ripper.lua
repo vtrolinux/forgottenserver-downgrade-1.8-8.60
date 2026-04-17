@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ron the Ripper")
 local monster = {}
 
+monster.name = "Ron the Ripper"
 monster.description = "Ron the Ripper"
 monster.experience = 500
 monster.outfit = {
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 59,
 	lookAddons = 1,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 273,
+	bossRace = RARITY_NEMESIS,
 }
 
 monster.health = 1500

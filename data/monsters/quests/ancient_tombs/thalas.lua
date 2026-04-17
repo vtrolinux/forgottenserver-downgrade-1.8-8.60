@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Thalas")
 local monster = {}
 
+monster.name = "Thalas"
 monster.description = "Thalas"
 monster.experience = 2950
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 89,
+	bossRace = RARITY_BANE,
+}
+
 monster.health = 4100
 monster.maxHealth = 4100
 monster.race = "undead"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 89,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {
@@ -94,7 +95,8 @@ monster.attacks = {
 	{ name = "melee", interval = 3000, chance = 20, minDamage = -150, maxDamage = -650 },
 	{ name = "speed", interval = 1000, chance = 6, speedChange = -800, range = 7, effect = CONST_ME_MAGIC_RED, target = false, duration = 20000 },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 1000, chance = 15, minDamage = -34, maxDamage = -35, radius = 5, effect = CONST_ME_POISONAREA, target = false },
+	{ name = "condition", interval = 1000, chance = 15, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -34, maxDamage = -35, radius = 5, effect = CONST_ME_POISONAREA } },
 	{ name = "combat", interval = 3000, chance = 17, type = COMBAT_EARTHDAMAGE, minDamage = -55, maxDamage = -550, length = 8, spread = 3, effect = CONST_ME_POISONAREA, target = false },
 }
 

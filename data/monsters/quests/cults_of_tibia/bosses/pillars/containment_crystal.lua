@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Containment Crystal")
 local monster = {}
 
+monster.name = "Containment Crystal"
 monster.description = "a containment crystal"
 monster.experience = 0
 monster.outfit = {
@@ -65,7 +66,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 35,
-	--	mitigation = ???,
 }
 
 monster.elements = {

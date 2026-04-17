@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Squirrel")
 local monster = {}
 
+monster.name = "Squirrel"
 monster.description = "a squirrel"
 monster.experience = 0
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

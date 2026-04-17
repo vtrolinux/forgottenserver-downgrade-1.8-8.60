@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Monk's Apparition")
 local monster = {}
 
+monster.name = "Monk's Apparition"
 monster.description = "a monk's apparition"
 monster.experience = 18870
 monster.outfit = {
@@ -33,7 +34,6 @@ monster.corpse = 111
 monster.speed = 235
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 4000,

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Solid Frozen Horror")
 local monster = {}
 
+monster.name = "Solid Frozen Horror"
 monster.description = "solid frozen horror"
 monster.experience = 0
 monster.outfit = {
@@ -77,7 +78,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 60,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, radius = 7, effect = CONST_ME_BLOCKHIT, target = false },
 }
 

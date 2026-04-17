@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ink Splash")
 local monster = {}
 
+monster.name = "Ink Splash"
 monster.description = "an ink splash"
 monster.experience = 1450
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 1950
 monster.maxHealth = 1950
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 28601
 monster.speed = 190
 monster.manaCost = 0

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Wild Fury Magic")
 local monster = {}
 
+monster.name = "Wild Fury Magic"
 monster.description = "a wild fury magic"
 monster.experience = 0
 monster.outfit = {

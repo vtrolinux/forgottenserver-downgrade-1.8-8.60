@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Blood Priest")
 local monster = {}
 
+monster.name = "Blood Priest"
 monster.description = "a blood priest"
 monster.experience = 900
 monster.outfit = {
@@ -102,7 +103,8 @@ monster.attacks = {
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_LIFEDRAIN, minDamage = -40, maxDamage = -60, radius = 4, effect = CONST_ME_MAGIC_RED, target = false },
 	{ name = "combat", interval = 3000, chance = 10, type = COMBAT_MANADRAIN, minDamage = -80, maxDamage = -130, range = 1, length = 7, spread = 0, effect = CONST_ME_HITAREA, target = true },
 	-- bleed
-	{ name = "condition", type = CONDITION_BLEEDING, interval = 2000, chance = 5, minDamage = -160, maxDamage = -290, range = 1, radius = 1, target = true },
+	{ name = "condition", interval = 2000, chance = 5, target = true, condition =
+	{ type = CONDITION_BLEEDING, minDamage = -160, maxDamage = -290, range = 1, radius = 1 } },
 }
 
 monster.defenses = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lost Exile")
 local monster = {}
 
+monster.name = "Lost Exile"
 monster.description = "a lost exile"
 monster.experience = 1800
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 1529
 monster.Bestiary = {
@@ -65,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

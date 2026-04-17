@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Slug")
 local monster = {}
 
+monster.name = "Slug"
 monster.description = "a slug"
 monster.experience = 70
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

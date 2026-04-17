@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Elf Overseer")
 local monster = {}
 
+monster.name = "Elf Overseer"
 monster.description = "an elf overseer"
 monster.experience = 200
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

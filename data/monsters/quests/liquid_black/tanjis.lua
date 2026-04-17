@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Tanjis")
 local monster = {}
 
+monster.name = "Tanjis"
 monster.description = "Tanjis"
 monster.experience = 15000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 775,
@@ -92,7 +91,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 	{ name = "combat", interval = 3000, chance = 40, type = COMBAT_HEALING, minDamage = 800, maxDamage = 1100, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

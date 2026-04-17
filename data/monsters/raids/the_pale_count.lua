@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Pale Count")
 local monster = {}
 
+monster.name = "The Pale Count"
 monster.description = "The Pale Count"
 monster.experience = 28000
 monster.outfit = {
@@ -121,7 +122,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 75,
 	armor = 75,
-	--	mitigation = ???,
 }
 
 monster.elements = {

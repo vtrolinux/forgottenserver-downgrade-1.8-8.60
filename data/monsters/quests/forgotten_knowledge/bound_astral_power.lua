@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Bound Astral Power")
 local monster = {}
 
+monster.name = "Bound Astral Power"
 monster.description = "a bound astral power"
 monster.experience = 0
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 70000
 monster.maxHealth = 70000
@@ -75,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 50,
-	--	mitigation = ???,
 }
 
 monster.elements = {

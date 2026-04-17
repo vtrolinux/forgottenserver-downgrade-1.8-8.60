@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Morgaroth")
 local monster = {}
 
+monster.name = "Morgaroth"
 monster.description = "Morgaroth"
 monster.experience = 15000
 monster.outfit = {
@@ -152,7 +153,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 130,
-	--	mitigation = ???,
 	{ name = "combat", interval = 3000, chance = 35, type = COMBAT_HEALING, minDamage = 800, maxDamage = 1100, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "combat", interval = 9000, chance = 15, type = COMBAT_HEALING, minDamage = 3800, maxDamage = 4000, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 4000, chance = 80, speedChange = 470, effect = CONST_ME_MAGIC_RED, target = false, duration = 6000 },

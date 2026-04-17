@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ancient Lion Knight")
 local monster = {}
 
+monster.name = "Ancient Lion Knight"
 monster.description = "an ancient lion knight"
 monster.experience = 8100
 monster.outfit = {
@@ -93,6 +94,7 @@ monster.loot = {
 	{ name = "lion wand", chance = 35 },
 	{ name = "lion amulet", chance = 35 },
 	{ name = "lion rod", chance = 35 },
+	{ name = "lion claws", chance = 35 },
 }
 
 monster.attacks = {
@@ -107,7 +109,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 60,
 	armor = 0,
-	--	mitigation = ???,
 	{ name = "speed", interval = 1000, chance = 10, speedChange = 160, effect = CONST_ME_POFF, target = false, duration = 4000 },
 }
 

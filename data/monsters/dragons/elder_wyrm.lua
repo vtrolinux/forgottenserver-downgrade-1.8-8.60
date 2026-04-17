@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Elder Wyrm")
 local monster = {}
 
+monster.name = "Elder Wyrm"
 monster.description = "an elder wyrm"
 monster.experience = 2500
 monster.outfit = {
@@ -98,6 +99,7 @@ monster.loot = {
 	{ name = "shadow sceptre", chance = 170 },
 	{ name = "lightning boots", chance = 150 },
 	{ name = "shockwave amulet", chance = 120 },
+	{ name = "legs of wisdom", chance = 700 },
 }
 
 monster.attacks = {

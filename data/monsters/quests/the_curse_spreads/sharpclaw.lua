@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sharpclaw")
 local monster = {}
 
+monster.name = "Sharpclaw"
 monster.description = "Sharpclaw"
 monster.experience = 3000
 monster.outfit = {
@@ -13,6 +14,11 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.bosstiary = {
+	bossRaceId = 1562,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 3300
 monster.maxHealth = 3300
 monster.race = "blood"
@@ -23,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1562,
-	bossRace = RARITY_ARCHFOE,
 }
 
 monster.strategiesTarget = {
@@ -110,7 +111,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 45,
 	armor = 40,
-	--	mitigation = ???,
 	{ name = "combat", interval = 4000, chance = 15, type = COMBAT_HEALING, minDamage = 150, maxDamage = 345, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "invisible", interval = 2000, chance = 15, effect = CONST_ME_MAGIC_BLUE },
 }

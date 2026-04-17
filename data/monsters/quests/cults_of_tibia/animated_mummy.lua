@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Animated Mummy")
 local monster = {}
 
+monster.name = "Animated Mummy"
 monster.description = "an animated mummy"
 monster.experience = 150
 monster.outfit = {
@@ -88,7 +89,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 }
 
 monster.elements = {

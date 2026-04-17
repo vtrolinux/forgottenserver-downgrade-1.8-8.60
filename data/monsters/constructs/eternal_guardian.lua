@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Eternal Guardian")
 local monster = {}
 
+monster.name = "Eternal Guardian"
 monster.description = "an eternal guardian"
 monster.experience = 1800
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

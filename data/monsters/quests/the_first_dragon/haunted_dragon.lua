@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Haunted Dragon")
 local monster = {}
 
+monster.name = "Haunted Dragon"
 monster.description = "a haunted dragon"
 monster.experience = 6500
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

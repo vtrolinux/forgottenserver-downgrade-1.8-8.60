@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Symbol of Hatred")
 local monster = {}
 
+monster.name = "Symbol of Hatred"
 monster.description = "a symbol of hatred"
 monster.experience = 0
 monster.outfit = {
@@ -73,11 +74,5 @@ monster.immunities = {
 	{ type = "invisible", condition = false },
 	{ type = "bleed", condition = false },
 }
-
-local intervalBetweenExecutions = 3000
-
-mType.onThink = function(monsterCallback, interval)
-	monsterCallback:onThinkGoshnarTormentCounter(interval, 30, intervalBetweenExecutions, SoulWarQuest.levers.goshnarsHatred.boss.position, "Goshnar's Hatred")
-end
 
 mType:register(monster)

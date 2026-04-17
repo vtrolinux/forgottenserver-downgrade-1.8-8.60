@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lizard Noble")
 local monster = {}
 
+monster.name = "Lizard Noble"
 monster.description = "a lizard noble"
 monster.experience = 2000
 monster.outfit = {
@@ -13,7 +14,6 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
 
 monster.raceId = 656
 monster.Bestiary = {
@@ -62,7 +62,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

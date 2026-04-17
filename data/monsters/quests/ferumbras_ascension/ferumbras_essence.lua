@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ferumbras Essence")
 local monster = {}
 
+monster.name = "Ferumbras Essence"
 monster.description = "ferumbras essence"
 monster.experience = 0
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 35000
 monster.maxHealth = 35000
@@ -74,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 10,
-	--	mitigation = ???,
 	{ name = "speed", interval = 2000, chance = 8, speedChange = 240, effect = CONST_ME_MAGIC_GREEN, target = false, duration = 20000 },
 	{ name = "combat", interval = 2000, chance = 11, type = COMBAT_HEALING, minDamage = 15, maxDamage = 25, effect = CONST_ME_MAGIC_BLUE, target = false },
 }

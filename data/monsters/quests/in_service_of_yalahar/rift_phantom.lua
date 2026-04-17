@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rift Phantom")
 local monster = {}
 
+monster.name = "Rift Phantom"
 monster.description = "a rift phantom"
 monster.experience = 0
 monster.outfit = {

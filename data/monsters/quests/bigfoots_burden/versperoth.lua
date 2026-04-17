@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Versperoth")
 local monster = {}
 
+monster.name = "Versperoth"
 monster.description = "Versperoth"
 monster.experience = 30000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 100000
 monster.maxHealth = 100000
@@ -78,7 +77,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 55,
 	armor = 55,
-	--	mitigation = ???,
 }
 
 monster.elements = {

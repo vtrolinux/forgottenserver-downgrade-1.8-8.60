@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Minotaur Cult Follower")
 local monster = {}
 
+monster.name = "Minotaur Cult Follower"
 monster.description = "a minotaur cult follower"
 monster.experience = 950
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 1508
 monster.Bestiary = {

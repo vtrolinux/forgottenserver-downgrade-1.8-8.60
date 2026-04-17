@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Golden Servant Replica")
 local monster = {}
 
+monster.name = "Golden Servant Replica"
 monster.description = "a golden servant replica"
 monster.experience = 450
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.raceId = 1327
 monster.Bestiary = {
@@ -62,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

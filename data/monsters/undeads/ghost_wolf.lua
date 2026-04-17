@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ghost Wolf")
 local monster = {}
 
+monster.name = "Ghost Wolf"
 monster.description = "a ghost wolf"
 monster.experience = 65
 monster.outfit = {
@@ -60,7 +61,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

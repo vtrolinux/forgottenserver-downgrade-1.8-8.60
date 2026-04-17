@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Cobra")
 local monster = {}
 
+monster.name = "Cobra"
 monster.description = "a cobra"
 monster.experience = 30
 monster.outfit = {
@@ -81,7 +82,8 @@ monster.loot = {
 
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = 0, condition = { type = CONDITION_POISON, totalDamage = 100, interval = 4000 } }, -- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 15, minDamage = -20, maxDamage = -40, range = 7, shootEffect = CONST_ANI_POISON, target = false },
+	{ name = "condition", interval = 2000, chance = 15, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -20, maxDamage = -40, range = 7, shootEffect = CONST_ANI_POISON } },
 }
 
 monster.defenses = {

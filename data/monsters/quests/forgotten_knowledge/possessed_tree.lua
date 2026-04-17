@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Possessed Tree")
 local monster = {}
 
+monster.name = "Possessed Tree"
 monster.description = "a possessed tree"
 monster.experience = 1300
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

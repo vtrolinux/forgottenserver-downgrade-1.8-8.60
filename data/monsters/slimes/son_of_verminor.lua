@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Son of Verminor")
 local monster = {}
 
+monster.name = "Son of Verminor"
 monster.description = "a son of verminor"
 monster.experience = 5900
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = false,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

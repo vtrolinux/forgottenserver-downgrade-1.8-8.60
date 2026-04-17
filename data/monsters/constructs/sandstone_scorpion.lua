@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Sandstone Scorpion")
 local monster = {}
 
+monster.name = "Sandstone Scorpion"
 monster.description = "a sandstone scorpion"
 monster.experience = 680
 monster.outfit = {
@@ -61,7 +62,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

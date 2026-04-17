@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Rage")
 local monster = {}
 
+monster.name = "The Rage"
 monster.description = "The Rage"
 monster.experience = 0
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -81,7 +81,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 100,
 	armor = 100,
-	--	mitigation = ???,
 }
 
 monster.elements = {

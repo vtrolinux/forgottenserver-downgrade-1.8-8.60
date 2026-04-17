@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Sandking")
 local monster = {}
 
+monster.name = "The Sandking"
 monster.description = "The Sandking"
 monster.experience = 0
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1444,
@@ -119,7 +118,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 }
 
 monster.elements = {

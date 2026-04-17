@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Midnight Spawn")
 local monster = {}
 
+monster.name = "Midnight Spawn"
 monster.description = "a midnight spawn"
 monster.experience = 900
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Orc Cult Priest")
 local monster = {}
 
+monster.name = "Orc Cult Priest"
 monster.description = "an orc cult priest"
 monster.experience = 1000
 monster.outfit = {
@@ -104,7 +105,7 @@ monster.defenses = {
 	defense = 27,
 	armor = 27,
 	mitigation = 1.18,
-	{ name = "heal monster", interval = 2000, chance = 20, effect = CONST_ME_MAGIC_BLUE, target = false },
+	{ name = "combat", interval = 2000, chance = 40, type = COMBAT_HEALING, minDamage = 229, maxDamage = 449, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 
 monster.elements = {

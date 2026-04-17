@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lethal Lissy")
 local monster = {}
 
+monster.name = "Lethal Lissy"
 monster.description = "Lethal Lissy"
 monster.experience = 500
 monster.outfit = {
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 115,
 	lookAddons = 3,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 272,
+	bossRace = RARITY_NEMESIS,
 }
 
 monster.health = 1450

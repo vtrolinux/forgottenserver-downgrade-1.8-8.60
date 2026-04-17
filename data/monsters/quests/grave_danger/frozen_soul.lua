@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Frozen Soul")
 local monster = {}
 
+monster.name = "Frozen Soul"
 monster.description = "a frozen soul"
 monster.experience = 0
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 10,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

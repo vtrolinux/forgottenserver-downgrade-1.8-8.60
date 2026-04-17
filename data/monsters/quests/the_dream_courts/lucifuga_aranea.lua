@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lucifuga Aranea")
 local monster = {}
 
+monster.name = "Lucifuga Aranea"
 monster.description = "a lucifuga aranea"
 monster.experience = 10000
 monster.outfit = {
@@ -81,7 +82,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 	{ name = "speed", interval = 2000, chance = 15, speedChange = 250, effect = CONST_ME_MAGIC_RED, target = false, duration = 5000 },
 }
 

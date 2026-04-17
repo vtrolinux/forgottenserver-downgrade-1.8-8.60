@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dreadful Harvester")
 local monster = {}
 
+monster.name = "Dreadful Harvester"
 monster.description = "a dreadful harvester"
 monster.experience = 25500
 monster.outfit = {
@@ -75,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 35,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 130, maxDamage = 205, target = false },
 	{ name = "speed", interval = 2000, chance = 15, speedChange = 450, effect = CONST_ME_MAGIC_RED, target = false, duration = 5000 },
 }

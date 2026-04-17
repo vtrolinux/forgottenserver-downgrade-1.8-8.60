@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Angry Plant")
 local monster = {}
 
+monster.name = "Angry Plant"
 monster.description = "an angry plant"
 monster.experience = 0
 monster.outfit = {
@@ -20,7 +21,6 @@ monster.corpse = 2983
 monster.speed = 55
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 2000,
@@ -73,7 +73,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 20,
 	armor = 26,
-	--	mitigation = ???,
 }
 
 monster.elements = {

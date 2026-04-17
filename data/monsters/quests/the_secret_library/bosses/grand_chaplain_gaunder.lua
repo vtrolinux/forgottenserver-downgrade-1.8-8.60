@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Grand Chaplain Gaunder")
 local monster = {}
 
+monster.name = "Grand Chaplain Gaunder"
 monster.description = "Grand Chaplain Gaunder"
 monster.experience = 14000
 monster.outfit = {
@@ -25,7 +26,6 @@ monster.corpse = 28733
 monster.speed = 105
 monster.manaCost = 0
 
-monster.events = {}
 
 monster.changeTarget = {
 	interval = 3000,
@@ -86,6 +86,7 @@ monster.loot = {
 	{ name = "falcon mace", chance = 210 },
 	{ name = "falcon plate", chance = 100 },
 	{ name = "falcon shield", chance = 100 },
+	{ name = "falcon sai", chance = 100, maxCount = 1 },
 }
 
 monster.attacks = {
@@ -99,7 +100,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 82,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_HEALING, minDamage = 200, maxDamage = 550, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "speed", interval = 1000, chance = 10, speedChange = 220, effect = CONST_ME_POFF, target = false, duration = 5000 },
 }

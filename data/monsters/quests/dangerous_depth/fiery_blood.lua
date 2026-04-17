@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Fiery Blood")
 local monster = {}
 
+monster.name = "Fiery Blood"
 monster.description = "a fiery blood"
 monster.experience = 0
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 }
 
 monster.elements = {

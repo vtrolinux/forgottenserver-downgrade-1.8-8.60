@@ -1,13 +1,14 @@
 local mType = Game.createMonsterType("Coral Frog")
 local monster = {}
 
+monster.name = "Coral Frog"
 monster.description = "a coral frog"
 monster.experience = 20
 monster.outfit = {
 	lookType = 226,
 	lookHead = 114,
-	lookBody = 98,
-	lookLegs = 97,
+	lookBody = 79,
+	lookLegs = 78,
 	lookFeet = 114,
 	lookAddons = 0,
 	lookMount = 0,
@@ -43,14 +44,14 @@ monster.strategiesTarget = {
 }
 
 monster.flags = {
-	summonable = true,
+	summonable = false,
 	attackable = true,
 	hostile = true,
 	convinceable = true,
-	pushable = true,
+	pushable = false,
 	rewardBoss = false,
 	illusionable = false,
-	canPushItems = false,
+	canPushItems = true,
 	canPushCreatures = false,
 	staticAttackChance = 90,
 	targetDistance = 1,
@@ -75,8 +76,8 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 75590, maxCount = 10 },
-	{ name = "worm", chance = 11310 },
+	{ name = "gold coin", chance = 76020, maxCount = 10 },
+	{ name = "worm", chance = 10670 },
 }
 
 monster.attacks = {
@@ -85,7 +86,8 @@ monster.attacks = {
 
 monster.defenses = {
 	defense = 5,
-	armor = 5,
+	armor = 8,
+	mitigation = 0.28,
 }
 
 monster.elements = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Heat of Summer")
 local monster = {}
 
+monster.name = "The Heat of Summer"
 monster.description = "a the heat of summer"
 monster.experience = 0
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 }
 
 monster.elements = {

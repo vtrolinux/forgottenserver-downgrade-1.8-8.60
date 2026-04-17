@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Capricious Phantom")
 local monster = {}
 
+monster.name = "Capricious Phantom"
 monster.description = "a capricious phantom"
 monster.experience = 19360
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Ebb and Flow.",
 }
 
-monster.events = {}
 
 monster.health = 30000
 monster.maxHealth = 30000

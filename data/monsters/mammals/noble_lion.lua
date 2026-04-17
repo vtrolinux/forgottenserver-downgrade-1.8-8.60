@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Noble Lion")
 local monster = {}
 
+monster.name = "Noble Lion"
 monster.description = "a noble lion"
 monster.experience = 400
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {

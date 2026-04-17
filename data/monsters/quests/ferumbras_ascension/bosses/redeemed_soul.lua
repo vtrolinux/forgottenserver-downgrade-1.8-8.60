@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Redeemed Soul")
 local monster = {}
 
+monster.name = "Redeemed Soul"
 monster.description = "a redeemed soul"
 monster.experience = 0
 monster.outfit = {
@@ -63,7 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
 	canWalkOnPoison = false,
-	isPreyExclusive = true,
 }
 
 monster.light = {

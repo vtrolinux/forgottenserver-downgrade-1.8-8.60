@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Unbeatable Dragon")
 local monster = {}
 
+monster.name = "Unbeatable Dragon"
 monster.description = "an unbeatable dragon"
 monster.experience = 0
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 48,
 	armor = 32,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_HEALING, minDamage = 55, maxDamage = 95, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

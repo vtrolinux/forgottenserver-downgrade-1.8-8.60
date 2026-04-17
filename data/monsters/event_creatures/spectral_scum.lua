@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Spectral Scum")
 local monster = {}
 
+monster.name = "Spectral Scum"
 monster.description = "a spectral scum"
 monster.experience = 0
 monster.outfit = {

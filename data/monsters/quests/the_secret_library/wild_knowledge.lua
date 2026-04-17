@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Wild Knowledge")
 local monster = {}
 
+monster.name = "Wild Knowledge"
 monster.description = "a wild knowledge"
 monster.experience = 0
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 33,
 	armor = 28,
-	--	mitigation = ???,
 }
 
 monster.elements = {

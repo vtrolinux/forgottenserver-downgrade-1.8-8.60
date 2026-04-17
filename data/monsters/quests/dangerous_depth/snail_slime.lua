@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Snail Slime")
 local monster = {}
 
+monster.name = "Snail Slime"
 monster.description = "a snail slime"
 monster.experience = 0
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 4500
 monster.maxHealth = 4500
@@ -73,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 }
 
 monster.elements = {

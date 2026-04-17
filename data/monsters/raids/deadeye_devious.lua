@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Deadeye Devious")
 local monster = {}
 
+monster.name = "Deadeye Devious"
 monster.description = "Deadeye Devious"
 monster.experience = 750
 monster.outfit = {
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 117,
 	lookAddons = 2,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 275,
+	bossRace = RARITY_NEMESIS,
 }
 
 monster.health = 1450

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Usurper Warlock")
 local monster = {}
 
+monster.name = "Usurper Warlock"
 monster.description = "an usurper warlock"
 monster.experience = 7000
 monster.outfit = {

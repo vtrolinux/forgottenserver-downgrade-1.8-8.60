@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Many Faces")
 local monster = {}
 
+monster.name = "Many Faces"
 monster.description = "a many faces"
 monster.experience = 18870
 monster.outfit = {
@@ -26,7 +27,6 @@ monster.Bestiary = {
 	Locations = "Mirrored Nightmare.",
 }
 
-monster.events = {}
 
 monster.health = 30000
 monster.maxHealth = 30000
@@ -134,9 +134,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval)
-	monster:tryTeleportToPlayer("Hands off my comrades!")
-end
 
 mType:register(monster)

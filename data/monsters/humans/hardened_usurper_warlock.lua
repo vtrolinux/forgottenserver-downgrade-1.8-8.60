@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Hardened Usurper Warlock")
 local monster = {}
 
+monster.name = "Hardened Usurper Warlock"
 monster.description = "a hardened usurper warlock"
 monster.experience = 0
 monster.outfit = {
@@ -74,7 +75,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 50,
 	armor = 0,
-	--	mitigation = ???,
 }
 
 monster.elements = {

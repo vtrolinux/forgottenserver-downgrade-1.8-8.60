@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Angry Sugar Fairy")
 local monster = {}
 
+monster.name = "Angry Sugar Fairy"
 monster.description = "an angry sugar fairy"
 monster.experience = 3100
 monster.outfit = {
@@ -25,7 +26,6 @@ monster.Bestiary = {
 	Occurrence = 0,
 	Locations = "Dessert Dungeons, Candy Carnival.",
 }
-
 monster.health = 3000
 monster.maxHealth = 3000
 monster.race = "undead"
@@ -101,7 +101,7 @@ monster.loot = {
 
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -110 },
-	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_PHYSICALDAMAGE, minDamage = -100, maxDamage = -230, range = 6, shootEffect = CONST_ANI_SMALLICE, effect = CONST_ME_ICEATTACK, target = true },
+	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_ICEDAMAGE, minDamage = -100, maxDamage = -230, range = 6, shootEffect = CONST_ANI_SMALLICE, effect = CONST_ME_ICEATTACK, target = true },
 	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_ENERGYDAMAGE, minDamage = -130, maxDamage = -280, range = 5, radius = 3, shootEffect = CONST_ANI_ENERGY, effect = CONST_ME_ELECTRICALSPARK, target = true },
 }
 

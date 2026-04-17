@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Vicious Manbat")
 local monster = {}
 
+monster.name = "Vicious Manbat"
 monster.description = "a vicious manbat"
 monster.experience = 1200
 monster.outfit = {
@@ -62,7 +63,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {
@@ -82,9 +82,10 @@ monster.loot = {
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -215 },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_PHYSICALDAMAGE, minDamage = -100, maxDamage = -250, radius = 3, effect = CONST_ME_HITAREA, target = false },
-	{ name = "speed", interval = 2000, chance = 15, minDamage = 0, maxDamage = -210, radius = 1, effect = CONST_ME_BATS, target = true },
+	{ name = "speed", interval = 2000, chance = 15, speedChange = -400, radius = 1, effect = CONST_ME_BATS, target = true },
 	-- bleed
-	{ name = "condition", type = CONDITION_BLEEDING, interval = 2000, chance = 20, minDamage = -400, maxDamage = -600, radius = 2, effect = CONST_ME_DRAWBLOOD, target = false },
+	{ name = "condition", interval = 2000, chance = 20, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -400, maxDamage = -600, radius = 2, effect = CONST_ME_DRAWBLOOD } },
 }
 
 monster.defenses = {

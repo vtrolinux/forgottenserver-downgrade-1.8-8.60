@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("The Sandking Fake")
 local monster = {}
 
 monster.name = "The Sandking"
+monster.name = "The Sandking Fake"
 monster.description = "The Sandking"
 monster.experience = 0
 monster.outfit = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ushuriel")
 local monster = {}
 
+monster.name = "Ushuriel"
 monster.description = "Ushuriel"
 monster.experience = 10000
 monster.outfit = {
@@ -13,8 +14,9 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {
-	"InquisitionBossDeath",
+monster.bosstiary = {
+	bossRaceId = 415,
+	bossRace = RARITY_BANE,
 }
 
 monster.health = 31500
@@ -27,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 5000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 415,
-	bossRace = RARITY_BANE,
 }
 
 monster.strategiesTarget = {
@@ -121,7 +118,8 @@ monster.attacks = {
 	{ name = "combat", interval = 1000, chance = 8, type = COMBAT_ICEDAMAGE, minDamage = 0, maxDamage = -430, radius = 6, effect = CONST_ME_ICETORNADO, target = false },
 	{ name = "drunk", interval = 3000, chance = 11, radius = 6, effect = CONST_ME_SOUND_PURPLE, target = false },
 	-- energy damage
-	{ name = "condition", type = CONDITION_ENERGY, interval = 2000, chance = 15, minDamage = -250, maxDamage = -250, radius = 4, effect = CONST_ME_ENERGYHIT, target = false },
+	{ name = "condition", interval = 2000, chance = 15, target = false, condition =
+	{ type = CONDITION_ENERGY, minDamage = -250, maxDamage = -250, effect = CONST_ME_ENERGYHIT } },
 }
 
 monster.defenses = {

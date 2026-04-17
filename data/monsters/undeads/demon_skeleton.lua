@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Demon Skeleton")
 local monster = {}
 
+monster.name = "Demon Skeleton"
 monster.description = "a demon skeleton"
 monster.experience = 240
 monster.outfit = {
@@ -13,7 +14,6 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
 
 monster.raceId = 37
 monster.Bestiary = {

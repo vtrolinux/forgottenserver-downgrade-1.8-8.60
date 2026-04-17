@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rift Worm")
 local monster = {}
 
+monster.name = "Rift Worm"
 monster.description = "a rift worm"
 monster.experience = 1195
 monster.outfit = {

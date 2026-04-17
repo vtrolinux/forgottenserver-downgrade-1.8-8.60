@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Last Lore Keeper")
 local monster = {}
 
+monster.name = "The Last Lore Keeper"
 monster.description = "the last lore keeper"
 monster.experience = 45000
 monster.outfit = {
@@ -13,7 +14,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
-monster.events = {}
+monster.bosstiary = {
+	bossRaceId = 1304,
+	bossRace = RARITY_NEMESIS,
+}
 
 monster.health = 750000
 monster.maxHealth = 750000
@@ -25,11 +29,6 @@ monster.manaCost = 0
 monster.changeTarget = {
 	interval = 2000,
 	chance = 8,
-}
-
-monster.bosstiary = {
-	bossRaceId = 1304,
-	bossRace = RARITY_NEMESIS,
 }
 
 monster.strategiesTarget = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Horrible Dream")
 local monster = {}
 
+monster.name = "Horrible Dream"
 monster.description = "a horrible dream"
 monster.experience = 0
 monster.outfit = {
@@ -80,7 +81,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 15,
 	armor = 15,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 5, type = COMBAT_HEALING, minDamage = 20, maxDamage = 30, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

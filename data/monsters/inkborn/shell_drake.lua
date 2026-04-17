@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Shell Drake")
 local monster = {}
 
+monster.name = "Shell Drake"
 monster.description = "a shell drake"
 monster.experience = 2370
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 2800
 monster.maxHealth = 2800
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 51556
 monster.speed = 90
 monster.manaCost = 0

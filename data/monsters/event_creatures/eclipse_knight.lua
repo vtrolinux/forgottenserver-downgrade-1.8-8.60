@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Eclipse Knight")
 local monster = {}
 
+monster.name = "Eclipse Knight"
 monster.description = "an eclipse knight"
 monster.experience = 4650
 monster.outfit = {
@@ -74,7 +75,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_HEALING, minDamage = 200, maxDamage = 250, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

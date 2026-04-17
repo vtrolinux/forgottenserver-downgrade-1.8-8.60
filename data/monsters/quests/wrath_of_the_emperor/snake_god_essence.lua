@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Snake God Essence")
 local monster = {}
 
+monster.name = "Snake God Essence"
 monster.description = "Snake God Essence"
 monster.experience = 7410
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 65000
 monster.maxHealth = 65000
@@ -77,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 65,
 	armor = 70,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_HEALING, minDamage = 150, maxDamage = 450, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

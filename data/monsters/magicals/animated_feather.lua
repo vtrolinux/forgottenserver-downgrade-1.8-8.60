@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Animated Feather")
 local monster = {}
 
+monster.name = "Animated Feather"
 monster.description = "an animated feather"
 monster.experience = 9860
 monster.outfit = {
@@ -28,7 +29,7 @@ monster.Bestiary = {
 
 monster.health = 13000
 monster.maxHealth = 13000
-monster.race = "ink"
+monster.race = "undead"
 monster.corpse = 28578
 monster.speed = 210
 monster.manaCost = 0

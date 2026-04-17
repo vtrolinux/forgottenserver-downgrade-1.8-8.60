@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Roaring Water Elemental")
 local monster = {}
 
+monster.name = "Roaring Water Elemental"
 monster.description = "a roaring water elemental"
 monster.experience = 1300
 monster.outfit = {
@@ -80,7 +81,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 30,
 	armor = 30,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 90, maxDamage = 150, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

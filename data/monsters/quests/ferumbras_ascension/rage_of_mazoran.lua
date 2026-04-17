@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Rage of Mazoran")
 local monster = {}
 
+monster.name = "Rage of Mazoran"
 monster.description = "a Rage of Mazoran"
 monster.experience = 0
 monster.outfit = {
@@ -75,7 +76,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 }
 
 monster.elements = {

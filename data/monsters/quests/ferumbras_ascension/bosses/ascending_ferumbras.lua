@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Ascending Ferumbras")
 local monster = {}
 
+monster.name = "Ascending Ferumbras"
 monster.description = "Ascending Ferumbras"
 monster.experience = 12000
 monster.outfit = {
@@ -11,6 +12,11 @@ monster.outfit = {
 	lookFeet = 0,
 	lookAddons = 0,
 	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 1204,
+	bossRace = RARITY_NEMESIS,
 }
 
 monster.health = 150000
@@ -74,7 +80,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 5,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

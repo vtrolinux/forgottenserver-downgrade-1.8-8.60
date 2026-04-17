@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dark Paladin")
 local monster = {}
 
+monster.name = "Dark Paladin"
 monster.description = "a dark paladin"
 monster.experience = 0
 monster.outfit = {
@@ -69,7 +70,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {

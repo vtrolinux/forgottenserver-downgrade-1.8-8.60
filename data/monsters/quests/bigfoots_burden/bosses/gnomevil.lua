@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Gnomevil")
 local monster = {}
 
+monster.name = "Gnomevil"
 monster.description = "Gnomevil"
 monster.experience = 400000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 893,
@@ -95,7 +94,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 35,
 	armor = 25,
-	--	mitigation = ???,
 	{ name = "combat", interval = 1000, chance = 25, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 4000, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

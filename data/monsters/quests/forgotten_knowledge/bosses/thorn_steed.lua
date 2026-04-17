@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Thorn Steed")
 local monster = {}
 
+monster.name = "Thorn Steed"
 monster.description = "a thorn steed"
 monster.experience = 0
 monster.outfit = {
@@ -71,7 +72,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 10,
 	armor = 10,
-	--	mitigation = ???,
 }
 
 monster.elements = {

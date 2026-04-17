@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Grandfather Tridian")
 local monster = {}
 
+monster.name = "Grandfather Tridian"
 monster.description = "Grandfather Tridian"
 monster.experience = 1400
 monster.outfit = {
@@ -80,10 +81,18 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 100000, maxCount = 80 },
-	{ name = "jewelled backpack", chance = 100000 },
-	{ name = "strong mana potion", chance = 5000 },
-	{ name = "brown mushroom", chance = 5000, maxCount = 3 },
+	{ name = "piggy bank", chance = 100000 },
+	{ name = "gold coin", chance = 58330, maxCount = 80 },
+	{ name = "skull staff", chance = 25000 },
+	{ name = "protection amulet", chance = 16670 },
+	{ name = "small sapphire", chance = 16670 },
+	{ name = "wand of inferno", chance = 16670 },
+	{ id = 5801, chance = 8330 }, -- jewelled backpack
+	{ name = "pirate voodoo doll", chance = 8330 },
+	{ name = "strong mana potion", chance = 8330 },
+	{ name = "brown mushroom", chance = 8330 },
+	{ id = 3002, chance = 8330 }, -- voodoo doll
+	{ name = "amber staff", chance = 8330 },
 	{ id = 6087, chance = 3000 }, -- music sheet (first verse)
 	{ id = 6088, chance = 3000 }, -- music sheet (second verse)
 	{ id = 6089, chance = 3000 }, -- music sheet (third verse)
@@ -99,7 +108,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 25,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_HEALING, minDamage = 60, maxDamage = 90, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "invisible", interval = 2000, chance = 15, effect = CONST_ME_YELLOW_RINGS },
 }
@@ -123,19 +131,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

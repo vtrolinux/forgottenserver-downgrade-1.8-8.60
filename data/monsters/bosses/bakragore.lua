@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Bakragore")
 local monster = {}
 
+monster.name = "Bakragore"
 monster.description = "Bakragore"
 monster.experience = 15000000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 2367,
@@ -82,20 +81,30 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "crystal coin", chance = 8938, maxCount = 165 },
-	{ name = "ultimate mana potion", chance = 11433, maxCount = 198 },
-	{ name = "giant amethyst", chance = 10570, maxCount = 4 },
-	{ name = "giant topaz", chance = 10570, maxCount = 6 },
-	{ name = "ultimate spirit potion", chance = 11433, maxCount = 45 },
-	{ name = "giant ruby", chance = 10570, maxCount = 1 },
-	{ name = "giant sapphire", chance = 10570, maxCount = 1 },
-	{ name = "mastermind potion", chance = 10938, maxCount = 23 },
-	{ id = 3039, chance = 10570, maxCount = 3 }, -- red gem
-	{ name = "violet gem", chance = 10970, maxCount = 8 },
-	{ name = "yellow gem", chance = 10970, maxCount = 9 },
-	-- { name = "figurine of bakragore", chance = 10970 },
-	-- { name = "bakragore's amalgamation", chance = 570 },
-	--{ name = "spiritual horseshoe", chance = 470 },
+	{ name = "crystal coin", chance = 100000, maxCount = 168 },
+	{ name = "ultimate mana potion", chance = 60000, maxCount = 37 },
+	{ name = "ultimate spirit potion", chance = 60000, maxCount = 200 },
+	{ name = "giant amethyst", chance = 40000, maxCount = 3 },
+	{ name = "giant ruby", chance = 30000, maxCount = 6 },
+	{ name = "giant sapphire", chance = 20000, maxCount = 6 },
+	{ id = 3041, chance = 20000, maxCount = 9 }, -- blue gem
+	{ name = "bullseye potion", chance = 20000, maxCount = 28 },
+	{ name = "berserk potion", chance = 10000, maxCount = 81 },
+	{ name = "dragon figurine", chance = 10000 },
+-- { name = "abridged promotion scroll", chance = 200 },
+	--{ name = "advanced promotion scroll", chance = 200 },
+	--{ name = "extended promotion scroll", chance = 150 },
+	--{ name = "basic promotion scroll", chance = 200 },
+	--{ name = "revised promotion scroll", chance = 200 },
+	{ name = "fiery tear", chance = 200 },
+	{ name = "cobalt ridge", chance = 100 },
+-- { name = "darklight figurine", chance = 250 },
+-- { name = "putrefactive figurine", chance = 250 },
+	{ name = "violet gem", chance = 20000, maxCount = 6 },
+	{ name = "yellow gem", chance = 40000, maxCount = 7 },
+-- { name = "figurine of bakragore", chance = 10970 },
+-- { name = "bakragore's amalgamation", chance = 570 },
+-- { name = "spiritual horseshoe", chance = 470 },
 	{ id = 43895, chance = 360 }, -- Bag you covet
 }
 
@@ -134,19 +143,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = false },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Animated Ogre Savage")
 local monster = {}
 
+monster.name = "Animated Ogre Savage"
 monster.description = "an animated ogre savage"
 monster.experience = 950
 monster.outfit = {
@@ -89,7 +90,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 20,
 	armor = 20,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_HEALING, minDamage = 80, maxDamage = 95, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

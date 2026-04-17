@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Fury of the Emperor")
 local monster = {}
 
+monster.name = "Fury of the Emperor"
 monster.description = "Fury of the Emperor"
 monster.experience = 550
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 51000
 monster.maxHealth = 51000
@@ -84,7 +83,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 55,
 	armor = 65,
-	--	mitigation = ???,
 }
 
 monster.elements = {

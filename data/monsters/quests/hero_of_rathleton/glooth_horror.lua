@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Glooth Horror")
 local monster = {}
 
+monster.name = "Glooth Horror"
 monster.description = "glooth horror"
 monster.experience = 900
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = false,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Calamary")
 local monster = {}
 
+monster.name = "Calamary"
 monster.description = "a calamary"
 monster.experience = 0
 monster.outfit = {
@@ -75,7 +76,7 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "shrimp", chance = 12270, maxCount = 2 },
+	{ name = "shrimp", chance = 10650, maxCount = 2 },
 }
 
 monster.defenses = {

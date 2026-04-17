@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Berserker Chicken")
 local monster = {}
 
+monster.name = "Berserker Chicken"
 monster.description = "a berserker chicken"
 monster.experience = 220
 monster.outfit = {
@@ -76,7 +77,7 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 50000, maxCount = 100 },
+	{ name = "gold coin", chance = 66220, maxCount = 75 },
 }
 
 monster.attacks = {

@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Hairy One")
 local monster = {}
 
+monster.name = "The Hairy One"
 monster.description = "The Hairy One"
 monster.experience = 115
 monster.outfit = {
@@ -73,7 +74,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 0,
 	armor = 16,
-	--	mitigation = ???,
 }
 
 monster.elements = {

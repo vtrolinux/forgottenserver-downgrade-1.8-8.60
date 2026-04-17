@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Hardened Usurper Knight")
 local monster = {}
 
+monster.name = "Hardened Usurper Knight"
 monster.description = "a hardened usurper knight"
 monster.experience = 0
 monster.outfit = {
@@ -74,7 +75,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 86,
 	armor = 0,
-	--	mitigation = ???,
 	{ name = "combat", interval = 4000, chance = 40, type = COMBAT_HEALING, minDamage = 200, maxDamage = 550, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 

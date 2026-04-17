@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Shadow Pupil")
 local monster = {}
 
+monster.name = "Shadow Pupil"
 monster.description = "a shadow pupil"
 monster.experience = 410
 monster.outfit = {

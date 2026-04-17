@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Lizard Chosen")
 local monster = {}
 
+monster.name = "Lizard Chosen"
 monster.description = "a lizard chosen"
 monster.experience = 2200
 monster.outfit = {
@@ -93,12 +94,14 @@ monster.loot = {
 	{ name = "corrupted flag", chance = 3350 },
 	{ name = "cursed shoulder spikes", chance = 5800 },
 	{ name = "scale of corruption", chance = 2870 },
+	{ id = 50152, chance = 560 }, -- collar of orange plasma
 }
 
 monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -360 },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 15, minDamage = -240, maxDamage = -320, length = 3, spread = 2, effect = CONST_ME_POISONAREA, target = false },
+	{ name = "condition", interval = 2000, chance = 15, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -240, maxDamage = -320, length = 3, spread = 2, effect = CONST_ME_POISONAREA } },
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_EARTHDAMAGE, minDamage = -190, maxDamage = -340, radius = 3, effect = CONST_ME_HITBYPOISON, target = false },
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_EARTHDAMAGE, minDamage = -90, maxDamage = -180, length = 8, spread = 3, effect = CONST_ME_GREEN_RINGS, target = false },
 }

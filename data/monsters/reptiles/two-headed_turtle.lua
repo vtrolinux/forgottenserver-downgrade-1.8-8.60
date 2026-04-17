@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Two-Headed Turtle")
 local monster = {}
 
+monster.name = "Two-Headed Turtle"
 monster.description = "a two-headed turtle"
 monster.experience = 2930
 monster.outfit = {
@@ -70,7 +71,7 @@ monster.loot = {
 	{ name = "two-headed turtle heads", chance = 8700 },
 	{ name = "strong mana potion", chance = 13373 },
 	{ name = "hydrophytes", chance = 11000 },
-	{ id = 1047, chance = 6388 }, -- bone
+	{ id = 3115, chance = 6388 }, -- bone
 	{ name = "glacier shoes", chance = 4650 },
 	{ id = 281, chance = 3582 }, -- giant shimmering pearl (green)
 	{ name = "small tropical fish", chance = 3582 },

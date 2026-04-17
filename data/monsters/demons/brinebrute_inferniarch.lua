@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Brinebrute Inferniarch")
 local monster = {}
 
+monster.name = "Brinebrute Inferniarch"
 monster.description = "a brinebrute inferniarch"
 monster.experience = 20300
 monster.outfit = {
@@ -63,8 +64,6 @@ monster.flags = {
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
 	canWalkOnPoison = true,
-	isPreyable = true,
-	isPreyExclusive = true,
 }
 
 monster.light = {
@@ -100,7 +99,7 @@ monster.loot = {
 	{ id = 3100, chance = 5000, maxCount = 1 }, -- Ring of Healing
 	{ name = "Mummified Demon Finger", chance = 500, maxCount = 1 },
 	{ name = "Gold Ring", chance = 500, maxCount = 1 },
-	--{ name = "brinebrute inferniarch soul core", chance = 100, maxCount = 1 },
+	{ name = "brinebrute inferniarch soul core", chance = 100, maxCount = 1 },
 }
 
 monster.attacks = {

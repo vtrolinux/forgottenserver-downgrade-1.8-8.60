@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Bulltaur Forgepriest")
 local monster = {}
 
+monster.name = "Bulltaur Forgepriest"
 monster.description = "a bulltaur forgepriest"
 monster.experience = 5180
 monster.outfit = {
@@ -91,7 +92,7 @@ monster.loot = {
 	{ name = "ultimate health potion", chance = 5285 },
 	{ name = "great mana potion", chance = 6285 },
 	{ name = "alloy legs", chance = 1285 },
-	--{ name = "encrypted notes", chance = 985 },
+-- { name = "encrypted notes", chance = 985 },
 	{ name = "ultimate mana potion", chance = 1285 },
 	{ name = "gold ingot", chance = 1285 },
 	{ name = "lightning robe", chance = 500, maxCount = 1 },

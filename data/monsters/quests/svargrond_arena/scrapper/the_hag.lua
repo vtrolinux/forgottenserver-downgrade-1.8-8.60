@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The Hag")
 local monster = {}
 
+monster.name = "The Hag"
 monster.description = "The Hag"
 monster.experience = 510
 monster.outfit = {
@@ -85,7 +86,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 25,
 	armor = 24,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 35, type = COMBAT_HEALING, minDamage = 95, maxDamage = 155, effect = CONST_ME_MAGIC_BLUE, target = false },
 	{ name = "invisible", interval = 3000, chance = 50, effect = CONST_ME_MAGIC_BLUE },
 }

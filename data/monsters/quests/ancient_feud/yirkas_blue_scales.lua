@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Yirkas Blue Scales")
 local monster = {}
 
+monster.name = "Yirkas Blue Scales"
 monster.description = "Yirkas Blue Scales"
 monster.experience = 4900
 monster.outfit = {
@@ -105,7 +106,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 78,
 	armor = 78,
-	--	mitigation = ???,
 	{ name = "speed", interval = 2000, chance = 5, speedChange = 350, effect = CONST_ME_MAGIC_RED, target = false, duration = 5000 },
 }
 

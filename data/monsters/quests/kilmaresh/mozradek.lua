@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Mozradek")
 local monster = {}
 
+monster.name = "Mozradek"
 monster.description = "Mozradek"
 monster.experience = 21000
 monster.outfit = {
@@ -12,8 +13,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.bosstiary = {
 	bossRaceId = 1829,
@@ -86,7 +85,6 @@ monster.attacks = {
 monster.defenses = {
 	defense = 84,
 	armor = 84,
-	--	mitigation = ???,
 }
 
 monster.elements = {

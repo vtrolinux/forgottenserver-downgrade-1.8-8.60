@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Giant Beaver")
 local monster = {}
 
+monster.name = "Giant Beaver"
 monster.description = "a giant beaver"
 monster.experience = 0
 monster.outfit = {
@@ -62,7 +63,6 @@ monster.voices = {
 monster.defenses = {
 	defense = 110,
 	armor = 120,
-	--	mitigation = ???,
 }
 
 monster.elements = {

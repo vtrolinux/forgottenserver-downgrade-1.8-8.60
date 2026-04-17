@@ -1,8 +1,9 @@
 local mType = Game.createMonsterType("Undead Dragon")
 local monster = {}
 
+monster.name = "Undead Dragon"
 monster.description = "an undead dragon"
-monster.experience = 7200
+monster.experience = 7500
 monster.outfit = {
 	lookType = 231,
 	lookHead = 0,
@@ -133,7 +134,7 @@ monster.elements = {
 	{ type = COMBAT_LIFEDRAIN, percent = 0 },
 	{ type = COMBAT_MANADRAIN, percent = 0 },
 	{ type = COMBAT_DROWNDAMAGE, percent = 100 },
-	{ type = COMBAT_ICEDAMAGE, percent = 50 },
+	{ type = COMBAT_ICEDAMAGE, percent = 90 },
 	{ type = COMBAT_HOLYDAMAGE, percent = -25 },
 	{ type = COMBAT_DEATHDAMAGE, percent = 100 },
 }

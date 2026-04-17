@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Floor Blob")
 local monster = {}
 
+monster.name = "Floor Blob"
 monster.description = "a floor blob"
 monster.experience = 0
 monster.outfit = {

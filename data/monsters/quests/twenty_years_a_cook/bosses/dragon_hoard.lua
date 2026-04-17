@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Dragon Hoard")
 local monster = {}
 
+monster.name = "Dragon Hoard"
 monster.description = "Dragon Hoard"
 monster.experience = 0
 monster.outfit = {
@@ -11,10 +12,6 @@ monster.outfit = {
 	lookFeet = 0,
 	lookAddons = 0,
 	lookMount = 0,
-}
-
-monster.events = {
-	-- "TwentyYearsACookBossDeath",
 }
 
 monster.bosstiary = {
@@ -110,7 +107,6 @@ monster.attacks = {}
 monster.defenses = {
 	defense = 40,
 	armor = 40,
-	--	mitigation = ???,
 }
 
 monster.elements = {
@@ -132,19 +128,5 @@ monster.immunities = {
 	{ type = "invisible", condition = true },
 	{ type = "bleed", condition = true },
 }
-
-mType.onThink = function(monster, interval) end
-
-mType.onAppear = function(monster, creature)
-	if monster:getType():isRewardBoss() then
-		monster:setReward(true)
-	end
-end
-
-mType.onDisappear = function(monster, creature) end
-
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
-
-mType.onSay = function(monster, creature, type, message) end
 
 mType:register(monster)

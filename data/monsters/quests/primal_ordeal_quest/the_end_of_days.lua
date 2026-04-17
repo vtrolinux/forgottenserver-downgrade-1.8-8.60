@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("The End of Days")
 local monster = {}
 
+monster.name = "The End of Days"
 monster.description = "the end of days"
 monster.experience = 0
 monster.outfit = {
@@ -15,7 +16,7 @@ monster.outfit = {
 
 monster.health = 90000
 monster.maxHealth = 90000
-monster.race = "undead"
+monster.race = "fire"
 monster.corpse = 0
 monster.speed = 250
 monster.manaCost = 0

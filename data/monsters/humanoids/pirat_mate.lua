@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Pirat Mate")
 local monster = {}
 
+monster.name = "Pirat Mate"
 monster.description = "a pirat mate"
 monster.experience = 2400
 monster.outfit = {
@@ -80,7 +81,7 @@ monster.loot = {
 	{ name = "cyan crystal fragment", chance = 10000 },
 	{ name = "small diamond", chance = 10000 },
 	{ name = "red crystal fragment", chance = 10000 },
-	{ name = "mouldy powder", chance = 9000 },
+-- { name = "mouldy powder", chance = 9000 },
 	{ name = "pirat's tail", chance = 7000 },
 	{ id = 3039, chance = 6000 }, -- red gem
 	{ name = "fire sword", chance = 5000 },

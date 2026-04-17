@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Braindeath")
 local monster = {}
 
+monster.name = "Braindeath"
 monster.description = "a braindeath"
 monster.experience = 985
 monster.outfit = {

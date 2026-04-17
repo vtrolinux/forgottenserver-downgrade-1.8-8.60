@@ -1,6 +1,7 @@
 local mType = Game.createMonsterType("Strong Glooth Horror")
 local monster = {}
 
+monster.name = "Strong Glooth Horror"
 monster.description = "a strong glooth horror"
 monster.experience = 1500
 monster.outfit = {
@@ -52,7 +53,6 @@ monster.flags = {
 	canWalkOnPoison = true,
 }
 
-monster.events = {}
 
 monster.light = {
 	level = 0,
@@ -70,14 +70,14 @@ monster.attacks = {
 	{ name = "melee", interval = 2000, chance = 100, skill = 150, attack = 100 },
 	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_DEATHDAMAGE, minDamage = -300, maxDamage = -500, range = 1, shootEffect = CONST_ANI_POISON, target = true },
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 12, minDamage = -500, maxDamage = -800, radius = 8, effect = CONST_ME_HITBYPOISON, target = false },
+	{ name = "condition", interval = 2000, chance = 12, target = false, condition =
+	{ type = CONDITION_POISON, minDamage = -500, maxDamage = -800, radius = 8, effect = CONST_ME_HITBYPOISON } },
 	{ name = "drunk", interval = 2000, chance = 8, radius = 8, effect = CONST_ME_HITBYPOISON, target = false, duration = 15000 },
 }
 
 monster.defenses = {
 	defense = 25,
 	armor = 15,
-	--	mitigation = ???,
 	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 500, maxDamage = 700, effect = CONST_ME_MAGIC_GREEN, target = false },
 }
 

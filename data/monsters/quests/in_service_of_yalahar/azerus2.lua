@@ -2,6 +2,7 @@ local mType = Game.createMonsterType("Azerus2")
 local monster = {}
 
 monster.name = "Azerus"
+monster.name = "Azerus2"
 monster.description = "Azerus"
 monster.experience = 6000
 monster.outfit = {
@@ -13,8 +14,6 @@ monster.outfit = {
 	lookAddons = 0,
 	lookMount = 0,
 }
-
-monster.events = {}
 
 monster.health = 26000
 monster.maxHealth = 26000
