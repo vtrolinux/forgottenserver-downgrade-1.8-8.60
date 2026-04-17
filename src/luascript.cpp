@@ -3252,7 +3252,7 @@ int LuaScriptInterface::luaAddEvent(lua_State* L)
 				case LuaData_Npc: {
 					if (auto creature = Lua::getCreature(L, i)) {
 						lua_pushinteger(L, creature->getID());
-						lua_setiuservalue(L, i, 1);
+						lua_setiuservalue(L, i, 2);
 					}
 
 					break;
@@ -3936,8 +3936,7 @@ void LuaEnvironment::executeTimerEvent(uint32_t eventIndex)
 			case LuaData_Player:
 			case LuaData_Monster:
 			case LuaData_Npc: {
-				if (lua_getiuservalue(luaState, -1, 1)) {
-					auto creatureId = Lua::getInteger<uint32_t>(luaState, -1);
+				auto replaceCreatureParameter = [this](uint32_t creatureId) {
 					if (auto creature = g_game.getCreatureByID(creatureId)) {
 						Lua::pushUserdata<Creature>(luaState, creature);
 						Lua::setCreatureMetatable(luaState, -1, creature);
@@ -3945,10 +3944,36 @@ void LuaEnvironment::executeTimerEvent(uint32_t eventIndex)
 						lua_pushnil(luaState);
 					}
 
-					lua_replace(luaState, -3);
+					lua_replace(luaState, -2);
+				};
+
+				int userValueType = lua_getiuservalue(luaState, -1, 2);
+				if (userValueType == LUA_TNUMBER) {
+					auto creatureId = Lua::getInteger<uint32_t>(luaState, -1);
+					lua_pop(luaState, 1);
+					replaceCreatureParameter(creatureId);
+					break;
+				}
+				if (userValueType != LUA_TNONE) {
+					lua_pop(luaState, 1);
 				}
 
-				lua_pop(luaState, 1);
+				userValueType = lua_getiuservalue(luaState, -1, 1);
+				if (userValueType == LUA_TNUMBER) {
+					auto creatureId = Lua::getInteger<uint32_t>(luaState, -1);
+					lua_pop(luaState, 1);
+					replaceCreatureParameter(creatureId);
+					break;
+				}
+				if (userValueType != LUA_TNONE) {
+					lua_pop(luaState, 1);
+				}
+
+				if (!Lua::getCreature(luaState, -1)) {
+					lua_pushnil(luaState);
+					lua_replace(luaState, -2);
+				}
+
 				break;
 			}
 

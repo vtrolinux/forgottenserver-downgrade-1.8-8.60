@@ -13,6 +13,18 @@
 			],
 			"description": "Configure with vcpkg toolchain and generate Ninja project files",
 			"toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+		},
+		{
+			"name": "asan-vcpkg",
+			"inherits": [
+				"vcpkg"
+			],
+			"description": "Configure with vcpkg and AddressSanitizer enabled",
+			"binaryDir": "${sourceDir}/build-asan",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"ENABLE_ASAN": "ON"
+			}
 		}
 	],
 	"buildPresets": [
@@ -23,6 +35,11 @@
 		{
 			"name": "vcpkg",
 			"configurePreset": "vcpkg"
+		},
+		{
+			"name": "asan-vcpkg",
+			"configurePreset": "asan-vcpkg",
+			"configuration": "Debug"
 		}
 	],
 	"testPresets": [
@@ -33,6 +50,11 @@
 		{
 			"name": "vcpkg",
 			"configurePreset": "vcpkg"
+		},
+		{
+			"name": "asan-vcpkg",
+			"configurePreset": "asan-vcpkg",
+			"configuration": "Debug"
 		}
 	]
 }

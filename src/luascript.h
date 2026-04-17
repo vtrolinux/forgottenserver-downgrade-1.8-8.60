@@ -917,7 +917,15 @@ void pushReflect(lua_State* L, const Reflect& reflect);
 template <class T>
 inline void pushUserdata(lua_State* L, T* value, int nuvalue = 1)
 {
-	T** userdata = static_cast<T**>(lua_newuserdatauv(L, sizeof(T*), nuvalue));
+	using RawT = std::remove_const_t<T>;
+	int uservalueCount = nuvalue;
+	if constexpr (std::is_base_of_v<Creature, RawT>) {
+		if (uservalueCount < 2) {
+			uservalueCount = 2;
+		}
+	}
+
+	T** userdata = static_cast<T**>(lua_newuserdatauv(L, sizeof(T*), uservalueCount));
 	*userdata = value;
 }
 

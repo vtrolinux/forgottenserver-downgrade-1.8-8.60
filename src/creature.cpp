@@ -1161,8 +1161,8 @@ bool Creature::addCombatCondition(Condition_ptr condition)
 
 void Creature::removeCondition(ConditionType_t type, bool force /* = false*/)
 {
-	auto it = conditions.begin(), end = conditions.end();
-	while (it != end) {
+	auto it = conditions.begin();
+	while (it != conditions.end()) {
 		if ((*it)->getType() != type) {
 			++it;
 			continue;
@@ -1187,8 +1187,8 @@ void Creature::removeCondition(ConditionType_t type, bool force /* = false*/)
 
 void Creature::removeCondition(ConditionType_t type, ConditionId_t conditionId, bool force /* = false*/)
 {
-	auto it = conditions.begin(), end = conditions.end();
-	while (it != end) {
+	auto it = conditions.begin();
+	while (it != conditions.end()) {
 		if ((*it)->getType() != type || (*it)->getId() != conditionId) {
 			++it;
 			continue;
@@ -1402,9 +1402,10 @@ bool Creature::registerCreatureEvent(std::string_view name)
 	}
 
 	CreatureEventType_t type = event->getEventType();
+	const std::string normalizedName = boost::algorithm::to_lower_copy(std::string{name});
 	if (hasEventRegistered(type)) {
-		for (CreatureEvent* creatureEvent : eventsList) {
-			if (creatureEvent == event) {
+		for (const auto& creatureEvent : eventsList) {
+			if (creatureEvent.name == normalizedName && creatureEvent.type == type) {
 				return false;
 			}
 		}
@@ -1412,7 +1413,7 @@ bool Creature::registerCreatureEvent(std::string_view name)
 		scriptEventsBitField |= static_cast<uint32_t>(1) << type;
 	}
 
-	eventsList.push_back(event);
+	eventsList.push_back({normalizedName, type});
 	return true;
 }
 
@@ -1429,16 +1430,16 @@ bool Creature::unregisterCreatureEvent(std::string_view name)
 	}
 
 	bool resetTypeBit = true;
+	const std::string normalizedName = boost::algorithm::to_lower_copy(std::string{name});
 
-	auto it = eventsList.begin(), end = eventsList.end();
-	while (it != end) {
-		CreatureEvent* curEvent = *it;
-		if (curEvent == event) {
+	auto it = eventsList.begin();
+	while (it != eventsList.end()) {
+		if (it->name == normalizedName && it->type == type) {
 			it = eventsList.erase(it);
 			continue;
 		}
 
-		if (curEvent->getEventType() == type) {
+		if (it->type == type) {
 			resetTypeBit = false;
 		}
 		++it;
@@ -1458,12 +1459,22 @@ CreatureEventList Creature::getCreatureEvents(CreatureEventType_t type) const
 		return tmpEventList;
 	}
 
-	for (CreatureEvent* creatureEvent : eventsList) {
+	tmpEventList.reserve(eventsList.size());
+	for (const auto& registeredEvent : eventsList) {
+		if (registeredEvent.type != type) {
+			continue;
+		}
+
+		CreatureEvent* creatureEvent = g_creatureEvents->getEventByName(registeredEvent.name);
+		if (!creatureEvent) {
+			continue;
+		}
+
 		if (!creatureEvent->isLoaded()) {
 			continue;
 		}
 
-		if (creatureEvent->getEventType() == type) {
+		if (creatureEvent->getEventType() == registeredEvent.type) {
 			tmpEventList.push_back(creatureEvent);
 		}
 	}

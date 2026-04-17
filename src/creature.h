@@ -15,12 +15,21 @@
 #include <absl/container/flat_hash_map.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 class Creature;
 
-using ConditionList = std::list<Condition_ptr>;
-using CreatureEventList = std::list<CreatureEvent*>;
+using ConditionList = std::vector<Condition_ptr>;
+using CreatureEventList = std::vector<CreatureEvent*>;
+
+struct CreatureEventRegistration
+{
+	std::string name;
+	CreatureEventType_t type = CREATURE_EVENT_NONE;
+};
+
+using CreatureEventRegistrationList = std::vector<CreatureEventRegistration>;
 using SummonList = std::vector<std::weak_ptr<Creature>>;
 
 enum slots_t : uint8_t
@@ -387,7 +396,7 @@ protected:
 	CountMap damageMap;
 
 	SummonList summons;
-	CreatureEventList eventsList;
+	CreatureEventRegistrationList eventsList;
 	ConditionList conditions;
 
 	std::vector<Direction> listWalkDir;
