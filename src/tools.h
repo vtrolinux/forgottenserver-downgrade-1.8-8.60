@@ -8,6 +8,8 @@
 #include "enums.h"
 #include "position.h"
 
+#include <utility>
+
 void printXMLError(std::string_view where, std::string_view fileName, const pugi::xml_parse_result& result);
 
 std::string transformToSHA1(std::string_view input);
@@ -97,7 +99,7 @@ std::string getVocationShortName(uint8_t vocationId);
 
 namespace tfs {
 
-#if __has_cpp_attribute(__cpp_lib_to_underlying)
+#if defined(__cpp_lib_to_underlying) && __cpp_lib_to_underlying >= 202102L
 
 inline constexpr auto to_underlying(auto e) noexcept { return std::to_underlying(e); }
 

@@ -53,6 +53,7 @@ endif ()
 find_package(OpenSSL 3.0.0 REQUIRED COMPONENTS Crypto)
 find_package(ZLIB REQUIRED)
 find_package(absl CONFIG REQUIRED)
+find_package(simdutf CONFIG REQUIRED)
 
 find_package(fmt 8.1.1 CONFIG)
 find_package(spdlog CONFIG REQUIRED)
@@ -107,7 +108,7 @@ endif ()
 
 include_directories(${Boost_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${PUGIXML_INCLUDE_DIR})
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

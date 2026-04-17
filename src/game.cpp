@@ -3494,7 +3494,7 @@ void Game::playerSetAttackedCreature(uint32_t playerId, uint32_t creatureId)
 		return;
 	}
 
-	if (player->getAttackedCreature() && creatureId == 0) {
+	if (player->getAttackedCreatureShared() && creatureId == 0) {
 		player->setAttackedCreature(nullptr);
 		player->sendCancelTarget();
 		return;

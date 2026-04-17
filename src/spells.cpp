@@ -328,7 +328,7 @@ bool Spell::playerSpellCheck(Player* player) const
 		return false;
 	}
 
-	if ((aggressive || pzLock) && (range < 1 || (range > 0 && !player->getAttackedCreature())) &&
+	if ((aggressive || pzLock) && (range < 1 || (range > 0 && !player->getAttackedCreatureShared())) &&
 	    player->getSkull() == SKULL_BLACK) {
 		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
 		return false;
@@ -628,6 +628,7 @@ bool InstantSpell::playerCastInstant(Player* player, std::string& param)
 	if (selfTarget) {
 		var.setNumber(player->getID());
 	} else if (needTarget || casterTargetOrDirection) {
+		std::shared_ptr<Creature> targetHolder;
 		Creature* target = nullptr;
 		bool useDirection = false;
 
@@ -673,7 +674,8 @@ bool InstantSpell::playerCastInstant(Player* player, std::string& param)
 				param = playerTarget->getName();
 			}
 		} else {
-			target = player->getAttackedCreature();
+			targetHolder = player->getAttackedCreatureShared();
+			target = targetHolder.get();
 			if (!target || target->isRemoved() || target->isDead()) {
 				if (!casterTargetOrDirection) {
 					player->sendCancelMessage(RETURNVALUE_YOUCANONLYUSEITONCREATURES);
@@ -777,9 +779,9 @@ bool InstantSpell::castSpell(Creature* creature)
 	LuaVariant var;
 
 	if (casterTargetOrDirection) {
-		Creature* target = creature->getAttackedCreature();
+		auto target = creature->getAttackedCreatureShared();
 		if (target && !target->isDead()) {
-			if (!canThrowSpell(creature, target)) {
+			if (!canThrowSpell(creature, target.get())) {
 				return false;
 			}
 

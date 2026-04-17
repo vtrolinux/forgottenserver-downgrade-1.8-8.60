@@ -1313,8 +1313,8 @@ void Player::updateStaminaRegen(int64_t timePassed)
 
 	// Stamina Trainer regeneration
 	if (staminaTrainerActive) {
-		Creature* target = getAttackedCreature();
-		if (target && isTrainerTarget(target)) {
+		auto target = getAttackedCreatureShared();
+		if (target && isTrainerTarget(target.get())) {
 			staminaTrainerTicks += timePassed;
 
 			if (staminaTrainerTicks >= staminaTrainerDelayMs) {

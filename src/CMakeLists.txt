@@ -232,6 +232,7 @@ target_link_libraries(tfslib PRIVATE
 	spdlog::spdlog
 	pugixml::pugixml
 	absl::flat_hash_map
+	simdutf::simdutf
 	${CMAKE_THREAD_LIBS_INIT}
 	${Crypto++_LIBRARIES}
 	${LUA_LIBRARIES}

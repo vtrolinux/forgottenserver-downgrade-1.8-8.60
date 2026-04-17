@@ -261,10 +261,10 @@ int luaCreatureGetTarget(lua_State* L)
 		return 1;
 	}
 
-	Creature* target = creature->getAttackedCreature();
+	auto target = creature->getAttackedCreatureShared();
 	if (target) {
-		pushUserdata<Creature>(L, target);
-		setCreatureMetatable(L, -1, target);
+		pushUserdata<Creature>(L, target.get());
+		setCreatureMetatable(L, -1, target.get());
 	} else {
 		lua_pushnil(L);
 	}
@@ -292,10 +292,10 @@ int luaCreatureGetFollowCreature(lua_State* L)
 		return 1;
 	}
 
-	Creature* followCreature = creature->getFollowCreature();
+	auto followCreature = creature->getFollowCreatureShared();
 	if (followCreature) {
-		pushUserdata<Creature>(L, followCreature);
-		setCreatureMetatable(L, -1, followCreature);
+		pushUserdata<Creature>(L, followCreature.get());
+		setCreatureMetatable(L, -1, followCreature.get());
 	} else {
 		lua_pushnil(L);
 	}

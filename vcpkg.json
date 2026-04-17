@@ -16,6 +16,7 @@
     "openssl",
     "pugixml",
     "spdlog",
+    "simdutf",
     "zlib"
   ],
   "features": {

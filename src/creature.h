@@ -207,11 +207,6 @@ public:
 
 	// follow functions
 	std::shared_ptr<Creature> getFollowCreatureShared() const { return followCreature.lock(); }
-	Creature* getFollowCreature() const
-	{
-		auto creature = getFollowCreatureShared();
-		return creature.get();
-	}
 	virtual bool setFollowCreature(Creature* creature);
 
 	// follow events
@@ -220,11 +215,6 @@ public:
 
 	// combat functions
 	std::shared_ptr<Creature> getAttackedCreatureShared() const { return attackedCreature.lock(); }
-	Creature* getAttackedCreature() const
-	{
-		auto creature = getAttackedCreatureShared();
-		return creature.get();
-	}
 	virtual bool setAttackedCreature(Creature* creature);
 	virtual BlockType_t blockHit(const std::shared_ptr<Creature>& attacker, CombatType_t combatType, int32_t& damage,
 	                             bool checkDefense = false, bool checkArmor = false, bool field = false,

@@ -1009,9 +1009,10 @@ void Monster::onThink(uint32_t interval)
 
 				auto ac = attackedCreature.lock();
 				if (!ac) {
-					if (master && master->getAttackedCreature()) {
+					auto masterTarget = master ? master->getAttackedCreatureShared() : nullptr;
+					if (masterTarget) {
 						// This happens if the monster is summoned during combat
-						selectTarget(master->getAttackedCreature());
+						selectTarget(masterTarget.get());
 					} else {
 						auto follow = followCreature.lock();
 						if (getMaster() != follow.get()) {
@@ -1207,7 +1208,8 @@ void Monster::onThinkTarget(uint32_t interval)
 {
 	if (!isSummon()) {
 		// protection time
-		if (getAttackedCreature() && getAttackedCreature()->getPlayer() && getAttackedCreature()->getPlayer()->getProtectionTime() > 0) {
+		if (auto target = getAttackedCreatureShared();
+		    target && target->getPlayer() && target->getPlayer()->getProtectionTime() > 0) {
 			setAttackedCreature(nullptr);
 			// OPTIMIZATION: Removed updateTargetList() here — it triggers
 			// a full getSpectators scan. The target list will be naturally
