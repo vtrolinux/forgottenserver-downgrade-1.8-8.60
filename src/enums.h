@@ -442,6 +442,10 @@ enum PlayerSex_t : uint8_t
 
 inline constexpr uint16_t VOCATION_NONE = 0;
 
+inline constexpr int32_t STORAGE_FAMILIAR_SUMMON_TIME = 845232;
+inline constexpr int32_t STORAGE_FAMILIAR_TIMER_10 = 845233;
+inline constexpr int32_t STORAGE_FAMILIAR_TIMER_60 = 845234;
+
 enum ReturnValue
 {
 	RETURNVALUE_NOERROR,

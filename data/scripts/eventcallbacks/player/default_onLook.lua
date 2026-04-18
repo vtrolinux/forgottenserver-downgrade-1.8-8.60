@@ -21,7 +21,7 @@ event.onLook = function(self, thing, position, distance, description)
 					isFamiliar = table.contains(summons, thing:getName():lower())
 				end
 				if isFamiliar then
-					local familiarSummonTime = master:getStorageValue(845232) or 0
+					local familiarSummonTime = master:getStorageValue(STORAGE_FAMILIAR_SUMMON_TIME) or 0
 					description = description .. " (Master: " .. master:getName() .. "). \z
 						It will disappear in " .. Game.getTimeInWords(familiarSummonTime - os.time())
 				end

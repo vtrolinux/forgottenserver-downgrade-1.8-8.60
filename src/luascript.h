@@ -526,6 +526,12 @@ private:
 	static int luaPlayerIsAutoLootGoldEnabled(lua_State* L);
 	static int luaPlayerClearAutoLoot(lua_State* L);
 
+	// Familiar System
+	static int luaPlayerGetFamiliarName(lua_State* L);
+	static int luaPlayerCreateFamiliar(lua_State* L);
+	static int luaPlayerDispellFamiliar(lua_State* L);
+	static int luaPlayerCreateFamiliarSpell(lua_State* L);
+
 	// Cast System
 	static int luaPlayerGetSpectators(lua_State* L);
 	static int luaPlayerSetSpectators(lua_State* L);

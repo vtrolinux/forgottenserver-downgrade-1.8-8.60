@@ -230,7 +230,7 @@ public:
 
 	bool hasSecureMode() const { return secureMode; }
 
-	void setParty(Party* party) { this->party = party ? party->shared_from_this() : std::shared_ptr<Party>(); }
+	void setParty(Party* party);
 	Party* getParty() const { return party.lock().get(); }
 	PartyShields_t getPartyShield(const Player* player) const;
 	bool isInviting(const Player* player) const;

@@ -18,6 +18,7 @@
 #include "monster.h"
 #include "movement.h"
 #include "npc.h"
+#include "party.h"
 #include "rewardchest.h"
 #include "scriptmanager.h"
 #include "scheduler.h"
@@ -62,6 +63,11 @@ Player::~Player()
 
 	// clear stored conditions to prevent memory leak from IOLoginData::loadPlayer
 	storedConditionList.clear();
+}
+
+void Player::setParty(Party* party)
+{
+	this->party = party ? party->shared_from_this() : std::shared_ptr<Party>();
 }
 
 bool Player::setVocation(uint16_t vocId)

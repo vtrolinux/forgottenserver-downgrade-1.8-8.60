@@ -1,6 +1,7 @@
 #include "otpch.h"
 
 #include "familiar.h"
+#include "events.h"
 #include "game.h"
 #include "monster.h"
 #include "condition.h"
@@ -21,6 +22,7 @@ static const std::map<uint32_t, FamDef> FAMILIAR_ID = {
     {2, {993, "Druid familiar"}},
     {3, {992, "Paladin familiar"}},
     {4, {991, "Knight familiar"}},
+    {9, {990, "Monk familiar"}},
 };
 
 struct FamTimer { int32_t storage; uint32_t countdown; std::string message; };
@@ -28,6 +30,21 @@ static const std::vector<FamTimer> FAMILIAR_TIMER = {
     {STORAGE_FAMILIAR_TIMER_10, 10, "10 seconds"},
     {STORAGE_FAMILIAR_TIMER_60, 60, "one minute"},
 };
+
+static void ClearFamiliarTimerEvents(Player* player, bool stopEvents)
+{
+    if (!player) {
+        return;
+    }
+
+    for (const auto& t : FAMILIAR_TIMER) {
+        const auto eventId = player->getStorageValue(static_cast<uint32_t>(t.storage));
+        if (stopEvents && eventId && *eventId > 0) {
+            g_scheduler.stopEvent(static_cast<uint32_t>(*eventId));
+        }
+        player->setStorageValue(static_cast<uint32_t>(t.storage), std::optional<int64_t>(-1));
+    }
+}
 
 static void SendMessageFunction(uint32_t playerId, const std::string& message)
 {
@@ -41,9 +58,8 @@ static void RemoveFamiliar(uint32_t creatureId, uint32_t playerId)
     if (Creature* creature = g_game.getCreatureByID(creatureId)) {
         if (Player* player = g_game.getPlayerByID(playerId)) {
             g_game.removeCreature(creature);
-            for (const auto& t : FAMILIAR_TIMER) {
-                player->setStorageValue(static_cast<uint32_t>(t.storage), std::optional<int64_t>(-1));
-            }
+            ClearFamiliarTimerEvents(player, false);
+            player->setStorageValue(STORAGE_FAMILIAR_SUMMON_TIME, std::optional<int64_t>(-1));
         }
     }
 }
@@ -74,6 +90,8 @@ bool dispellFamiliar(Player* player)
                 g_game.addMagicEffect(player->getPosition(), CONST_ME_MAGIC_BLUE, player->getInstanceID());
                 g_game.addMagicEffect(summon->getPosition(), CONST_ME_POFF, summon->getInstanceID());
                 g_game.removeCreature(summon.get());
+                ClearFamiliarTimerEvents(player, true);
+                player->setStorageValue(STORAGE_FAMILIAR_SUMMON_TIME, std::optional<int64_t>(-1));
                 return true;
             }
         }
@@ -98,7 +116,7 @@ bool createFamiliar(Player* player, const std::string& familiarName, uint32_t ti
         return false;
     }
 
-    auto monster = std::shared_ptr<Monster>(monsterUnique.release());
+    auto monster = std::shared_ptr<Monster>(std::move(monsterUnique));
     const Position& pos = player->getPosition();
     monster->setInstanceID(player->getInstanceID());
 
@@ -127,10 +145,14 @@ bool createFamiliar(Player* player, const std::string& familiarName, uint32_t ti
 
     // schedule warning messages and store event ids
     for (const auto& t : FAMILIAR_TIMER) {
-        uint32_t eventId = g_scheduler.addEvent((timeLeft - t.countdown) * 1000, [playerId = player->getID(), msg = t.message]() {
-            SendMessageFunction(playerId, msg);
-        });
-        player->setStorageValue(static_cast<uint32_t>(t.storage), std::optional<int64_t>(static_cast<int64_t>(eventId)));
+        if (timeLeft > t.countdown) {
+            uint32_t eventId = g_scheduler.addEvent((timeLeft - t.countdown) * 1000, [playerId = player->getID(), msg = t.message]() {
+                SendMessageFunction(playerId, msg);
+            });
+            player->setStorageValue(static_cast<uint32_t>(t.storage), std::optional<int64_t>(static_cast<int64_t>(eventId)));
+        } else {
+            player->setStorageValue(static_cast<uint32_t>(t.storage), std::optional<int64_t>(-1));
+        }
     }
 
     return true;
@@ -142,6 +164,12 @@ bool createFamiliarSpell(Player* player, uint32_t spellId)
     if (!player->isPremium()) {
         g_game.addMagicEffect(player->getPosition(), CONST_ME_POFF, player->getInstanceID());
         player->sendCancelMessage("You need a premium account.");
+        return false;
+    }
+
+    if (player->getLevel() < 200) {
+        player->sendCancelMessage("You need to be at least level 200.");
+        g_game.addMagicEffect(player->getPosition(), CONST_ME_POFF, player->getInstanceID());
         return false;
     }
 

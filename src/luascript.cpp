@@ -1372,6 +1372,10 @@ void LuaScriptInterface::registerFunctions()
 	registerGlobalVariable("AUTOLOOT_MAXITEMS_FREE", ConfigManager::AUTOLOOT_MAXITEMS_FREE);
 	registerGlobalVariable("AUTOLOOT_MAXITEMS_PREMIUM", ConfigManager::AUTOLOOT_MAXITEMS_PREMIUM);
 
+	registerGlobalVariable("STORAGE_FAMILIAR_SUMMON_TIME", STORAGE_FAMILIAR_SUMMON_TIME);
+	registerGlobalVariable("STORAGE_FAMILIAR_TIMER_10", STORAGE_FAMILIAR_TIMER_10);
+	registerGlobalVariable("STORAGE_FAMILIAR_TIMER_60", STORAGE_FAMILIAR_TIMER_60);
+
 	registerGlobalVariable("ACCOUNT_MANAGER_NONE", static_cast<uint8_t>(AccountManagerMode::ACCOUNT_MANAGER_NONE));
 	registerGlobalVariable("ACCOUNT_MANAGER_NEW", static_cast<uint8_t>(AccountManagerMode::ACCOUNT_MANAGER_NEW));
 	registerGlobalVariable("ACCOUNT_MANAGER_ACCOUNT", static_cast<uint8_t>(AccountManagerMode::ACCOUNT_MANAGER_ACCOUNT));
