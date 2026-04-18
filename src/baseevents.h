@@ -9,10 +9,15 @@
 class Event;
 using Event_ptr = std::unique_ptr<Event>;
 
+// Non-owning observer pointer. The LuaScriptInterface lifetime is managed by
+// the owning event registry, not by Event or CallBack instances.
+template <typename T>
+using ObserverPtr = T*;
+
 class Event
 {
 public:
-	explicit Event(LuaScriptInterface* interface);
+	explicit Event(ObserverPtr<LuaScriptInterface> interface);
 	virtual ~Event() = default;
 
 	bool loadCallback();
@@ -30,7 +35,7 @@ protected:
 	virtual std::string_view getScriptEventName() const = 0;
 
 	int32_t scriptId = 0;
-	LuaScriptInterface* scriptInterface = nullptr;
+	ObserverPtr<LuaScriptInterface> scriptInterface = nullptr;
 };
 
 class BaseEvents
@@ -57,12 +62,12 @@ class CallBack
 public:
 	CallBack() = default;
 
-	bool loadCallBack(LuaScriptInterface* interface, std::string_view name);
-	bool loadCallBack(LuaScriptInterface* interface);
+	bool loadCallBack(ObserverPtr<LuaScriptInterface> interface, std::string_view name);
+	bool loadCallBack(ObserverPtr<LuaScriptInterface> interface);
 
 protected:
 	int32_t scriptId = 0;
-	LuaScriptInterface* scriptInterface = nullptr;
+	ObserverPtr<LuaScriptInterface> scriptInterface = nullptr;
 
 private:
 	bool loaded = false;

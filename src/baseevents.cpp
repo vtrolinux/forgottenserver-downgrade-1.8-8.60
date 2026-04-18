@@ -41,7 +41,7 @@ void BaseEvents::reInitState(bool fromLua)
 	}
 }
 
-Event::Event(LuaScriptInterface* interface) : scriptInterface(interface) {}
+Event::Event(ObserverPtr<LuaScriptInterface> interface) : scriptInterface(interface) {}
 
 bool Event::loadCallback()
 {
@@ -84,7 +84,7 @@ bool Event::loadScript(const std::string& scriptFile)
 	return true;
 }
 
-bool CallBack::loadCallBack(LuaScriptInterface* interface, std::string_view name)
+bool CallBack::loadCallBack(ObserverPtr<LuaScriptInterface> interface, std::string_view name)
 {
 	if (!interface) {
 		LOG_ERROR(fmt::format("Failure: [CallBack::loadCallBack] scriptInterface == nullptr"));
@@ -104,7 +104,7 @@ bool CallBack::loadCallBack(LuaScriptInterface* interface, std::string_view name
 	return true;
 }
 
-bool CallBack::loadCallBack(LuaScriptInterface* interface)
+bool CallBack::loadCallBack(ObserverPtr<LuaScriptInterface> interface)
 {
 	if (!interface) {
 		LOG_ERROR("Failure: [CallBack::loadCallBack] scriptInterface == nullptr");

@@ -713,7 +713,7 @@ static constexpr uint32_t ASTAR_HASH_BITS = 10u;
 static constexpr uint32_t ASTAR_HASH_SIZE = (1u << ASTAR_HASH_BITS); // 1024
 static constexpr uint32_t ASTAR_HASH_MASK = ASTAR_HASH_SIZE - 1u;
 static constexpr uint32_t FIB_MULT = 2654435761u;
-static constexpr uint16_t ASTAR_INVALID = 0xFFFFu;
+static constexpr uint16_t ASTAR_INVALID = ASTAR_NODE_NONE;
 
 struct AStarWorkspace
 {
@@ -762,23 +762,24 @@ bool Map::getPathMatching(const Creature& creature, std::vector<Direction>& dirL
 
 	const Position start_position = position;
 
-	AStarNode* found = nullptr;
+	uint16_t found = ASTAR_NODE_NONE;
 	while (fpp.maxSearchDist != 0 || nodes.GetClosedNodes() < 100) {
-		auto *node = nodes.GetBestNode();
-		if (!node) {
-			if (found) {
+		const uint16_t nodeIdx = nodes.GetBestNode();
+		if (nodeIdx == ASTAR_NODE_NONE) {
+			if (found != ASTAR_NODE_NONE) {
 				break;
 			}
 			return false;
 		}
 
-		const int_fast32_t x = node->x;
-		const int_fast32_t y = node->y;
+		const AStarNode& node = nodes.GetNode(nodeIdx);
+		const int_fast32_t x = node.x;
+		const int_fast32_t y = node.y;
 		position.x = x;
 		position.y = y;
 
 		if (pathCondition(start_position, position, fpp, best_match)) {
-			found = node;
+			found = nodeIdx;
 			end_position = position;
 			if (best_match == 0) {
 				break;
@@ -787,9 +788,10 @@ bool Map::getPathMatching(const Creature& creature, std::vector<Direction>& dirL
 
 		uint_fast32_t direction_count;
 		int_fast32_t* neighbors;
-		if (node->parent) {
-			const int_fast32_t x_offset = node->parent->x - x;
-			const int_fast32_t y_offset = node->parent->y - y;
+		if (node.parent != ASTAR_NODE_NONE) {
+			const AStarNode& parent = nodes.GetNode(node.parent);
+			const int_fast32_t x_offset = parent.x - x;
+			const int_fast32_t y_offset = parent.y - y;
 
 			if (y_offset == 0) {
 				neighbors = (x_offset == -1) ? *dirNeighbors[DIRECTION_WEST]
@@ -811,7 +813,7 @@ bool Map::getPathMatching(const Creature& creature, std::vector<Direction>& dirL
 			neighbors = *allNeighbors;
 		}
 
-		const int_fast32_t parent_g_score = node->g_score;
+		const int_fast32_t parent_g_score = node.g_score;
 
 		for (uint_fast32_t i = 0; i < direction_count; ++i) {
 			position.x = x + *neighbors++;
@@ -828,8 +830,9 @@ bool Map::getPathMatching(const Creature& creature, std::vector<Direction>& dirL
 				continue;
 			}
 
-			auto *neighbor_node = nodes.GetNodeByPosition(position.x, position.y);
-			const Tile *tile = neighbor_node ? getTile(position.x, position.y, position.z)
+			const uint16_t neighborNodeIdx = nodes.GetNodeByPosition(position.x, position.y);
+			const bool hasNeighborNode = neighborNodeIdx != ASTAR_NODE_NONE;
+			const Tile *tile = hasNeighborNode ? getTile(position.x, position.y, position.z)
 				: canWalkTo(creature, position);
 
 			if (!tile) {
@@ -844,20 +847,21 @@ bool Map::getPathMatching(const Creature& creature, std::vector<Direction>& dirL
 					manhattan_heuristic(position.x, position.y);
 			const int_fast32_t neighbor_f_score = neighbor_g_score + neighbor_h_score;
 
-			if (neighbor_node) {
-				if (neighbor_node->f <= neighbor_f_score) {
+			if (hasNeighborNode) {
+				AStarNode& neighborNode = nodes.GetNode(neighborNodeIdx);
+				if (neighborNode.f <= neighbor_f_score) {
 					// Existing path is at least as cheap so lets skip it
 					continue;
 				}
-				neighbor_node->f = neighbor_f_score;
-				neighbor_node->g_score = neighbor_g_score;
-				neighbor_node->parent = node;
+				neighborNode.f = neighbor_f_score;
+				neighborNode.g_score = neighbor_g_score;
+				neighborNode.parent = nodeIdx;
 				// Sifts the node up in the min-heap
-				nodes.OpenNode(neighbor_node);
+				nodes.OpenNode(neighborNodeIdx);
 			} else {
-				neighbor_node = nodes.CreateOpenNode(node, position.x, position.y, neighbor_f_score, neighbor_g_score);
-				if (!neighbor_node) {
-					if (found) {
+				const uint16_t createdNodeIdx = nodes.CreateOpenNode(nodeIdx, position.x, position.y, neighbor_f_score, neighbor_g_score);
+				if (createdNodeIdx == ASTAR_NODE_NONE) {
+					if (found != ASTAR_NODE_NONE) {
 						break;
 					}
 					return false;
@@ -865,20 +869,21 @@ bool Map::getPathMatching(const Creature& creature, std::vector<Direction>& dirL
 			}
 		}
 
-		nodes.CloseNode(node);
+		nodes.CloseNode(nodeIdx);
 	}
 
-	if (!found) {
+	if (found == ASTAR_NODE_NONE) {
 		return false;
 	}
 
 	int_fast32_t prevx = end_position.x;
 	int_fast32_t prevy = end_position.y;
-	found = found->parent;
+	found = nodes.GetNode(found).parent;
 
-	while (found) {
-		position.x = found->x;
-		position.y = found->y;
+	while (found != ASTAR_NODE_NONE) {
+		const AStarNode& node = nodes.GetNode(found);
+		position.x = node.x;
+		position.y = node.y;
 
 		const int_fast32_t dx = position.getX() - prevx;
 		const int_fast32_t dy = position.getY() - prevy;
@@ -904,7 +909,7 @@ bool Map::getPathMatching(const Creature& creature, std::vector<Direction>& dirL
 			dirList.push_back(DIRECTION_SOUTH);
 		}
 
-		found = found->parent;
+		found = node.parent;
 	}
 	return true;
 }
@@ -926,7 +931,7 @@ AStarNodes::AStarNodes(uint32_t x, uint32_t y) : heap_size(1), current_node(1), 
 	workspace.used_count = 0;
 
 	auto &start = workspace.nodes[0];
-	start.parent = nullptr;
+	start.parent = ASTAR_NODE_NONE;
 	start.x = static_cast<uint16_t>(x);
 	start.y = static_cast<uint16_t>(y);
 	start.f = 0;
@@ -1024,11 +1029,11 @@ uint16_t AStarNodes::Find(uint32_t key) const
 	return ASTAR_INVALID;
 }
 
-AStarNode* AStarNodes::CreateOpenNode(AStarNode* parent, uint32_t x,uint32_t y, int_fast32_t f,
-									  int_fast32_t g_score)
+uint16_t AStarNodes::CreateOpenNode(uint16_t parent, uint32_t x, uint32_t y, int_fast32_t f,
+                                    int_fast32_t g_score)
 {
 	if (current_node >= MAX_NODES) {
-		return nullptr;
+		return ASTAR_NODE_NONE;
 	}
 
 	auto &workspace = threaded_workspace;
@@ -1044,25 +1049,23 @@ AStarNode* AStarNodes::CreateOpenNode(AStarNode* parent, uint32_t x,uint32_t y, 
 	workspace.node_to_heap[node_index] = heap_size;
 	++heap_size;
 	SiftUp(heap_size - 1u);
-	return &node;
+	return node_index;
 }
 
 // This should now be O(1) since the best node should always be at the root of
 // the heap.
-AStarNode* AStarNodes::GetBestNode()
+uint16_t AStarNodes::GetBestNode() const
 {
 	if (heap_size == 0) {
-		return nullptr;
+		return ASTAR_NODE_NONE;
 	}
 	auto &workspace = threaded_workspace;
-	return &workspace.nodes[workspace.heap[0]];
+	return workspace.heap[0];
 }
 
-void AStarNodes::CloseNode(const AStarNode* node)
+void AStarNodes::CloseNode(uint16_t node_index)
 {
 	auto &workspace = threaded_workspace;
-	const uint16_t node_index =
-			static_cast<uint16_t>(node - workspace.nodes);
 	const uint16_t position = workspace.node_to_heap[node_index];
 
 	assert(position != ASTAR_INVALID);
@@ -1086,11 +1089,9 @@ void AStarNodes::CloseNode(const AStarNode* node)
 	}
 }
 
-void AStarNodes::OpenNode(AStarNode* node)
+void AStarNodes::OpenNode(uint16_t node_index)
 {
 	auto &workspace = threaded_workspace;
-	const uint16_t node_index =
-			static_cast<uint16_t>(node - workspace.nodes);
 
 	if (workspace.node_to_heap[node_index] == ASTAR_INVALID) {
 		workspace.heap[heap_size] = node_index;
@@ -1107,18 +1108,26 @@ void AStarNodes::OpenNode(AStarNode* node)
 
 int_fast32_t AStarNodes::GetClosedNodes() const { return closed_nodes; }
 
-AStarNode* AStarNodes::GetNodeByPosition(uint32_t x, uint32_t y)
+uint16_t AStarNodes::GetNodeByPosition(uint32_t x, uint32_t y) const
 {
-	const uint16_t index = Find((x << 16) | y);
-	if (index == ASTAR_INVALID) {
-		return nullptr;
-	}
-	return &threaded_workspace.nodes[index];
+	return Find((x << 16) | y);
 }
 
-int_fast32_t AStarNodes::GetMapWalkCost(const AStarNode* node, const Position& neighborPos)
+AStarNode& AStarNodes::GetNode(uint16_t nodeIdx)
 {
-	if (std::abs(node->x - neighborPos.x) == std::abs(node->y - neighborPos.y)) {
+	assert(nodeIdx != ASTAR_NODE_NONE);
+	return threaded_workspace.nodes[nodeIdx];
+}
+
+const AStarNode& AStarNodes::GetNode(uint16_t nodeIdx) const
+{
+	assert(nodeIdx != ASTAR_NODE_NONE);
+	return threaded_workspace.nodes[nodeIdx];
+}
+
+int_fast32_t AStarNodes::GetMapWalkCost(const AStarNode& node, const Position& neighborPos)
+{
+	if (std::abs(node.x - neighborPos.x) == std::abs(node.y - neighborPos.y)) {
 		// diagonal movement extra cost
 		return MAP_DIAGONALWALKCOST;
 	}

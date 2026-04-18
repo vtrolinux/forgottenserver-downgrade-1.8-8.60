@@ -47,9 +47,11 @@ inline constexpr int32_t MAP_MAX_LAYERS = 16;
 
 struct FindPathParams;
 
+inline constexpr uint16_t ASTAR_NODE_NONE = 0xFFFFu;
+
 struct AStarNode
 {
-	AStarNode* parent;
+	uint16_t parent = ASTAR_NODE_NONE;
 	int_fast32_t f;       // f = g_score + h_score, used for heap ordering
 	int_fast32_t g_score; // actual accumulated cost from start to this node
 	uint16_t x, y;
@@ -65,14 +67,16 @@ public:
 	AStarNodes(uint32_t x, uint32_t y);
 	~AStarNodes();
 
-	AStarNode* CreateOpenNode(AStarNode* parent, uint32_t x, uint32_t y, int_fast32_t f, int_fast32_t g_score);
-	AStarNode* GetBestNode();
-	void CloseNode(const AStarNode* node);
-	void OpenNode(AStarNode* node);
+	uint16_t CreateOpenNode(uint16_t parent, uint32_t x, uint32_t y, int_fast32_t f, int_fast32_t g_score);
+	uint16_t GetBestNode() const;
+	void CloseNode(uint16_t nodeIdx);
+	void OpenNode(uint16_t nodeIdx);
 	int_fast32_t GetClosedNodes() const;
-	AStarNode* GetNodeByPosition(uint32_t x, uint32_t y);
+	uint16_t GetNodeByPosition(uint32_t x, uint32_t y) const;
+	AStarNode& GetNode(uint16_t nodeIdx);
+	const AStarNode& GetNode(uint16_t nodeIdx) const;
 
-	static int_fast32_t GetMapWalkCost(const AStarNode *node, const Position &neighborPos);
+	static int_fast32_t GetMapWalkCost(const AStarNode &node, const Position &neighborPos);
 	static int_fast32_t GetTileWalkCost(const Creature &creature, const Tile* tile);
 
 private:

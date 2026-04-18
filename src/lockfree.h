@@ -125,7 +125,8 @@ public:
 			return static_cast<T*>(p);
 		}
 
-		// Pool is empty, allocate new memory without calling constructor
+		// Intentional raw storage allocation: STL allocators must return
+		// unconstructed memory; object lifetime is managed by the container.
 		return static_cast<T*>(operator new(sizeof(T)));
 	}
 
@@ -160,8 +161,8 @@ public:
 			return;
 		}
 
-		// Pool is full, release memory without calling destructor
-		// (destructor has already been called at this point)
+		// Pool is full, release raw storage. The container already called the
+		// destructor before returning memory to the allocator.
 		operator delete(p);
 	}
 
