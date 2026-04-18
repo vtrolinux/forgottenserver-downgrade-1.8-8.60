@@ -235,10 +235,10 @@ Enhanced decay system for better server performance. Optimized item decay proces
 
 ### 🔥 Forge System (Item Fusion)
 
-![Forge System](forge.gif)
-
-<details open>
+<details>
 <summary><b>Click to expand</b></summary>
+
+![Forge System](forge.gif)
 
 Fuse two identical items — one is consumed, the other gains **+1 Tier**. Tier is capped by item classification.
 
