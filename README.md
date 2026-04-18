@@ -281,13 +281,27 @@ Fuse two identical items — one is consumed, the other gains **+1 Tier**. Tier 
 <details>
 <summary><b>Click to expand</b></summary>
 
-- **Two Methods**: Via **Imbuement Scrolls** or craft from **raw materials** using an Etcher tool.
-- **Workbench**: 4-slot station — 1 equipment + up to 3 scrolls or materials.
-- **Owner Lock**: Only the item's owner can apply imbuements.
+The system supports two distinct methods for applying imbuements. You can choose whichever fits your needs best:
 
-| Tiers | Types Available |
+#### 📜 Method 1: Imbuement Scrolls
+Directly apply imbuements using scrolls. This is the fastest way to get your gear upgraded.
+
+![Scroll Method](imbuments_scroll.gif)
+
+#### 🧪 Method 2: Raw Materials & Etching
+Craft imbuements from raw creature products and materials using the **Etcher** tool at the workbench.
+
+![Raw Materials Method](imbuments_items.gif)
+
+---
+
+- **Workbench**: 4-slot station — 1 equipment + up to 3 slots for scrolls or raw materials.
+- **Owner Lock**: To prevent theft, only the item's owner can apply imbuements.
+- **Tiers**: Flawed → Intricate → **Powerful**
+
+| Available Tiers | Types Available |
 |:-----:|:-:|
-| Flawed → Intricate → **Powerful** | **27 types**: Skill boosts, Magic Level, Life/Mana Leech, Critical Hit, Elemental Damage & Protection, Speed, Capacity |
+| 3 Stages | **27 types**: Skill boosts, Magic Level, Life/Mana Leech, Critical Hit, Elemental Damage & Protection, Speed, Capacity |
 
 </details>
 
