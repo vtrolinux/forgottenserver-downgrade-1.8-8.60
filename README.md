@@ -52,6 +52,7 @@
 | [System Spy](#-system-spy) | [Guild Wars](#️-guild-war-system) | [AutoLoot](#️-autoloot-system) | [Linux Tuning](#-linux-server-tuning) | [Downloads](#-downloads--client-updater) |
 | | [Harmony (Monk)](#-harmony-system--monk-vocation) | [Offline Training](#-offline-training-system) | | [Donations](#-support-the-project) |
 | [Token Protect](#-token-item-protection) | | [Live Cast](#-live-cast-system) | [Magic Roulette](#-magic-roulette-system) | |
+| | | [Zones System](#️-zones-system) | | |
 
 </div>
 
@@ -397,6 +398,29 @@ Game.createMonster(name, pos, extended, force, master, instanceId)
 **C++ Core**: Spectator filtering, item visibility, and interaction checks all respect instance boundaries.
 
 > **Use Cases**: Solo/party dungeons · Boss rooms · Quests — without interfering with the main world.
+
+</details>
+
+---
+
+### 🗺️ Zones System
+
+<details>
+<summary><b>Click to expand</b></summary>
+
+Allows server administrators to create custom geographical **Zones** by assigning a unique ID to a group of map coordinates. This is perfect for custom map events, localized effects, or restricted areas.
+
+**Key Features:**
+- **XML Configured**: Easily define zones in `data/world/world-zones/1.xml` by mapping an ID to `X, Y, Z` coordinates.
+- **Rich Lua API**: Full integration in Lua via the `Zone` class to query entities inside a zone:
+  - `zone:getCreatures([type])` / `zone:getCreatureCount([type])`
+  - `zone:getItems([itemId])` / `zone:getItemCount([itemId])`
+  - `zone:getGrounds()`
+  - `zone:getTiles([flags])` / `zone:getTileCount([flags])`
+- **Dynamic Creation**: Build zones on the fly using `Zone(id, positions)`.
+- **Event Callbacks**: Triggers `Creature:onChangeZone(fromZone, toZone)` in Lua whenever a creature enters or leaves a configured zone.
+
+> **Use Cases**: Safe zones, PvP arenas, custom events, or territory control without needing complex `isInArea` checks manually!
 
 </details>
 
