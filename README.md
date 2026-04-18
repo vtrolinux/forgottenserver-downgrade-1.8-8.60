@@ -9,6 +9,8 @@
 [![License](https://img.shields.io/badge/license-GPL--2.0-blue?style=flat-square)](LICENSE)
 &nbsp;
 [![Commits](https://img.shields.io/badge/commits-~900-6a0dad?style=flat-square)](https://github.com/Mateuzkl/forgottenserver-downgrade-1.8-8.60/commits)
+&nbsp;
+[![Wiki](https://img.shields.io/badge/docs-wiki-8b5cf6?style=flat-square&logo=wikipedia&logoColor=white)](https://github.com/Mateuzkl/forgottenserver-downgrade-1.8-8.60/wiki)
 
 </div>
 
@@ -44,8 +46,8 @@
 
 | 🧬 Core Engine | ⚔️ Combat & RPG | 🌍 World Systems | 🏗️ Infrastructure | 📚 Docs & Support |
 |:-:|:-:|:-:|:-:|:-:|
-| [ClientID .dat](#-clientid-implementation) | [Forge System](#-forge-system-item-fusion) | [Instance System](#-instance-system) | [Compilation](#️-compilation) | [Contributing](#-contributing--issues) |
-| [Overview](#-overview) | [Imbuement System](#-imbuement-system) | [Guild Halls](#-guild-halls-system) | | |
+| [ClientID .dat](#-clientid-implementation) | [Forge System](#-forge-system-item-fusion) | [Instance System](#-instance-system) | [Compilation](#️-compilation) | [📖 Full Wiki Docs](https://github.com/Mateuzkl/forgottenserver-downgrade-1.8-8.60/wiki) |
+| [Overview](#-overview) | [Imbuement System](#-imbuement-system) | [Guild Halls](#-guild-halls-system) | | [Contributing](#-contributing--issues) |
 | [Extended Protocol](#-extended-options--modified-860-cip-clients) | [Reward Boss](#-reward-boss-system) | [House Protection](#️-house-protection-system) | [Client Config](#-client-configuration-otcv8--mehah) | [Project Status](#-project-status) |
 | | [Guild Wars](#️-guild-war-system) | [AutoLoot](#️-autoloot-system) | [Linux Tuning](#-linux-server-tuning) | [Downloads](#-downloads--client-updater) |
 | | [Harmony (Monk)](#-harmony-system--monk-vocation) | [Offline Training](#-offline-training-system) | | [Donations](#-support-the-project) |
