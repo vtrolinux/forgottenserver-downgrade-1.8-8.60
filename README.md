@@ -469,8 +469,7 @@ sudo apt install git cmake build-essential liblua5.4-dev libmysqlclient-dev \
 > **Note:** We use `Release` mode building as the default because it makes the server start up and load the map significantly faster.
 
 ```bash
-git clone -b Revscrypt-full --single-branch \
-  https://github.com/Mateuzkl/forgottenserver-downgrade-1.8-8.60.git
+git clone https://github.com/Mateuzkl/forgottenserver-downgrade-1.8-8.60
 cd forgottenserver-downgrade-1.8-8.60
 
 rm -rf build-release
