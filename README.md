@@ -464,26 +464,24 @@ sudo apt install git cmake build-essential liblua5.4-dev libmysqlclient-dev \
   libssl-dev libspdlog-dev libmimalloc-dev -y
 ```
 
-#### Step 2 — Clone & compile
+#### Step 2 — Clone & Compile (Release Mode - Faster Startup)
+
+> **Note:** We use `Release` mode building as the default because it makes the server start up and load the map significantly faster.
 
 ```bash
 git clone -b Revscrypt-full --single-branch \
   https://github.com/Mateuzkl/forgottenserver-downgrade-1.8-8.60.git
 cd forgottenserver-downgrade-1.8-8.60
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
-```
 
-#### ⚡ Optimized Release Build — Recommended for Production
+rm -rf build-release
+mkdir build-release && cd build-release
 
-```bash
-mkdir -p build-release && cd build-release
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DDISABLE_STATS=1 \
       -DENABLE_SLOW_TASK_DETECTION=OFF \
       -DUSE_MIMALLOC=ON \
       ..
+
 cmake --build . -- -j$(nproc)
 ```
 
