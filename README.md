@@ -431,16 +431,71 @@ Allows server administrators to create custom geographical **Zones** by assignin
 <details>
 <summary><b>Click to expand</b></summary>
 
-Exclusive to **Monks** (vocations 9–10). Gain Harmony points by hitting enemies.
+Exclusive to **Monks** (vocations 9–10). A resource management system where you accumulate **Harmony points (0-5)** by hitting enemies with **Builder Spells**, then spend them with powerful **Spender Spells**.
 
-| Virtue | Bonus |
-|--------|-------|
-| ⚖️ Justice | Increases damage output |
-| 🧘 Harmony | Increases XP gain |
-| 🛡️ Sustain | Increases defense and survivability |
+#### 📊 Core Mechanics
 
-- **Scaling Bonuses**: XP and damage scale with accumulated Harmony points.
-- **Command**: `!harmony` — view your current state and points.
+- **Gain Harmony**: Hit enemies with any attack → +1 point (max 5)
+- **Spend Harmony**: Cast spells marked with `spell:harmony(true)` → consumes ALL points
+- **Bonus Scaling**: More points = stronger spell effects
+
+#### 🎯 Harmony Bonus Table
+
+| Points | Base Bonus | With Virtue of Harmony |
+|:------:|:----------:|:----------------------:|
+| 0 | 0% | 0% |
+| 1 | +15% | +25% |
+| 2 | +30% | +55% |
+| 3 | +60% | +100% |
+| 4 | +120% | +200% |
+| 5 | +240% | +400% |
+
+#### ⚡ Virtues — Modify Harmony Bonuses
+
+Cast a Virtue spell to change how your Harmony points scale:
+
+| Virtue | Effect | Spell |
+|--------|--------|-------|
+| 🧘 **Harmony** | Doubles the bonus table above | `utori virtu` (Virtue of Harmony) |
+| ⚖️ **Justice** | *Planned* — Will increase damage output | `utori justi` (Virtue of Justice) |
+| 🛡️ **Sustain** | *Planned* — Will increase defense | `utori sana` (Virtue of Sustain) |
+
+> **Note**: Justice and Sustain virtues are defined in code but not yet implemented with combat effects.
+
+#### 🌟 Serene State
+
+- **Effect**: Doubles ALL Virtue bonuses (stacks multiplicatively)
+- **Activation**: Cast `Focus Serenity` or activate `Avatar of Balance`
+- **Duration**: Temporary buff with cooldown
+
+#### 🔮 Avatar of Balance
+
+Ultimate transformation that enhances all Monk systems:
+- Sets Harmony to 5/5 instantly
+- Activates Serene State
+- +50% bonus to all Harmony effects
+- Clears all spell cooldowns
+- Duration: 30 seconds
+
+#### 📝 Commands
+
+| Command | Description |
+|---------|-------------|
+| `!harmony` | View current Harmony points, active Virtue, Serene state, and bonus % |
+
+#### 🎮 Spell Types
+
+**Builder Spells** (gain Harmony):
+- Double Jab, Swift Jab, Flurry of Blows, Forceful Uppercut, Mystic Repulse, Chained Penance
+
+**Spender Spells** (consume Harmony):
+- Tiger Clash, Greater Tiger Clash, Sweeping Takedown, Devastating Knockout, Spiritual Outburst, Mass Spirit Mend
+
+**Example**: Mass Spirit Mend healing scales with Harmony:
+```lua
+local multiplier = 1 + (harmony * 0.6)
+-- At 5 Harmony: 1 + (5 * 0.6) = 4x healing!
+```
 
 </details>
 
