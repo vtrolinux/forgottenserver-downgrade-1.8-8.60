@@ -503,7 +503,7 @@ local multiplier = 1 + (harmony * 0.6)
 
 ## 🛠️ Compilation
 
-### 🐧 Ubuntu 22.04 / 24.04
+### 🐧 Ubuntu 22.04 / 24.04 / WSL2
 
 > [!IMPORTANT]
 > Requires **Boost 1.75+** and **Lua 5.4**
@@ -513,13 +513,30 @@ local multiplier = 1 + (harmony * 0.6)
 #### Step 1 — Install dependencies
 
 ```bash
-sudo apt install git cmake build-essential liblua5.4-dev libmysqlclient-dev \
+sudo apt update
+sudo apt install -y \
+  git cmake build-essential pkg-config \
+  liblua5.4-dev libmysqlclient-dev \
   libboost-system-dev libboost-iostreams-dev libboost-filesystem-dev \
-  libboost-locale-dev libboost-regex-dev libpugixml-dev libfmt-dev \
-  libssl-dev libspdlog-dev libmimalloc-dev -y
+  libboost-locale-dev libboost-regex-dev libboost-json-dev \
+  libpugixml-dev libfmt-dev libssl-dev libspdlog-dev libmimalloc-dev \
+  libabsl-dev
 ```
 
-#### Step 2 — Clone & Compile (Release Mode - Faster Startup)
+#### Step 2 — Install simdutf manually
+
+> **Note:** `simdutf` may not be available as a ready-to-use development package in some Ubuntu 24.04 / WSL2 environments. Install it manually into `$HOME/.local`:
+
+```bash
+cd ~
+git clone https://github.com/simdutf/simdutf.git
+cd simdutf
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.local
+cmake --build build -- -j"$(nproc)"
+cmake --install build
+```
+
+#### Step 3 — Clone & Compile (Release Mode - Faster Startup)
 
 > **Note:** We use `Release` mode building as the default because it makes the server start up and load the map significantly faster.
 
@@ -534,9 +551,10 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DDISABLE_STATS=1 \
       -DENABLE_SLOW_TASK_DETECTION=OFF \
       -DUSE_MIMALLOC=ON \
+      -Dsimdutf_DIR=$HOME/.local/lib/cmake/simdutf \
       ..
 
-cmake --build . -- -j$(nproc)
+cmake --build . -- -j"$(nproc)"
 ```
 
 | CMake Flag | Effect |
@@ -545,6 +563,7 @@ cmake --build . -- -j$(nproc)
 | `-DDISABLE_STATS=1` | Removes runtime stats collection overhead |
 | `-DENABLE_SLOW_TASK_DETECTION=OFF` | Removes per-task timing overhead |
 | `-DUSE_MIMALLOC=ON` | Microsoft's mimalloc allocator — faster than glibc malloc |
+| `-Dsimdutf_DIR=$HOME/.local/lib/cmake/simdutf` | Points CMake to the manually installed simdutf |
 
 **Alternative — run mimalloc without recompiling:**
 ```bash
