@@ -586,7 +586,18 @@ sudo nice -n -10 ./tfs
 
 ### 🪟 Windows
 
-Recommended: **vcpkg** for dependency management.
+#### Install vcpkg
+
+```bash
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+.\bootstrap-vcpkg.bat
+.\vcpkg.exe integrate install
+```
+
+#### Build with Visual Studio
+
+Use **Visual Studio 2022** (or newer), select backend (OpenGL, DirectX), platform (x86, x64) and just build. All required libraries will be automatically installed for you.
 
 > 📖 See the full [Windows Compilation Wiki Guide](https://github.com/MillhioreBT/forgottenserver-downgrade/wiki/Compiling-on-Windows-(vcpkg))
 
