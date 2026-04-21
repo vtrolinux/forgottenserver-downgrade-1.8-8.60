@@ -2742,7 +2742,7 @@ int luaOfflinePlayerRemove(lua_State* L)
 	// offlinePlayer:__close() or offlinePlayer:__gc()
 	Player** playerPtr = getRawUserdata<Player>(L, 1);
 	if (auto player = *playerPtr) {
-		delete player;
+		std::unique_ptr<Player> guard(player);
 		*playerPtr = nullptr;
 	}
 	return 0;

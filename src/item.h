@@ -188,7 +188,7 @@ public:
 
 		struct PushLuaVisitor : public boost::static_visitor<>
 		{
-			lua_State* L;
+			lua_State* L; // non-owning
 
 			explicit PushLuaVisitor(lua_State* L) : boost::static_visitor<>(), L(L) {}
 

@@ -72,7 +72,7 @@ struct VIPEntry
 
 struct OpenContainer
 {
-	Container* container;
+	Container* container; // non-owning
 	uint16_t index;
 };
 

@@ -97,7 +97,7 @@ class MonsterType
 {
 	struct MonsterInfo
 	{
-		LuaScriptInterface* scriptInterface;
+		LuaScriptInterface* scriptInterface; // non-owning
 
 		std::map<CombatType_t, int32_t> elementMap;
 

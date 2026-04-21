@@ -250,10 +250,10 @@ private:
 	using StorageMap = std::unordered_map<uint32_t, int32_t>;
 	using DBResultMap = std::unordered_map<uint32_t, DBResult_ptr>;
 
-	LuaScriptInterface* interface;
+	LuaScriptInterface* interface; // non-owning
 
 	// for npc scripts
-	Npc* curNpc = nullptr;
+	Npc* curNpc = nullptr; // non-owning
 
 	// temporary item list
 	static std::multimap<ScriptEnvironment*, std::shared_ptr<Item>> tempItems;
@@ -262,7 +262,7 @@ public:
 	static void clearTempItems();
 
 	// local item map
-	std::unordered_map<uint32_t, Item*> localMap;
+	std::unordered_map<uint32_t, Item*> localMap; // non-owning: items managed by tempItems (shared_ptr)
 	uint32_t lastUID = std::numeric_limits<uint16_t>::max();
 
 	// script file id
