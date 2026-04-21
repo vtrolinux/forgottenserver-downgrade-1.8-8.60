@@ -69,7 +69,7 @@ struct spellBlock_t
 	spellBlock_t& operator=(spellBlock_t&& other) noexcept;
 
 	std::unique_ptr<BaseSpell> ownedSpell;
-	BaseSpell* spell = nullptr;
+	BaseSpell* spell = nullptr; // non-owning
 	uint32_t chance = 100;
 	uint32_t speed = 2000;
 	uint32_t range = 0;

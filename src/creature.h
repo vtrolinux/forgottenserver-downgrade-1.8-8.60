@@ -21,7 +21,7 @@
 class Creature;
 
 using ConditionList = std::vector<Condition_ptr>;
-using CreatureEventList = std::vector<CreatureEvent*>;
+using CreatureEventList = std::vector<CreatureEvent*>; // non-owning
 
 struct CreatureEventRegistration
 {

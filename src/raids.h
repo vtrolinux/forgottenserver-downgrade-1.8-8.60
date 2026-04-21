@@ -69,7 +69,7 @@ private:
 	LuaScriptInterface scriptInterface{"Raid Interface"};
 
 	std::list<std::unique_ptr<Raid>> raidList;
-	Raid* running = nullptr;
+	Raid* running = nullptr; // non-owning
 	uint64_t lastRaidEnd = 0;
 	uint32_t checkRaidsEvent = 0;
 	bool loaded = false;

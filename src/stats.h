@@ -144,7 +144,7 @@ public:
 
 private:
 	static thread_local AutoStatRecursive* activeStat;
-	AutoStatRecursive* parent = nullptr;
+	AutoStatRecursive* parent = nullptr; // non-owning
 };
 
 #endif
