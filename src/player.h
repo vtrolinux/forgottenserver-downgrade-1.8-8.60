@@ -1213,6 +1213,8 @@ private:
 	void gainExperience(uint64_t gainExp, const std::shared_ptr<Creature>& source);
 
 	void updateInventoryWeight();
+	void reloadEquipmentStats();
+	void applyEquipmentStats();
 
 	void setNextWalkActionTask(std::unique_ptr<SchedulerTask> task);
 	void setNextWalkTask(std::unique_ptr<SchedulerTask> task);

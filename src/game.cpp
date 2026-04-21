@@ -6036,8 +6036,14 @@ bool Game::reload(ReloadTypes_t reloadType)
 			return true;
 		}
 		case RELOAD_TYPE_ITEMS: {
+			for (const auto& [playerId, player] : players) {
+				player->reloadEquipmentStats();
+			}
 			bool result = Item::items.reload();
 			if (result) LOG_INFO("Items reloaded successfully.");
+			for (const auto& [playerId, player] : players) {
+				player->applyEquipmentStats();
+			}
 			return result;
 		}
 		case RELOAD_TYPE_MONSTERS: {

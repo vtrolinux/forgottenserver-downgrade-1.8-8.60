@@ -539,6 +539,32 @@ void Player::updateInventoryWeight()
 	}
 }
 
+void Player::reloadEquipmentStats()
+{
+	for (int32_t slot = CONST_SLOT_FIRST; slot <= CONST_SLOT_LAST; ++slot) {
+		Item* item = inventory[slot].get();
+		if (!item) {
+			continue;
+		}
+		g_moveEvents->onPlayerDeEquip(this, item, static_cast<slots_t>(slot));
+	}
+}
+
+void Player::applyEquipmentStats()
+{
+	for (int32_t slot = CONST_SLOT_FIRST; slot <= CONST_SLOT_LAST; ++slot) {
+		Item* item = inventory[slot].get();
+		if (!item) {
+			continue;
+		}
+		g_moveEvents->onPlayerEquip(this, item, static_cast<slots_t>(slot), false);
+	}
+	updateInventoryWeight();
+	updateItemsLight();
+	sendStats();
+	sendSkills();
+}
+
 void Player::addSkillAdvance(skills_t skill, uint64_t count, bool artificial /*= false*/)
 {
 	uint64_t currReqTries = vocation->getReqSkillTries(skill, skills[skill].level);
