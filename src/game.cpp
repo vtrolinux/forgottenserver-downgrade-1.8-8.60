@@ -424,6 +424,7 @@ Player* Game::getPlayerByID(uint32_t id)
 		return nullptr;
 	}
 
+	std::shared_lock<std::shared_mutex> lock(playersMutex);
 	auto it = players.find(id);
 	if (it == players.end()) {
 		return nullptr;
@@ -440,6 +441,7 @@ Creature* Game::getCreatureByName(std::string_view s)
 	const std::string lowerCaseName = boost::algorithm::to_lower_copy(std::string{s});
 
 	{
+		std::shared_lock<std::shared_mutex> lock(playersMutex);
 		auto it = mappedPlayerNames.find(lowerCaseName);
 		if (it != mappedPlayerNames.end()) {
 			return it->second;
@@ -498,6 +500,7 @@ Player* Game::getPlayerByName(std::string_view s)
 		return nullptr;
 	}
 
+	std::shared_lock<std::shared_mutex> lock(playersMutex);
 	auto it = mappedPlayerNames.find(boost::algorithm::to_lower_copy<std::string>(std::string{s}));
 	if (it == mappedPlayerNames.end()) {
 		return nullptr;
@@ -511,6 +514,7 @@ Player* Game::getPlayerByGUID(const uint32_t& guid)
 		return nullptr;
 	}
 
+	std::shared_lock<std::shared_mutex> lock(playersMutex);
 	auto it = mappedPlayerGuids.find(guid);
 	if (it == mappedPlayerGuids.end()) {
 		return nullptr;
@@ -528,7 +532,13 @@ ReturnValue Game::getPlayerByNameWildcard(std::string_view s, Player*& player)
 	if (s.back() == '~') {
 		auto query = boost::algorithm::to_lower_copy<std::string>(std::string{s.substr(0, strlen - 1)});
 		std::string result;
-		ReturnValue ret = wildcardTree.findOne(query, result);
+		ReturnValue ret;
+		
+		{
+			std::shared_lock<std::shared_mutex> lock(playersMutex);
+			ret = wildcardTree.findOne(query, result);
+		}
+		
 		if (ret != RETURNVALUE_NOERROR) {
 			return ret;
 		}
@@ -547,6 +557,7 @@ ReturnValue Game::getPlayerByNameWildcard(std::string_view s, Player*& player)
 
 Player* Game::getPlayerByAccount(uint32_t acc)
 {
+	std::shared_lock<std::shared_mutex> lock(playersMutex);
 	for (const auto& it : players) {
 		if (it.second->getAccount() == acc) {
 			return it.second;
@@ -570,9 +581,14 @@ bool Game::internalPlaceCreature(Creature* creature, const Position& pos, bool e
 		// for the same raw pointer, leading to double-free / use-after-free.
 		return false;
 	}
-	creatureSharedRefs[creature->getID()] = creatureRef;
+	
+	{
+		std::unique_lock<std::shared_mutex> lock(creatureRefsMutex);
+		creatureSharedRefs[creature->getID()] = creatureRef;
+	}
 
 	if (!map.placeCreature(pos, creature, extendedPos, forced)) {
+		std::unique_lock<std::shared_mutex> lock(creatureRefsMutex);
 		creatureSharedRefs.erase(creature->getID());
 		return false;
 	}
@@ -698,7 +714,10 @@ bool Game::removeCreature(Creature* creature, bool isLogout /* = true*/)
 	}
 
 	// Drop the shared_ptr anchor from the global creature registry.
-	creatureSharedRefs.erase(creature->getID());
+	{
+		std::unique_lock<std::shared_mutex> lock(creatureRefsMutex);
+		creatureSharedRefs.erase(creature->getID());
+	}
 
 	return true;
 }
@@ -5378,7 +5397,10 @@ void Game::shutdown()
 		manager->stop();
 	}
 
-	creatureSharedRefs.clear();
+	{
+		std::unique_lock<std::shared_mutex> lock(creatureRefsMutex);
+		creatureSharedRefs.clear();
+	}
 
 	Item::clearGlobalRegistry();
 
@@ -5861,11 +5883,16 @@ void Game::playerAnswerModalWindow(uint32_t playerId, uint32_t modalWindowId, ui
 void Game::addPlayer(Player* player)
 {
 	const std::string& lowercase_name = boost::algorithm::to_lower_copy<std::string>(player->getName());
-	mappedPlayerNames[lowercase_name] = player;
-	mappedPlayerGuids[player->getGUID()] = player;
-	wildcardTree.insert(lowercase_name);
-	players[player->getID()] = player;
-	playersOnline.store(players.size(), std::memory_order_relaxed);
+	
+	{
+		std::unique_lock<std::shared_mutex> lock(playersMutex);
+		mappedPlayerNames[lowercase_name] = player;
+		mappedPlayerGuids[player->getGUID()] = player;
+		wildcardTree.insert(lowercase_name);
+		players[player->getID()] = player;
+		playersOnline.store(players.size(), std::memory_order_relaxed);
+	}
+	
 	checkPlayersRecord();
 }
 
@@ -5875,11 +5902,15 @@ void Game::removePlayer(Player* player)
 	g_spy.onPlayerDisconnect(player->getID());
 
 	const std::string& lowercase_name = boost::algorithm::to_lower_copy<std::string>(player->getName());
-	mappedPlayerNames.erase(lowercase_name);
-	mappedPlayerGuids.erase(player->getGUID());
-	wildcardTree.remove(lowercase_name);
-	players.erase(player->getID());
-	playersOnline.store(players.size(), std::memory_order_relaxed);
+	
+	{
+		std::unique_lock<std::shared_mutex> lock(playersMutex);
+		mappedPlayerNames.erase(lowercase_name);
+		mappedPlayerGuids.erase(player->getGUID());
+		wildcardTree.remove(lowercase_name);
+		players.erase(player->getID());
+		playersOnline.store(players.size(), std::memory_order_relaxed);
+	}
 }
 
 void Game::addNpc(Npc* npc)

@@ -17,6 +17,7 @@
 #include "raids.h"
 #include "wildcardtree.h"
 
+#include <shared_mutex>
 #include <absl/container/flat_hash_map.h>
 
 class ServiceManager;
@@ -570,12 +571,14 @@ public:
 
 	std::weak_ptr<Creature> getCreatureWeakRef(const Creature* creature) const {
 		if (!creature) return {};
+		std::shared_lock<std::shared_mutex> lock(creatureRefsMutex);
 		auto it = creatureSharedRefs.find(creature->getID());
 		if (it != creatureSharedRefs.end()) return it->second;
 		return {};
 	}
 
 	std::shared_ptr<Creature> getCreatureSharedRef(uint32_t creatureId) const {
+		std::shared_lock<std::shared_mutex> lock(creatureRefsMutex);
 		auto it = creatureSharedRefs.find(creatureId);
 		if (it != creatureSharedRefs.end()) return it->second;
 		return {};
@@ -598,6 +601,7 @@ public:
 
 	std::weak_ptr<Player> getPlayerWeakRef(const Player* player) const {
 		if (!player) return {};
+		std::shared_lock<std::shared_mutex> lock(creatureRefsMutex);
 		auto it = creatureSharedRefs.find(player->getID());
 		if (it != creatureSharedRefs.end()) return std::static_pointer_cast<Player>(it->second);
 		return {};
@@ -616,6 +620,7 @@ private:
 	std::unordered_map<uint32_t, Player*> players;
 	std::unordered_map<std::string, Player*> mappedPlayerNames;
 	std::unordered_map<uint32_t, Player*> mappedPlayerGuids;
+	mutable std::shared_mutex playersMutex;
 	std::unordered_map<uint32_t, Guild_ptr> guilds;
 	std::unordered_map<uint16_t, Item*> uniqueItems;
 	std::map<uint32_t, uint32_t> stages;
@@ -635,6 +640,7 @@ private:
 	std::unordered_map<uint32_t, InstanceArea> instanceAreas;
 	
 	std::unordered_map<uint32_t, std::shared_ptr<Creature>> creatureSharedRefs;
+	mutable std::shared_mutex creatureRefsMutex;
 
 	// list of items that are in trading state, mapped to the player
 	std::unordered_map<Item*, uint32_t> tradeItems;
