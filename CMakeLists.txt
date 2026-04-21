@@ -74,7 +74,19 @@ endif()
 
 find_package(simdutf CONFIG QUIET HINTS ${SIMDUTF_HINTS})
 if (NOT simdutf_FOUND)
-    message(FATAL_ERROR "simdutf was not found. Install it via the vcpkg manifest, add its install prefix to CMAKE_PREFIX_PATH, or configure -Dsimdutf_DIR=<prefix>/lib/cmake/simdutf (for example: -Dsimdutf_DIR=$HOME/.local/lib/cmake/simdutf).")
+    if (WIN32)
+        message(FATAL_ERROR "simdutf was not found. It should be automatically installed via vcpkg (see vcpkg.json). Make sure vcpkg is properly configured.")
+    else()
+        message(FATAL_ERROR "simdutf was not found. Install it manually:\n"
+                "  cd ~\n"
+                "  git clone https://github.com/simdutf/simdutf.git\n"
+                "  cd simdutf\n"
+                "  cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.local\n"
+                "  cmake --build build -- -j$(nproc)\n"
+                "  cmake --install build\n"
+                "CMake will automatically detect it in $HOME/.local\n"
+                "If installed elsewhere, use: -Dsimdutf_DIR=<prefix>/lib/cmake/simdutf")
+    endif()
 endif()
 
 find_package(fmt 8.1.1 CONFIG)
