@@ -643,6 +643,12 @@ bool Creature::dropCorpse(Creature* lastHitCreature, Creature* mostDamageCreatur
 						corpseOwner->lootCorpse(corpseContainer);
 					}
 				}
+
+				// Start loot highlight — shows the sparkling effect on the corpse
+				// so the owner (and later everyone) knows there's loot inside
+				if (!corpseContainer->empty() && corpseOwnerId != 0) {
+					g_game.startLootHighlight(corpseContainer, corpseOwnerId);
+				}
 			}
 		}
 	}

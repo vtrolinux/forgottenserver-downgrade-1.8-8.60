@@ -69,6 +69,10 @@ inline constexpr int32_t RANGE_BROWSE_FIELD_INTERVAL = 400;
 inline constexpr int32_t RANGE_WRAP_ITEM_INTERVAL = 400;
 inline constexpr int32_t RANGE_REQUEST_TRADE_INTERVAL = 400;
 
+inline constexpr int32_t LOOT_HIGHLIGHT_OWNER_MS = 10000;
+inline constexpr int32_t LOOT_HIGHLIGHT_MAX_DURATION_MS = 120000;
+inline constexpr uint32_t LOOT_HIGHLIGHT_PULSE_MS = 2000;
+
 /**
  * Main Game class.
  * This class is responsible to control everything that happens
@@ -507,6 +511,11 @@ public:
 	void stopDecay(Item* item);
 	void internalDecayItem(Item* item);
 
+	// Loot Highlight system
+	void startLootHighlight(Container* corpse, uint32_t ownerPlayerId);
+	void stopLootHighlight(Container* corpse);
+	void checkLootHighlight(uintptr_t corpseKey, uint32_t ownerPlayerId, int32_t ownerTicksLeft, int32_t totalTicksLeft);
+
 	void loadMotdNum();
 	int16_t getWorldTime() { return worldTime; }
 	void updateWorldTime();
@@ -648,6 +657,9 @@ private:
 	std::unordered_map<uint32_t, BedItem*> bedSleepersMap;
 
 	std::unordered_set<Tile*> tilesToClean;
+
+	// Loot Highlight: maps container raw pointer (as uintptr_t) -> scheduler event ID
+	std::unordered_map<uintptr_t, uint32_t> lootHighlightEvents;
 
 	ModalWindow offlineTrainingWindow{std::numeric_limits<uint32_t>::max(), "Train while you sleep",
 	                                  "Please choose a skill to train:"};

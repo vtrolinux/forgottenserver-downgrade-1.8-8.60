@@ -335,6 +335,9 @@ ReturnValue Actions::internalUseItem(Player* player, const Position& pos, uint8_
 		if (oldContainerId == -1) {
 			player->addContainer(index, openContainer);
 			player->onSendContainer(openContainer);
+
+			// Stop the loot highlight when the corpse is opened for the first time
+			g_game.stopLootHighlight(openContainer);
 		} else {
 			player->onCloseContainer(openContainer);
 			player->closeContainer(static_cast<uint8_t>(oldContainerId));

@@ -5321,6 +5321,136 @@ void Game::internalDecayItem(Item* item)
 	}
 }
 
+// ============================================================
+// Loot Highlight System
+// ============================================================
+
+// Called once after loot is dropped into a corpse container.
+// ownerPlayerId: the player who has exclusive rights to open the corpse.
+// The highlight pulses every 2 seconds.
+// Phase 1 (0-10s): effect visible only to owner.
+// Phase 2 (10s+):  effect visible to everyone until corpse is opened/decayed.
+void Game::startLootHighlight(Container* corpse, uint32_t ownerPlayerId)
+{
+	if (!corpse || corpse->empty()) {
+		return;
+	}
+
+	// Send the first effect immediately to owner and party
+	Player* owner = getPlayerByID(ownerPlayerId);
+	if (owner) {
+		owner->sendMagicEffect(corpse->getPosition(), CONST_ME_LOOT_HIGHLIGHT);
+		if (Party* party = owner->getParty()) {
+			if (auto leader = party->getLeader()) {
+				if (leader.get() != owner) {
+					leader->sendMagicEffect(corpse->getPosition(), CONST_ME_LOOT_HIGHLIGHT);
+				}
+			}
+			for (const auto& memberRef : party->getMembers()) {
+				if (auto member = memberRef.lock()) {
+					if (member.get() != owner) {
+						member->sendMagicEffect(corpse->getPosition(), CONST_ME_LOOT_HIGHLIGHT);
+					}
+				}
+			}
+		}
+	}
+
+	uintptr_t key = reinterpret_cast<uintptr_t>(corpse);
+
+	// Schedule the first repeating tick
+	uint32_t eventId = g_scheduler.addEvent(createSchedulerTask(
+	    LOOT_HIGHLIGHT_PULSE_MS,
+	    ([this, key, ownerPlayerId, 
+	      ownerTicksLeft = LOOT_HIGHLIGHT_OWNER_MS - static_cast<int32_t>(LOOT_HIGHLIGHT_PULSE_MS),
+	      totalTicksLeft = LOOT_HIGHLIGHT_MAX_DURATION_MS - static_cast<int32_t>(LOOT_HIGHLIGHT_PULSE_MS)]() {
+		    checkLootHighlight(key, ownerPlayerId, ownerTicksLeft, totalTicksLeft);
+	    })));
+
+	lootHighlightEvents[key] = eventId;
+}
+
+void Game::checkLootHighlight(uintptr_t corpseKey, uint32_t ownerPlayerId, int32_t ownerTicksLeft, int32_t totalTicksLeft)
+{
+	// Remove entry first
+	auto it = lootHighlightEvents.find(corpseKey);
+	if (it == lootHighlightEvents.end()) {
+		return;
+	}
+	lootHighlightEvents.erase(it);
+
+	// Recover container
+	Container* corpse = reinterpret_cast<Container*>(corpseKey);
+
+	// Validate stop conditions
+	Tile* tile = corpse->getTile();
+	if (!tile || corpse->isRemoved() || corpse->empty() || totalTicksLeft < 0) {
+		return; // Stop permanently
+	}
+
+	const Position& pos = corpse->getPosition();
+
+	if (ownerTicksLeft > 0) {
+		// Phase 1 — Owner and Party
+		Player* owner = getPlayerByID(ownerPlayerId);
+		if (owner) {
+			owner->sendMagicEffect(pos, CONST_ME_LOOT_HIGHLIGHT);
+			if (Party* party = owner->getParty()) {
+				if (auto leader = party->getLeader()) {
+					if (leader.get() != owner) {
+						leader->sendMagicEffect(pos, CONST_ME_LOOT_HIGHLIGHT);
+					}
+				}
+				for (const auto& memberRef : party->getMembers()) {
+					if (auto member = memberRef.lock()) {
+						if (member.get() != owner) {
+							member->sendMagicEffect(pos, CONST_ME_LOOT_HIGHLIGHT);
+						}
+					}
+				}
+			}
+		}
+	} else {
+		// Phase 2 — Public
+		SpectatorVec spectators;
+		map.getSpectators(spectators, pos, false, true);
+		for (const auto& spec : spectators) {
+			if (Player* p = spec->getPlayer()) {
+				p->sendMagicEffect(pos, CONST_ME_LOOT_HIGHLIGHT);
+			}
+		}
+	}
+
+	// Reschedule with decreased timers
+	uint32_t newEventId = g_scheduler.addEvent(createSchedulerTask(
+	    LOOT_HIGHLIGHT_PULSE_MS,
+	    ([this, corpseKey, ownerPlayerId, 
+	      nextOwnerTicks = ownerTicksLeft - static_cast<int32_t>(LOOT_HIGHLIGHT_PULSE_MS),
+	      nextTotalTicks = totalTicksLeft - static_cast<int32_t>(LOOT_HIGHLIGHT_PULSE_MS)]() {
+		    checkLootHighlight(corpseKey, ownerPlayerId, nextOwnerTicks, nextTotalTicks);
+	    })));
+
+	lootHighlightEvents[corpseKey] = newEventId;
+}
+
+void Game::stopLootHighlight(Container* corpse)
+{
+	if (!corpse) {
+		return;
+	}
+
+	uintptr_t key = reinterpret_cast<uintptr_t>(corpse);
+	auto it = lootHighlightEvents.find(key);
+	if (it == lootHighlightEvents.end()) {
+		return; // No highlight active for this corpse
+	}
+
+	g_scheduler.stopEvent(it->second);
+	lootHighlightEvents.erase(it);
+}
+
+// ============================================================
+
 void Game::checkLight()
 {
 	g_scheduler.addEvent(createSchedulerTask(EVENT_LIGHTINTERVAL, [this]() { checkLight(); }));
