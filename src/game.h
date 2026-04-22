@@ -632,7 +632,6 @@ private:
 	mutable std::shared_mutex playersMutex;
 	std::unordered_map<uint32_t, Guild_ptr> guilds;
 	std::unordered_map<uint16_t, Item*> uniqueItems;
-	std::map<uint32_t, uint32_t> stages;
 	std::unordered_map<uint32_t, std::unordered_map<uint32_t, int32_t>> accountStorageMap;
 
 	std::vector<std::shared_ptr<Creature>> checkCreatureLists[EVENT_CREATURECOUNT];
@@ -698,10 +697,6 @@ private:
 	std::string motdHash;
 	uint32_t motdNum = 0;
 	std::string boostedCreature = "";
-
-	uint32_t lastStageLevel = 0;
-	bool stagesEnabled = false;
-	bool useLastStageLevel = false;
 };
 
 #endif
