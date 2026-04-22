@@ -1529,7 +1529,7 @@ bool ConditionDamage::doDamage(Creature* creature, int32_t healthChange)
 			const Position &creaturePos = creature->getPosition();
 			SpectatorVec spectators;
 			g_game.map.getSpectators(spectators, creaturePos, true, true);
-			InstanceUtils::sendMagicEffectToInstance(spectators, creaturePos, CONST_ME_POFF, creature->getInstanceID());
+			InstanceUtils::sendMagicEffectToInstance(spectators, creaturePos, field ? CONST_ME_BLOCKHIT : CONST_ME_POFF, creature->getInstanceID());
 		}
 		return false;
 	}

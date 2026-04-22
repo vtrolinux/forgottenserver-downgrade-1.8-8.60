@@ -1489,7 +1489,7 @@ void Monster::pushItems(Tile* tile)
 		}
 
 		if (removeCount > 0) {
-			g_game.addMagicEffect(tile->getPosition(), CONST_ME_POFF);
+			g_game.addMagicEffect(tile->getPosition(), CONST_ME_BLOCKHIT);
 		}
 	}
 }
