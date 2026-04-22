@@ -50,7 +50,6 @@ GlobalStorageKeys = {
 
 AccountStorageKeys = {}
 
-
 -- Check duplicates player storage keys
 do
     local duplicates = {}
@@ -59,17 +58,14 @@ do
         duplicates[id] = name
     end
 
-
     local __index = function(self, key)
         local keyStorage = rawget(PlayerStorageKeys, key)
         if not keyStorage then debugPrint("Invalid keyStorage: " .. key) end
         return keyStorage
     end
 
-
     setmetatable(PlayerStorageKeys, {__index = __index})
 end
-
 
 -- Check duplicates global storage keys
 do
@@ -85,7 +81,6 @@ do
         if not keyStorage then debugPrint("Invalid keyStorage: " .. key) end
         return keyStorage
     end
-
 
     setmetatable(GlobalStorageKeys, {__index = __index})
 end

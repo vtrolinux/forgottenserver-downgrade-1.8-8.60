@@ -10,7 +10,8 @@ local messages = {
 }
 
 function action.onUse(player, item, fromPosition, target, toPosition, isHotkey)
-	if player:getStorageValue(PlayerStorageKeys.delayWallMirror) <= os.time() then
+	local storage = player:getStorageValue(PlayerStorageKeys.delayWallMirror)
+	if not storage or storage <= os.time() then
 		player:say(messages[math.random(1, #messages)], TALKTYPE_MONSTER_SAY)
 		player:setStorageValue(PlayerStorageKeys.delayWallMirror,
 		                       os.time() + 20 * 60 * 60)

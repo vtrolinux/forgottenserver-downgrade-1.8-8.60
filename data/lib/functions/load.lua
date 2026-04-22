@@ -1,2 +1,7 @@
 -- Load core functions
-dofile("data/lib/functions/vocation.lua")
+
+dofile(CORE_DIRECTORY .. '/lib/functions/boosted_list.lua')
+dofile(CORE_DIRECTORY .. '/lib/functions/exercise_training.lua')
+dofile(CORE_DIRECTORY .. '/lib/functions/house_autowrap.lua')
+dofile(CORE_DIRECTORY .. '/lib/functions/monk_harmony.lua')
+dofile(CORE_DIRECTORY .. '/lib/functions/vocation.lua')

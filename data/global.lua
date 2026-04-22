@@ -1,5 +1,7 @@
 math.randomseed(os.time())
-dofile('data/lib/lib.lua')
+DATA_DIRECTORY = "data"
+CORE_DIRECTORY = DATA_DIRECTORY
+dofile(DATA_DIRECTORY .. '/lib/lib.lua')
 
 local startupFile=io.open("data/startup/startup.lua", "r")
 if startupFile ~= nil then

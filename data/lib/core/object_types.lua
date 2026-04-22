@@ -1,3 +1,0 @@
--- This file is intentionally left empty.
--- Door/window tables have been moved to data/lib/core/doors.lua
--- (Crystal Server style)
