@@ -443,8 +443,8 @@ bool Actions::useItemEx(Player* player, const Position& fromPos, const Position&
 		return false;
 	}
 	if (!isRune && player->hasCondition(CONDITION_EXHAUST_WEAPON, EXHAUST_POTION)) {
-		return false;
-	}
+			return false;
+		}
 
 	// Set exhaust condition
 	if (!player->hasFlag(PlayerFlag_HasNoExhaustion)) {

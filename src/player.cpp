@@ -3662,7 +3662,8 @@ void Player::doAttacking(uint32_t)
 void Player::maintainAttackFlow()
 {
 	if (!attackedCreature.expired() && !hasCondition(CONDITION_PACIFIED)) {
-		if (!canDoAction() && !getBoolean(ConfigManager::ALLOW_AUTO_ATTACK_WITHOUT_EXHAUSTION)) {
+		bool allowAutoAttackWithoutExhaustion = getBoolean(ConfigManager::ALLOW_AUTO_ATTACK_WITHOUT_EXHAUSTION);
+		if (!canDoAction() && !allowAutoAttackWithoutExhaustion) {
 			return;
 		}
 
@@ -3670,7 +3671,13 @@ void Player::maintainAttackFlow()
 			lastAttack = OTSYS_TIME() - getAttackSpeed() + 100;
 
 			auto task = createSchedulerTask(100, [id = getID()]() { g_game.checkCreatureAttack(id); });
-			setNextActionTask(std::move(task), false);
+			bool classicSpeed = getBoolean(ConfigManager::CLASSIC_ATTACK_SPEED);
+
+			if (!classicSpeed && !allowAutoAttackWithoutExhaustion) {
+				setNextActionTask(std::move(task), false);
+			} else {
+				g_scheduler.addEvent(std::move(task));
+			}
 		}
 	}
 }
