@@ -2343,6 +2343,59 @@ int luaPlayerGetFightMode(lua_State* L)
 	return 1;
 }
 
+int luaPlayerIsSecureModeEnabled(lua_State* L)
+{
+	// player:isSecureModeEnabled()
+	const Player* player = getUserdata<const Player>(L, 1);
+	if (player) {
+		pushBoolean(L, player->isSecureModeEnabled());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaPlayerIsChasingEnabled(lua_State* L)
+{
+	// player:isChasingEnabled()
+	const Player* player = getUserdata<const Player>(L, 1);
+	if (player) {
+		pushBoolean(L, player->isChasingEnabled());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaPlayerSetFightMode(lua_State* L)
+{
+	// player:setFightMode(stance[, chase[, secure]])
+	Player* player = getUserdata<Player>(L, 1);
+	if (player) {
+		const fightMode_t stance = getNumber<fightMode_t>(L, 2, player->getFightMode());
+		const bool chase = getBoolean(L, 3, player->isChasingEnabled());
+		const bool secure = getBoolean(L, 4, player->isSecureModeEnabled());
+		player->setFightMode(stance, chase, secure);
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaPlayerStopWalk(lua_State* L)
+{
+	// player:stopWalk()
+	Player* player = getUserdata<Player>(L, 1);
+	if (player) {
+		player->stopWalk();
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 int luaPlayerSetAttackSpeed(lua_State* L)
 {
 	// player:setAttackSpeed(ms)
@@ -3529,6 +3582,11 @@ void LuaScriptInterface::registerPlayer()
 	registerMethod("Player", "hasChaseMode", luaPlayerHasChaseMode);
 	registerMethod("Player", "hasSecureMode", luaPlayerHasSecureMode);
 	registerMethod("Player", "getFightMode", luaPlayerGetFightMode);
+	registerMethod("Player", "isSecureModeEnabled", luaPlayerIsSecureModeEnabled);
+	registerMethod("Player", "isChasingEnabled", luaPlayerIsChasingEnabled);
+	registerMethod("Player", "setFightMode", luaPlayerSetFightMode);
+	registerMethod("Player", "setFightingModes", luaPlayerSetFightMode);
+	registerMethod("Player", "stopWalk", luaPlayerStopWalk);
 
 	registerMethod("Player", "getAttackSpeed", luaPlayerGetAttackSpeed);
 	registerMethod("Player", "setAttackSpeed", luaPlayerSetAttackSpeed);

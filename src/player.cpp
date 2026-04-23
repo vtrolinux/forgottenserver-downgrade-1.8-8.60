@@ -450,7 +450,7 @@ int32_t Player::getDefense() const
 	}
 
 	if (defenseSkill == 0) {
-		switch (fightMode) {
+		switch (getFightMode()) {
 			case FIGHTMODE_ATTACK:
 			case FIGHTMODE_BALANCED:
 				return 1;
@@ -465,7 +465,7 @@ int32_t Player::getDefense() const
 
 float Player::getAttackFactor() const
 {
-	switch (fightMode) {
+	switch (getFightMode()) {
 		case FIGHTMODE_ATTACK:
 			return 1.0f;
 		case FIGHTMODE_BALANCED:
@@ -479,7 +479,7 @@ float Player::getAttackFactor() const
 
 float Player::getDefenseFactor() const
 {
-	switch (fightMode) {
+	switch (getFightMode()) {
 		case FIGHTMODE_ATTACK:
 			return (OTSYS_TIME() - lastAttack) < getAttackSpeed() ? 0.5f : 1.0f;
 		case FIGHTMODE_BALANCED:
@@ -3577,7 +3577,7 @@ bool Player::setAttackedCreature(Creature* creature)
 		return false;
 	}
 
-	if (chaseMode && creature) {
+	if (isChasingEnabled() && creature) {
 		auto follow = followCreature.lock();
 		if (follow.get() != creature) {
 			// chase opponent
@@ -3725,6 +3725,15 @@ void Player::setChaseMode(bool mode)
 			cancelNextWalk = true;
 		}
 	}
+}
+
+void Player::setFightMode(fightMode_t stance, bool chase, bool secure)
+{
+	fightMode = stance;
+	chaseMode = chase;
+	secureMode = secure;
+
+	g_events->eventPlayerOnFightModeChanged(this, fightMode, chaseMode, secureMode);
 }
 
 void Player::onWalkAborted()

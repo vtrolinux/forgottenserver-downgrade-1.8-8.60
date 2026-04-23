@@ -67,6 +67,7 @@ class Events
 		int32_t playerOnUpdateInventory = -1;
 		int32_t playerOnRotateItem = -1;
 		int32_t playerOnSpellCheck = -1;
+		int32_t playerOnFightModeChanged = -1;
 
 		// Monster
 		int32_t monsterOnDropLoot = -1;
@@ -127,6 +128,7 @@ public:
 	void eventPlayerOnUpdateInventory(Player* player, Item* item, const slots_t slot, const bool equip);
 	void eventPlayerOnRotateItem(Player* player, Item* item);
 	bool eventPlayerOnSpellCheck(Player* player, const Spell* spell);
+	void eventPlayerOnFightModeChanged(Player* player, uint8_t stance, bool chase, bool secure);
 
 	// Monster
 	void eventMonsterOnDropLoot(Monster* monster, Container* corpse);

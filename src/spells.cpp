@@ -516,7 +516,7 @@ bool Spell::playerRuneSpellCheck(Player* player, const Position& toPos)
 		return false;
 	}
 
-	if (aggressive && needTarget && topVisibleCreature && player->hasSecureMode()) {
+	if (aggressive && needTarget && topVisibleCreature && player->isSecureModeEnabled()) {
 		const Player* targetPlayer = topVisibleCreature->getPlayer();
 		if (targetPlayer && targetPlayer != player && player->getSkullClient(targetPlayer) == SKULL_NONE &&
 		    !Combat::isInPvpZone(player, targetPlayer)) {

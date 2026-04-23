@@ -228,7 +228,7 @@ public:
 		return client->getVersion();
 	}
 
-	bool hasSecureMode() const { return secureMode; }
+	bool hasSecureMode() const { return isSecureModeEnabled(); }
 
 	void setParty(Party* party);
 	Party* getParty() const { return party.lock().get(); }
@@ -525,6 +525,7 @@ public:
 
 	void setChaseMode(bool mode);
 	void setFightMode(fightMode_t mode) { fightMode = mode; }
+	void setFightMode(fightMode_t stance, bool chase, bool secure);
 	void setSecureMode(bool mode) { secureMode = mode; }
 
 	void setAttackSpeed(uint32_t speed) { attackSpeed = speed; }
@@ -1185,6 +1186,8 @@ public:
 	bool getChaseMode() const { return chaseMode; }
 	bool getSecureMode() const { return secureMode; }
 	auto getFightMode() const { return fightMode; }
+	bool isChasingEnabled() const { return chaseMode; }
+	bool isSecureModeEnabled() const { return secureMode; }
 
 	bool hasDebugAssertSent() const { return client ? client->debugAssertSent : false; }
 

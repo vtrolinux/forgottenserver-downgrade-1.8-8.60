@@ -127,6 +127,16 @@ function Player.sendExtendedOpcode(self, opcode, buffer)
 	return true
 end
 
+function Player.sendFightMode(self)
+	local msg<close> = NetworkMessage()
+	msg:addByte(0xA7)
+	msg:addByte(self:getFightMode())
+	msg:addByte(self:isChasingEnabled() and 1 or 0)
+	msg:addByte(self:isSecureModeEnabled() and 1 or 0)
+	msg:sendToPlayer(self)
+	return true
+end
+
 -- Always pass the number through the isValidMoney function first before using the transferMoneyTo
 function Player.transferMoneyTo(self, target, amount)
 	if not target then return false end

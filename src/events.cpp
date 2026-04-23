@@ -119,6 +119,8 @@ bool Events::load()
 				info.playerOnRotateItem = event;
 			} else if (methodName == "onSpellCheck") {
 				info.playerOnSpellCheck = event;
+			} else if (methodName == "onFightModeChanged") {
+				info.playerOnFightModeChanged = event;
 			} else {
 				LOG_WARN(fmt::format("[Warning - Events::load] Unknown player method: {}", methodName));
 			}
@@ -1259,6 +1261,34 @@ bool Events::eventPlayerOnSpellCheck(Player* player, const Spell* spell)
 	Lua::pushSpell(L, *spell);
 
 	return scriptInterface.callFunction(2);
+}
+
+void Events::eventPlayerOnFightModeChanged(Player* player, uint8_t stance, bool chase, bool secure)
+{
+	// Player:onFightModeChanged(stance, chase, secure)
+	if (info.playerOnFightModeChanged == -1) {
+		return;
+	}
+
+	if (!scriptInterface.reserveScriptEnv()) {
+		LOG_ERROR("[Error - Events::eventPlayerOnFightModeChanged] Call stack overflow");
+		return;
+	}
+
+	ScriptEnvironment* env = scriptInterface.getScriptEnv();
+	env->setScriptId(info.playerOnFightModeChanged, &scriptInterface);
+
+	lua_State* L = scriptInterface.getLuaState();
+	scriptInterface.pushFunction(info.playerOnFightModeChanged);
+
+	Lua::pushUserdata<Player>(L, player);
+	Lua::setMetatable(L, -1, "Player");
+
+	lua_pushinteger(L, stance);
+	Lua::pushBoolean(L, chase);
+	Lua::pushBoolean(L, secure);
+
+	scriptInterface.callVoidFunction(4);
 }
 
 void Events::eventMonsterOnDropLoot(Monster* monster, Container* corpse)

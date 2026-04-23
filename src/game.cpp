@@ -3564,18 +3564,6 @@ void Game::playerFollowCreature(uint32_t playerId, uint32_t creatureId)
 	player->setFollowCreature(followCreature);
 }
 
-void Game::playerSetFightModes(uint32_t playerId, fightMode_t fightMode, bool chaseMode, bool secureMode)
-{
-	Player* player = getPlayerByID(playerId);
-	if (!player) {
-		return;
-	}
-
-	player->setFightMode(fightMode);
-	player->setChaseMode(chaseMode);
-	player->setSecureMode(secureMode);
-}
-
 void Game::playerRequestAddVip(uint32_t playerId, std::string_view name)
 {
 	if (name.length() > PLAYER_NAME_LENGTH) {

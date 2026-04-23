@@ -138,3 +138,9 @@ function Player:onStepTile(fromPosition, toPosition)
     end
     return true
 end
+
+function Player:onFightModeChanged(stance, chase, secure)
+	if hasEvent.onFightModeChanged then
+		Event.onFightModeChanged(self, stance, chase, secure)
+	end
+end
