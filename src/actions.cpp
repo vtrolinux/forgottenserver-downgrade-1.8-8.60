@@ -190,7 +190,8 @@ Action* Actions::getAction(const Position& pos)
 	return nullptr;
 }
 
-ReturnValue Actions::internalUseItem(Player* player, const Position& pos, uint8_t index, Item* item, bool isHotkey)
+ReturnValue Actions::internalUseItem(Player* player, const Position& pos, uint8_t index,
+                                     const std::shared_ptr<Item>& item, bool isHotkey)
 {
 	if (Door* door = item->getDoor()) {
 		if (!door->canUse(player)) {
@@ -217,7 +218,7 @@ ReturnValue Actions::internalUseItem(Player* player, const Position& pos, uint8_
 		return RETURNVALUE_CANNOTUSETHISOBJECT;
 	}
 
-	Action* action = getAction(item);
+	Action* action = getAction(item.get());
 	if (action) {
 		if (action->isScripted()) {
 			if (action->executeUse(player, item, pos, nullptr, pos, isHotkey)) {
@@ -349,11 +350,11 @@ ReturnValue Actions::internalUseItem(Player* player, const Position& pos, uint8_
 	const ItemType& it = Item::items[item->getID()];
 	if (it.canReadText) {
 		if (it.canWriteText) {
-			player->setWriteItem(item->shared_from_this(), it.maxTextLen);
-			player->sendTextWindow(item, it.maxTextLen, true);
+			player->setWriteItem(item, it.maxTextLen);
+			player->sendTextWindow(item.get(), it.maxTextLen, true);
 		} else {
 			player->setWriteItem(nullptr);
-			player->sendTextWindow(item, 0, false);
+			player->sendTextWindow(item.get(), 0, false);
 		}
 
 		return RETURNVALUE_NOERROR;
@@ -362,7 +363,7 @@ ReturnValue Actions::internalUseItem(Player* player, const Position& pos, uint8_
 	return RETURNVALUE_CANNOTUSETHISOBJECT;
 }
 
-static void showUseHotkeyMessage(Player* player, const Item* item, uint32_t count)
+static void showUseHotkeyMessage(Player* player, const Item* item, uint32_t count) // raw ptr: lifetime garantido pelo caller
 {
 	const ItemType& it = Item::items[item->getID()];
 	if (!it.showCount) {
@@ -375,8 +376,12 @@ static void showUseHotkeyMessage(Player* player, const Item* item, uint32_t coun
 	}
 }
 
-bool Actions::useItem(Player* player, const Position& pos, uint8_t index, Item* item, bool isHotkey)
+bool Actions::useItem(Player* player, const Position& pos, uint8_t index, std::shared_ptr<Item> item, bool isHotkey)
 {
+	if (!item) [[unlikely]] {
+		return false;
+	}
+
 	if (player->hasCondition(CONDITION_EXHAUST_WEAPON, EXHAUST_OPENCONTAINER)) {
 		return false;
 	}
@@ -390,7 +395,7 @@ bool Actions::useItem(Player* player, const Position& pos, uint8_t index, Item* 
 
 	if (isHotkey) {
 		uint16_t subType = item->getSubType();
-		showUseHotkeyMessage(player, item,
+		showUseHotkeyMessage(player, item.get(),
 		                     player->getItemTypeCount(item->getID(), subType != item->getItemCount() ? subType : -1));
 	}
 
@@ -431,9 +436,13 @@ bool Actions::useItem(Player* player, const Position& pos, uint8_t index, Item* 
 	return true;
 }
 
-bool Actions::useItemEx(Player* player, const Position& fromPos, const Position& toPos, uint8_t toStackPos, Item* item,
-                        bool isHotkey, Creature* creature /* = nullptr*/)
+bool Actions::useItemEx(Player* player, const Position& fromPos, const Position& toPos, uint8_t toStackPos,
+                        std::shared_ptr<Item> item, bool isHotkey, Creature* creature /* = nullptr*/)
 {
+	if (!item) [[unlikely]] {
+		return false;
+	}
+
 	// Determine exhaust channel: runes use their own, potions/items use theirs
 	bool isRune = g_spells->getRuneSpell(item->getID()) != nullptr;
 	Exhaust_t exhaustType = isRune ? EXHAUST_RUNE : EXHAUST_USEITEM;
@@ -455,7 +464,7 @@ bool Actions::useItemEx(Player* player, const Position& fromPos, const Position&
 		player->sendUseItemCooldown(cooldown);
 	}
 
-	Action* action = getAction(item);
+	Action* action = getAction(item.get());
 	if (!action) {
 		player->sendCancelMessage(RETURNVALUE_CANNOTUSETHISOBJECT);
 		return false;
@@ -469,7 +478,7 @@ bool Actions::useItemEx(Player* player, const Position& fromPos, const Position&
 
 	if (isHotkey) {
 		uint16_t subType = item->getSubType();
-		showUseHotkeyMessage(player, item,
+		showUseHotkeyMessage(player, item.get(),
 		                     player->getItemTypeCount(item->getID(), subType != item->getItemCount() ? subType : -1));
 	}
 
@@ -507,9 +516,13 @@ Thing* Action::getTarget(Player* player, Creature* targetCreature, const Positio
 	return g_game.internalGetThing(player, toPosition, toStackPos, 0, STACKPOS_USETARGET);
 }
 
-bool Action::executeUse(Player* player, Item* item, const Position& fromPosition, Thing* target,
+bool Action::executeUse(Player* player, const std::shared_ptr<Item>& item, const Position& fromPosition, Thing* target,
                         const Position& toPosition, bool isHotkey)
 {
+	if (!item) [[unlikely]] {
+		return false;
+	}
+
 	// onUse(player, item, fromPosition, target, toPosition, isHotkey)
 	if (!scriptInterface->reserveScriptEnv()) {
 		LOG_ERROR("[Error - Action::executeUse] Call stack overflow");
@@ -526,7 +539,7 @@ bool Action::executeUse(Player* player, Item* item, const Position& fromPosition
 	Lua::pushUserdata<Player>(L, player);
 	Lua::setMetatable(L, -1, "Player");
 
-	Lua::pushThing(L, item);
+	Lua::pushThing(L, item.get());
 	Lua::pushPosition(L, fromPosition);
 
 	Lua::pushThing(L, target);

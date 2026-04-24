@@ -8,10 +8,13 @@
 #include "enums.h"
 #include "luascript.h"
 
+#include <functional>
+#include <memory>
+
 class Action;
 using Action_ptr = std::unique_ptr<Action>;
-using ActionFunction = std::function<bool(Player* player, Item* item, const Position& fromPosition, Thing* target,
-                                          const Position& toPosition, bool isHotkey)>;
+using ActionFunction = std::function<bool(Player*, const std::shared_ptr<Item>&, const Position&, Thing*,
+                                          const Position&, bool)>;
 
 class Action : public Event
 {
@@ -19,8 +22,7 @@ public:
 	explicit Action(LuaScriptInterface* interface);
 
 	// scripting
-	virtual bool executeUse(Player* player, Item* item, const Position& fromPosition, Thing* target,
-	                        const Position& toPosition, bool isHotkey);
+	virtual bool executeUse(Player*, const std::shared_ptr<Item>&, const Position&, Thing*, const Position&, bool);
 
 	bool getAllowFarUse() const { return allowFarUse; }
 	void setAllowFarUse(bool v) { allowFarUse = v; }
@@ -88,19 +90,19 @@ public:
 	Actions(const Actions&) = delete;
 	Actions& operator=(const Actions&) = delete;
 
-	bool useItem(Player* player, const Position& pos, uint8_t index, Item* item, bool isHotkey);
-	bool useItemEx(Player* player, const Position& fromPos, const Position& toPos, uint8_t toStackPos, Item* item,
-	               bool isHotkey, Creature* creature = nullptr);
+	bool useItem(Player*, const Position&, uint8_t, std::shared_ptr<Item>, bool);
+	bool useItemEx(Player*, const Position&, const Position&, uint8_t, std::shared_ptr<Item>, bool,
+	               Creature* = nullptr);
 
 	ReturnValue canUse(const Player* player, const Position& pos);
-	ReturnValue canUse(const Player* player, const Position& pos, const Item* item);
+	ReturnValue canUse(const Player*, const Position&, const Item*); // raw ptr: lifetime garantido pelo caller
 	ReturnValue canUseFar(const Creature* creature, const Position& toPos, bool checkLineOfSight, bool checkFloor);
 
 	bool registerLuaEvent(Action* event);
 	void clear(bool fromLua) override final;
 
 private:
-	ReturnValue internalUseItem(Player* player, const Position& pos, uint8_t index, Item* item, bool isHotkey);
+	ReturnValue internalUseItem(Player*, const Position&, uint8_t, const std::shared_ptr<Item>&, bool);
 
 	LuaScriptInterface& getScriptInterface() override;
 	std::string_view getScriptBaseName() const override;
@@ -111,7 +113,7 @@ private:
 	ActionUseMap actionItemMap;
 	std::map<Position, Action> positionMap;
 
-	Action* getAction(const Item* item);
+	Action* getAction(const Item*); // raw ptr: lifetime garantido pelo caller
 	Action* getAction(const Position& pos);
 	void clearMap(ActionUseMap& map, bool fromLua);
 

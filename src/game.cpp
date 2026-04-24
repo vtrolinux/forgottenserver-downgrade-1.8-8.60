@@ -2513,7 +2513,7 @@ void Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, uint8_t f
 	player->resetIdleTime();
 	player->setNextActionTask(nullptr);
 
-	g_actions->useItemEx(player, fromPos, toPos, toStackPos, item, isHotkey);
+	g_actions->useItemEx(player, fromPos, toPos, toStackPos, item->shared_from_this(), isHotkey);
 	player->maintainAttackFlow();
 }
 
@@ -2577,10 +2577,11 @@ void Game::playerUseItem(uint32_t playerId, const Position& pos, uint8_t stackPo
 	player->resetIdleTime();
 	player->setNextActionTask(nullptr);
 
-	g_actions->useItem(player, pos, index, item, isHotkey);
+	auto itemRef = item->shared_from_this();
+	g_actions->useItem(player, pos, index, itemRef, isHotkey);
 
-	if (item->getCorpseOwner() != 0) {
-		player->lootCorpse(item->getContainer());
+	if (!itemRef->isRemoved() && itemRef->getCorpseOwner() != 0) {
+		player->lootCorpse(itemRef->getContainer());
 	}
 	player->maintainAttackFlow();
 }
@@ -2691,8 +2692,8 @@ void Game::playerUseWithCreature(uint32_t playerId, const Position& fromPos, uin
 	player->setNextActionTask(nullptr);
 
 	g_actions->useItemEx(player, fromPos, creature->getPosition(),
-	                     static_cast<uint8_t>(creature->getParent()->getThingIndex(creature)), item, isHotkey,
-	                     creature);
+	                     static_cast<uint8_t>(creature->getParent()->getThingIndex(creature)),
+	                     item->shared_from_this(), isHotkey, creature);
 	player->maintainAttackFlow();
 }
 

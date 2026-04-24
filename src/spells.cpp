@@ -882,8 +882,8 @@ ReturnValue RuneSpell::canExecuteAction(const Player* player, const Position& to
 	return RETURNVALUE_NOERROR;
 }
 
-bool RuneSpell::executeUse(Player* player, Item* item, const Position&, Thing* target, const Position& toPosition,
-                           bool isHotkey)
+bool RuneSpell::executeUse(Player* player, const std::shared_ptr<Item>& item, const Position&, Thing* target,
+                           const Position& toPosition, bool isHotkey)
 {
 	if (!playerRuneSpellCheck(player, toPosition)) {
 		return false;
@@ -928,7 +928,7 @@ bool RuneSpell::executeUse(Player* player, Item* item, const Position&, Thing* t
 
 	if (hasCharges && item && getBoolean(ConfigManager::REMOVE_RUNE_CHARGES)) {
 		int32_t newCount = std::max<int32_t>(0, item->getItemCount() - 1);
-		g_game.transformItem(item, item->getID(), newCount);
+		g_game.transformItem(item.get(), item->getID(), newCount);
 	}
 	return true;
 }

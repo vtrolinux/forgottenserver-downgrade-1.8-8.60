@@ -283,8 +283,8 @@ public:
 		return targetCreature;
 	}
 
-	bool executeUse(Player* player, Item* item, const Position& fromPosition, Thing* target, const Position& toPosition,
-	                bool isHotkey) override;
+	bool executeUse(Player* player, const std::shared_ptr<Item>& item, const Position& fromPosition, Thing* target,
+	                const Position& toPosition, bool isHotkey) override;
 
 	bool castSpell(Creature* creature) override;
 	bool castSpell(Creature* creature, Creature* target) override;
