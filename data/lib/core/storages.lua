@@ -32,6 +32,9 @@ PlayerStorageKeys = {
     -- Influenced creatures
     influencedSpawnTime = 10050,
 
+    -- House Construction
+    constructionCooldown = 45001,
+
     -- The Oracle NPC
     oracleVisits = 90001,
     oracleTrialWisdom = 90002,

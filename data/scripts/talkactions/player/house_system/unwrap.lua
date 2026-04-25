@@ -1,6 +1,16 @@
+local COOLDOWN_TIME = 2 -- seconds
+
 local unwrapCommand = TalkAction("!unwrap")
 
 function unwrapCommand.onSay(player, words, param)
+	-- Cooldown check
+	local cooldown = player:getStorageValue(PlayerStorageKeys.constructionCooldown)
+	if cooldown > os.time() then
+		local remaining = cooldown - os.time()
+		player:sendTextMessage(MESSAGE_INFO_DESCR, string.format("You must wait %d second%s before using this command again.", remaining, remaining > 1 and "s" or ""))
+		return false
+	end
+
 	local position = player:getPosition()
 	local tile = position:getTile()
 
@@ -37,27 +47,15 @@ function unwrapCommand.onSay(player, words, param)
 		local itemId = item:getId()
 		local itemType = item:getType()
 
-		-- Check if it's a kit (needs to be constructed)
-		if not houseAutowrapItems then
-			-- Fallback in case the lib was not loaded
-			houseAutowrapItems = {}
-			for i = 1, 50000 do
-				local it = ItemType(i)
-				if it and it:getId() ~= 0 then
-					local w = it:getWrapableTo()
-					if w and w ~= 0 then
-						houseAutowrapItems[w] = i
-					end
-				end
-			end
-		end
-
 		local constructedId = item:getAttribute("wrapid")
 		if not constructedId or constructedId == 0 then
 			constructedId = houseAutowrapItems[itemId]
 		end
 
 		if constructedId and constructedId ~= 0 then
+			-- Apply cooldown
+			player:setStorageValue(PlayerStorageKeys.constructionCooldown, os.time() + COOLDOWN_TIME)
+
 			item:transform(constructedId)
 			item:setAttribute("wrapid", itemId) -- Store the kit ID on the furniture
 			lookPosition:sendMagicEffect(CONST_ME_POFF)
@@ -72,6 +70,9 @@ function unwrapCommand.onSay(player, words, param)
 		end
 
 		if wrapId and wrapId ~= 0 then
+			-- Apply cooldown
+			player:setStorageValue(PlayerStorageKeys.constructionCooldown, os.time() + COOLDOWN_TIME)
+
 			local furnitureId = item:getId()
 			item:transform(wrapId)
 			item:setAttribute("wrapid", furnitureId) -- Store the furniture ID on the kit
@@ -87,3 +88,5 @@ end
 
 unwrapCommand:separator(" ")
 unwrapCommand:register()
+
+

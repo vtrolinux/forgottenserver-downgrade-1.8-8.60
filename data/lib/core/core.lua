@@ -22,3 +22,5 @@ dofile(CORE_DIRECTORY .. "/lib/core/tile.lua")
 dofile(CORE_DIRECTORY .. "/lib/core/vocation.lua")
 dofile(CORE_DIRECTORY .. "/lib/core/quests.lua")
 dofile(CORE_DIRECTORY .. "/lib/core/spells.lua")
+dofile(CORE_DIRECTORY .. "/lib/core/house_autowrap.lua")
+

@@ -1,29 +1,29 @@
+local COOLDOWN_TIME = 2 -- seconds
+
 local constructionKits = Action()
 
-if not houseAutowrapItems then
-	houseAutowrapItems = {}
-	for i = 1, 50000 do
-		local it = ItemType(i)
-		if it and it:getId() ~= 0 then
-			local w = it:getWrapableTo()
-			if w and w ~= 0 then
-				houseAutowrapItems[w] = i
-			end
-		end
-	end
-end
-
 function constructionKits.onUse(player, item, fromPosition, target, toPosition, isHotkey)
+	-- Cooldown check
+	local cooldown = player:getStorageValue(PlayerStorageKeys.constructionCooldown)
+	if cooldown > os.time() then
+		local remaining = cooldown - os.time()
+		player:sendTextMessage(MESSAGE_INFO_DESCR, string.format("You must wait %d second%s before using this again.", remaining, remaining > 1 and "s" or ""))
+		return true
+	end
+
 	local kit = houseAutowrapItems[item.itemid]
 	if not kit then
 		return false
 	end
 
 	if fromPosition.x == CONTAINER_POSITION then
-		player:sendTextMessage(MESSAGE_FAILURE, "Put the construction kit on the floor first.")
+		player:sendTextMessage(MESSAGE_INFO_DESCR, "Put the construction kit on the floor first.")
 	elseif not Tile(fromPosition):getHouse() then
-		player:sendTextMessage(MESSAGE_FAILURE, "You may construct this only inside a house.")
+		player:sendTextMessage(MESSAGE_INFO_DESCR, "You may construct this only inside a house.")
 	else
+		-- Apply cooldown
+		player:setStorageValue(PlayerStorageKeys.constructionCooldown, os.time() + COOLDOWN_TIME)
+
 		local kitId = item.itemid
 		item:transform(kit)
 		-- Store the kit ID so it can be wrapped back later
@@ -38,3 +38,5 @@ for id, _ in pairs(houseAutowrapItems) do
 end
 
 constructionKits:register()
+
+
