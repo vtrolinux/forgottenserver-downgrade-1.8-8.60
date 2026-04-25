@@ -515,7 +515,7 @@ public:
 	// Loot Highlight system
 	void startLootHighlight(Container* corpse, uint32_t ownerPlayerId);
 	void stopLootHighlight(Container* corpse);
-	void checkLootHighlight(uintptr_t corpseKey, uint32_t ownerPlayerId, int32_t ownerTicksLeft, int32_t totalTicksLeft);
+	void checkLootHighlight(std::shared_ptr<Item> corpseItem, uint32_t ownerPlayerId, int32_t ownerTicksLeft, int32_t totalTicksLeft);
 
 	void loadMotdNum();
 	int16_t getWorldTime() { return worldTime; }

@@ -5382,30 +5382,44 @@ void Game::startLootHighlight(Container* corpse, uint32_t ownerPlayerId)
 	}
 
 	uintptr_t key = reinterpret_cast<uintptr_t>(corpse);
+	std::weak_ptr<Item> weakCorpse = corpse->weak_from_this();
 
 	// Schedule the first repeating tick
 	uint32_t eventId = g_scheduler.addEvent(createSchedulerTask(
 	    LOOT_HIGHLIGHT_PULSE_MS,
-	    ([this, key, ownerPlayerId, 
+	    ([this, weakCorpse, ownerPlayerId,
 	      ownerTicksLeft = LOOT_HIGHLIGHT_OWNER_MS - static_cast<int32_t>(LOOT_HIGHLIGHT_PULSE_MS),
 	      totalTicksLeft = LOOT_HIGHLIGHT_MAX_DURATION_MS - static_cast<int32_t>(LOOT_HIGHLIGHT_PULSE_MS)]() {
-		    checkLootHighlight(key, ownerPlayerId, ownerTicksLeft, totalTicksLeft);
+		    auto corpseItem = weakCorpse.lock();
+		    if (!corpseItem) {
+			    return;
+		    }
+
+		    checkLootHighlight(corpseItem, ownerPlayerId, ownerTicksLeft, totalTicksLeft);
 	    })));
 
 	lootHighlightEvents[key] = eventId;
 }
 
-void Game::checkLootHighlight(uintptr_t corpseKey, uint32_t ownerPlayerId, int32_t ownerTicksLeft, int32_t totalTicksLeft)
+void Game::checkLootHighlight(std::shared_ptr<Item> corpseItem, uint32_t ownerPlayerId, int32_t ownerTicksLeft, int32_t totalTicksLeft)
 {
+	if (!corpseItem) {
+		return;
+	}
+
+	Container* corpse = corpseItem->getContainer();
+	if (!corpse) {
+		return;
+	}
+
+	uintptr_t corpseKey = reinterpret_cast<uintptr_t>(corpse);
+
 	// Remove entry first
 	auto it = lootHighlightEvents.find(corpseKey);
 	if (it == lootHighlightEvents.end()) {
 		return;
 	}
 	lootHighlightEvents.erase(it);
-
-	// Recover container
-	Container* corpse = reinterpret_cast<Container*>(corpseKey);
 
 	// Validate stop conditions
 	Tile* tile = corpse->getTile();
@@ -5447,12 +5461,18 @@ void Game::checkLootHighlight(uintptr_t corpseKey, uint32_t ownerPlayerId, int32
 	}
 
 	// Reschedule with decreased timers
+	std::weak_ptr<Item> weakCorpse = corpseItem;
 	uint32_t newEventId = g_scheduler.addEvent(createSchedulerTask(
 	    LOOT_HIGHLIGHT_PULSE_MS,
-	    ([this, corpseKey, ownerPlayerId, 
+	    ([this, weakCorpse, ownerPlayerId,
 	      nextOwnerTicks = ownerTicksLeft - static_cast<int32_t>(LOOT_HIGHLIGHT_PULSE_MS),
 	      nextTotalTicks = totalTicksLeft - static_cast<int32_t>(LOOT_HIGHLIGHT_PULSE_MS)]() {
-		    checkLootHighlight(corpseKey, ownerPlayerId, nextOwnerTicks, nextTotalTicks);
+		    auto corpseItem = weakCorpse.lock();
+		    if (!corpseItem) {
+			    return;
+		    }
+
+		    checkLootHighlight(corpseItem, ownerPlayerId, nextOwnerTicks, nextTotalTicks);
 	    })));
 
 	lootHighlightEvents[corpseKey] = newEventId;
