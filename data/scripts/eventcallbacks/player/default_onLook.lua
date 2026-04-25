@@ -1,5 +1,12 @@
 local event = Event()
 event.onLook = function(self, thing, position, distance, description)
+	local minDist = 5
+	if thing:isCreature() and thing:isNpc() and distance <= minDist then
+		self:say("hi", TALKTYPE_PRIVATE_PN, false, thing)
+		self:say("trade", TALKTYPE_PRIVATE_PN, false, thing)
+		return false
+	end
+
 	local description = "You see "
 
 	if thing:isItem() then
