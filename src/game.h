@@ -632,7 +632,7 @@ private:
 	std::unordered_map<uint32_t, Player*> mappedPlayerGuids;
 	mutable std::shared_mutex playersMutex;
 	std::unordered_map<uint32_t, Guild_ptr> guilds;
-	std::unordered_map<uint16_t, Item*> uniqueItems;
+	std::unordered_map<uint16_t, std::weak_ptr<Item>> uniqueItems;
 	std::unordered_map<uint32_t, std::unordered_map<uint32_t, int32_t>> accountStorageMap;
 
 	std::vector<std::shared_ptr<Creature>> checkCreatureLists[EVENT_CREATURECOUNT];

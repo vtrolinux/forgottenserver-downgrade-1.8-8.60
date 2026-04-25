@@ -1853,16 +1853,20 @@ void ConditionOutfit::serialize(PropWriteStream& propWriteStream)
 	Condition::serialize(propWriteStream);
 
 	propWriteStream.write<uint8_t>(CONDITIONATTR_OUTFIT);
-	Outfit_t serializedOutfit{};
-	serializedOutfit.lookType = outfit.lookType;
-	serializedOutfit.lookTypeEx = outfit.lookTypeEx;
-	serializedOutfit.lookMount = outfit.lookMount;
-	serializedOutfit.lookHead = outfit.lookHead;
-	serializedOutfit.lookBody = outfit.lookBody;
-	serializedOutfit.lookLegs = outfit.lookLegs;
-	serializedOutfit.lookFeet = outfit.lookFeet;
-	serializedOutfit.lookAddons = outfit.lookAddons;
-	propWriteStream.write<Outfit_t>(serializedOutfit);
+	propWriteStream.write<uint16_t>(outfit.lookType);
+	propWriteStream.write<uint16_t>(outfit.lookTypeEx);
+	propWriteStream.write<uint16_t>(outfit.lookMount);
+	propWriteStream.write<uint8_t>(outfit.lookHead);
+	propWriteStream.write<uint8_t>(outfit.lookBody);
+	propWriteStream.write<uint8_t>(outfit.lookLegs);
+	propWriteStream.write<uint8_t>(outfit.lookFeet);
+	propWriteStream.write<uint8_t>(outfit.lookAddons);
+
+	constexpr size_t serializedFieldsSize = (sizeof(uint16_t) * 3) + (sizeof(uint8_t) * 5);
+	static_assert(sizeof(Outfit_t) >= serializedFieldsSize);
+	for (size_t i = serializedFieldsSize; i < sizeof(Outfit_t); ++i) {
+		propWriteStream.write<uint8_t>(0);
+	}
 }
 
 bool ConditionOutfit::startCondition(Creature* creature)

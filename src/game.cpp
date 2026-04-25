@@ -6227,12 +6227,28 @@ Item* Game::getUniqueItem(uint16_t uniqueId)
 	if (it == uniqueItems.end()) {
 		return nullptr;
 	}
-	return it->second;
+
+	auto item = it->second.lock();
+	if (!item) {
+		uniqueItems.erase(it);
+		return nullptr;
+	}
+	return item.get();
 }
 
 bool Game::addUniqueItem(uint16_t uniqueId, Item* item)
 {
-	auto result = uniqueItems.emplace(uniqueId, item);
+	if (!item) {
+		return false;
+	}
+
+	auto itemRef = item->weak_from_this();
+	if (itemRef.expired()) {
+		LOG_WARN(fmt::format("Unique id {} was not registered because the item is not shared-owned", uniqueId));
+		return false;
+	}
+
+	auto result = uniqueItems.emplace(uniqueId, std::move(itemRef));
 	if (!result.second) {
 		LOG_WARN(fmt::format("Duplicate unique id: {}", uniqueId));
 	}

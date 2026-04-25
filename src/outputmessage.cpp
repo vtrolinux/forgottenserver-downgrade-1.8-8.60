@@ -22,66 +22,48 @@ inline constexpr auto AUTOSEND_DELAY_MAX = 25ms;   // Low load (few players with
 inline constexpr auto AUTOSEND_DELAY_DEFAULT = 10ms;
 inline constexpr size_t AUTOSEND_HIGH_LOAD_THRESHOLD = 200; // protocols with pending data
 
-	/**
-	 * Sends all buffered messages to the protocols
-	 *
-	 * @param bufferedProtocols Pointer to the protocol vector (non-null)
-	 * @note Must be called only from the dispatcher thread
-	 * @note Marked as noexcept - failures will cause std::terminate
-	 */
-void sendAll(std::vector<Protocol_ptr>* bufferedProtocols) noexcept;
-
-	/**
-	 * Schedules the next automatic sending of messages
-	 *
-	 * @param bufferedProtocols Pointer to the protocol vector
-	 * @param delay Adaptive delay for the next tick
-	 * @note Must be called only from the dispatcher thread
-	 */
-void scheduleSendAll(std::vector<Protocol_ptr>* bufferedProtocols, std::chrono::milliseconds delay) noexcept
-{
-		g_scheduler.addEvent(createSchedulerTask(
-			static_cast<int>(delay.count()),
-			[bufferedProtocols]() { sendAll(bufferedProtocols); }
-		));
-	}
-
-void sendAll(std::vector<Protocol_ptr>* bufferedProtocols) noexcept
-{
-		// dispatcher thread
-		if (!bufferedProtocols || bufferedProtocols->empty()) [[unlikely]] {
-			return;
-		}
-
-		// Sends the current buffer of each protocol, if present
-		size_t activeCount = 0;
-		for (auto& protocol : *bufferedProtocols) {
-			auto& msg = protocol->getCurrentBuffer();
-			if (msg) [[likely]] {
-				protocol->send(std::move(msg));
-				++activeCount;
-			}
-		}
-
-		// Reschedule with adaptive delay based on how many protocols had data
-		if (!bufferedProtocols->empty()) [[likely]] {
-			auto delay = AUTOSEND_DELAY_DEFAULT;
-			if (activeCount >= AUTOSEND_HIGH_LOAD_THRESHOLD) {
-				delay = AUTOSEND_DELAY_MIN;
-			} else if (activeCount == 0) {
-				delay = AUTOSEND_DELAY_MAX;
-			}
-			scheduleSendAll(bufferedProtocols, delay);
-		}
-	}
 } // namespace
+
+void OutputMessagePool::scheduleSendAll(std::chrono::milliseconds delay) noexcept
+{
+	g_scheduler.addEvent(createSchedulerTask(static_cast<int>(delay.count()), []() {
+		OutputMessagePool::getInstance().sendAll();
+	}));
+}
+
+void OutputMessagePool::sendAll() noexcept
+{
+	// THREAD-SAFETY: Must be called from dispatcher thread only.
+	if (bufferedProtocols.empty()) [[unlikely]] {
+		return;
+	}
+
+	size_t activeCount = 0;
+	for (auto& protocol : bufferedProtocols) {
+		auto& msg = protocol->getCurrentBuffer();
+		if (msg) [[likely]] {
+			protocol->send(std::move(msg));
+			++activeCount;
+		}
+	}
+
+	if (!bufferedProtocols.empty()) [[likely]] {
+		auto delay = AUTOSEND_DELAY_DEFAULT;
+		if (activeCount >= AUTOSEND_HIGH_LOAD_THRESHOLD) {
+			delay = AUTOSEND_DELAY_MIN;
+		} else if (activeCount == 0) {
+			delay = AUTOSEND_DELAY_MAX;
+		}
+		scheduleSendAll(delay);
+	}
+}
 
 void OutputMessagePool::addProtocolToAutosend(Protocol_ptr protocol)
 {
 	// THREAD-SAFETY: Must be called from dispatcher thread only
 	// dispatcher thread
 	if (bufferedProtocols.empty()) [[unlikely]] {
-		scheduleSendAll(&bufferedProtocols, AUTOSEND_DELAY_DEFAULT);
+		scheduleSendAll(AUTOSEND_DELAY_DEFAULT);
 	}
 	bufferedProtocols.emplace_back(std::move(protocol));
 }

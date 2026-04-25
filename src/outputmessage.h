@@ -8,6 +8,8 @@
 #include "networkmessage.h"
 #include "tools.h"
 
+#include <chrono>
+
 class OutputMessage : public NetworkMessage
 {
 public:
@@ -124,6 +126,9 @@ public:
 
 private:
 	OutputMessagePool() { bufferedProtocols.reserve(256); }
+
+	void scheduleSendAll(std::chrono::milliseconds delay) noexcept;
+	void sendAll() noexcept;
 
 	std::vector<Protocol_ptr> bufferedProtocols;
 };
