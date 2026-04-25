@@ -16,7 +16,7 @@ int luaCreateLoot(lua_State* L)
 {
 	// Loot() will create a Lua-owned loot item
 	auto loot = std::make_unique<Loot>();
-	pushUserdata<Loot>(L, loot.release());
+	pushOwnedUserdata<Loot>(L, std::move(loot));
 	setMetatable(L, -1, "Loot");
 	return 1;
 }
@@ -24,12 +24,7 @@ int luaCreateLoot(lua_State* L)
 int luaDeleteLoot(lua_State* L)
 {
 	// loot:delete() or loot:__gc() or loot:__close()
-	Loot** lootPtr = getRawUserdata<Loot>(L, 1);
-	if (lootPtr && *lootPtr) {
-		delete *lootPtr;
-		*lootPtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 
 int luaLootSetId(lua_State* L)

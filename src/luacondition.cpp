@@ -18,7 +18,7 @@ int luaConditionCreate(lua_State* L)
 
 	auto condition = Condition::createCondition(conditionId, conditionType, 0, 0);
 	if (condition) {
-		pushUserdata<Condition>(L, condition.release());
+		pushOwnedUserdata<Condition>(L, std::move(condition));
 		setMetatable(L, -1, "Condition");
 	} else {
 		lua_pushnil(L);
@@ -91,7 +91,7 @@ int luaConditionClone(lua_State* L)
 	// condition:clone()
 	const Condition* condition = getUserdata<const Condition>(L, 1);
 	if (condition) {
-		pushUserdata<Condition>(L, condition->clone().release());
+		pushOwnedUserdata<Condition>(L, condition->clone());
 		setMetatable(L, -1, "Condition");
 	} else {
 		lua_pushnil(L);
@@ -277,13 +277,7 @@ int luaConditionSetConstant(lua_State* L)
 
 int luaConditionDelete(lua_State* L)
 {
-	// __gc metamethod - destructor called by Lua's garbage collector
-	Condition** conditionPtr = getRawUserdata<Condition>(L, 1);
-	if (conditionPtr && *conditionPtr) {
-		delete *conditionPtr;
-		*conditionPtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 } // namespace
 

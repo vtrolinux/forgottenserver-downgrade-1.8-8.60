@@ -25,7 +25,7 @@ int luaCreateMoveEvent(lua_State* L)
 
 	auto moveevent = std::make_unique<MoveEvent>(LuaScriptInterface::getScriptEnv()->getScriptInterface());
 	moveevent->fromLua = true;
-	pushUserdata<MoveEvent>(L, moveevent.release());
+	pushOwnedUserdata<MoveEvent>(L, std::move(moveevent));
 	setMetatable(L, -1, "MoveEvent");
 	return 1;
 }
@@ -69,15 +69,12 @@ int luaMoveEventType(lua_State* L)
 int luaMoveEventRegister(lua_State* L)
 {
 	// moveevent:register()
-	MoveEvent** moveeventPtr = getRawUserdata<MoveEvent>(L, 1);
-	if (auto moveevent = *moveeventPtr) {
+	if (auto moveevent = getUserdata<MoveEvent>(L, 1)) {
 		if (!moveevent->isScripted()) {
-			pushBoolean(L, g_moveEvents->registerLuaFunction(moveevent));
+			pushBoolean(L, g_moveEvents->registerLuaFunction(releaseOwnedUserdata<MoveEvent>(L, 1)));
 		} else {
-			pushBoolean(L, g_moveEvents->registerLuaEvent(moveevent));
+			pushBoolean(L, g_moveEvents->registerLuaEvent(releaseOwnedUserdata<MoveEvent>(L, 1)));
 		}
-
-		*moveeventPtr = nullptr;
 	} else {
 		lua_pushnil(L);
 	}
@@ -341,12 +338,7 @@ int luaMoveEventPosition(lua_State* L)
 
 int luaDeleteMoveEvent(lua_State* L)
 {
-	MoveEvent** movePtr = getRawUserdata<MoveEvent>(L, 1);
-	if (movePtr && *movePtr) {
-		delete *movePtr;
-		*movePtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 } // namespace
 

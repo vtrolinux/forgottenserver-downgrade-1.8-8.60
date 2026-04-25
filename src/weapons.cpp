@@ -97,9 +97,9 @@ void Weapons::loadDefaults()
 	}
 }
 
-bool Weapons::registerLuaEvent(Weapon* weapon)
+bool Weapons::registerLuaEvent(std::unique_ptr<Weapon> weapon)
 {
-	weapons[weapon->getID()] = std::unique_ptr<Weapon>(weapon);
+	weapons[weapon->getID()] = std::move(weapon);
 	return true;
 }
 

@@ -69,14 +69,14 @@ int luaSpellCreate(lua_State* L)
 		auto spell = std::make_unique<InstantSpell>(LuaScriptInterface::getScriptEnv()->getScriptInterface());
 		spell->fromLua = true;
 		spell->spellType = SPELL_INSTANT;
-		pushUserdata<Spell>(L, spell.release());
+		pushOwnedUserdata<InstantSpell>(L, std::move(spell));
 		setMetatable(L, -1, "Spell");
 		return 1;
 	} else if (spellType == SPELL_RUNE) {
 		auto spell = std::make_unique<RuneSpell>(LuaScriptInterface::getScriptEnv()->getScriptInterface());
 		spell->fromLua = true;
 		spell->spellType = SPELL_RUNE;
-		pushUserdata<Spell>(L, spell.release());
+		pushOwnedUserdata<RuneSpell>(L, std::move(spell));
 		setMetatable(L, -1, "Spell");
 		return 1;
 	}
@@ -116,8 +116,7 @@ int luaSpellOnCastSpell(lua_State* L)
 int luaSpellRegister(lua_State* L)
 {
 	// spell:register()
-	Spell** spellPtr = getRawUserdata<Spell>(L, 1);
-	if (auto spell = *spellPtr) {
+	if (auto spell = getUserdata<Spell>(L, 1)) {
 		if (spell->spellType == SPELL_INSTANT) {
 			InstantSpell* instant = dynamic_cast<InstantSpell*>(getUserdata<Spell>(L, 1));
 			if (!instant->isScripted()) {
@@ -125,8 +124,8 @@ int luaSpellRegister(lua_State* L)
 				return 1;
 			}
 
+			releaseOwnedUserdata<Spell>(L, 1);
 			pushBoolean(L, g_spells->registerInstantLuaEvent(instant));
-			*spellPtr = nullptr;
 		} else if (spell->spellType == SPELL_RUNE) {
 			RuneSpell* rune = dynamic_cast<RuneSpell*>(getUserdata<Spell>(L, 1));
 			if (rune->getMagicLevel() != 0 || rune->getLevel() != 0) {
@@ -143,8 +142,8 @@ int luaSpellRegister(lua_State* L)
 				return 1;
 			}
 
+			releaseOwnedUserdata<Spell>(L, 1);
 			pushBoolean(L, g_spells->registerRuneLuaEvent(rune));
-			*spellPtr = nullptr;
 		} else {
 			lua_pushnil(L);
 		}

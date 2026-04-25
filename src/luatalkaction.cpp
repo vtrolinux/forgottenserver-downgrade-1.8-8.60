@@ -26,7 +26,7 @@ int luaCreateTalkaction(lua_State* L)
 		talk->setWords(getString(L, i));
 	}
 	talk->fromLua = true;
-	pushUserdata<TalkAction>(L, talk.release());
+	pushOwnedUserdata<TalkAction>(L, std::move(talk));
 	setMetatable(L, -1, "TalkAction");
 	return 1;
 }
@@ -50,15 +50,13 @@ int luaTalkactionOnSay(lua_State* L)
 int luaTalkactionRegister(lua_State* L)
 {
 	// talkAction:register()
-	TalkAction** talkPtr = getRawUserdata<TalkAction>(L, 1);
-	if (auto talk = *talkPtr) {
+	if (auto talk = getUserdata<TalkAction>(L, 1)) {
 		if (!talk->isScripted()) {
 			pushBoolean(L, false);
 			return 1;
 		}
 
-		pushBoolean(L, g_talkActions->registerLuaEvent(talk));
-		*talkPtr = nullptr;
+		pushBoolean(L, g_talkActions->registerLuaEvent(releaseOwnedUserdata<TalkAction>(L, 1)));
 	} else {
 		lua_pushnil(L);
 	}
@@ -130,12 +128,7 @@ int luaTalkactionAccountType(lua_State* L)
 
 int luaDeleteTalkAction(lua_State* L)
 {
-	TalkAction** talkPtr = getRawUserdata<TalkAction>(L, 1);
-	if (talkPtr && *talkPtr) {
-		delete *talkPtr;
-		*talkPtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 } // namespace
 

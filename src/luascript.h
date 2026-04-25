@@ -760,6 +760,64 @@ inline T** getRawUserdata(lua_State* L, int32_t arg, const bool checkType = true
 	return static_cast<T**>(lua_touserdata(L, arg));
 }
 
+struct OwnedUserdataHeader {
+	void* value;
+	void (*destroy)(OwnedUserdataHeader*) noexcept;
+	void* (*release)(OwnedUserdataHeader*) noexcept;
+};
+
+template <class T>
+struct OwnedUserdata {
+	T* value;
+	void (*destroy)(OwnedUserdataHeader*) noexcept;
+	void* (*release)(OwnedUserdataHeader*) noexcept;
+	std::unique_ptr<T> owner;
+
+	explicit OwnedUserdata(std::unique_ptr<T> ptr) noexcept :
+		value(ptr.get()),
+		destroy([](OwnedUserdataHeader* header) noexcept {
+			auto* userdata = reinterpret_cast<OwnedUserdata*>(header);
+			userdata->owner.reset();
+			userdata->value = nullptr;
+		}),
+		release([](OwnedUserdataHeader* header) noexcept -> void* {
+			auto* userdata = reinterpret_cast<OwnedUserdata*>(header);
+			userdata->value = nullptr;
+			return userdata->owner.release();
+		}),
+		owner(std::move(ptr))
+	{}
+};
+
+inline int deleteOwnedUserdata(lua_State* L)
+{
+	auto* header = static_cast<OwnedUserdataHeader*>(lua_touserdata(L, 1));
+	if (header && header->value) {
+		header->destroy(header);
+	}
+	return 0;
+}
+
+template <class T>
+inline T* releaseOwnedUserdata(lua_State* L, int32_t arg)
+{
+	T** rawUserdata = getRawUserdata<T>(L, arg);
+	if (!rawUserdata || !*rawUserdata) {
+		return nullptr;
+	}
+
+	auto* header = static_cast<OwnedUserdataHeader*>(lua_touserdata(L, arg));
+	if (!header || !header->release) {
+		T* value = *rawUserdata;
+		*rawUserdata = nullptr;
+		return value;
+	}
+
+	T* value = *rawUserdata;
+	header->release(header);
+	return value;
+}
+
 Creature* getValidatedCreatureUserdata(lua_State* L, int32_t arg);
 
 template <class T>
@@ -933,6 +991,12 @@ inline void pushUserdata(lua_State* L, T* value, int nuvalue = 1)
 
 	T** userdata = static_cast<T**>(lua_newuserdatauv(L, sizeof(T*), uservalueCount));
 	*userdata = value;
+}
+
+template <class T>
+inline void pushOwnedUserdata(lua_State* L, std::unique_ptr<T> value, int nuvalue = 1)
+{
+	new (lua_newuserdatauv(L, sizeof(OwnedUserdata<T>), nuvalue)) OwnedUserdata<T>(std::move(value));
 }
 
 // Shared Ptr

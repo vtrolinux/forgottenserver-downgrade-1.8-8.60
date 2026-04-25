@@ -392,7 +392,7 @@ bool SingleSpawnEvent::executeEvent()
 		return false;
 	}
 
-	auto monster = std::shared_ptr<Monster>(monsterUnique.release());
+	std::shared_ptr<Monster> monster(std::move(monsterUnique));
 	if (!g_game.placeCreature(monster.get(), position, false, true)) {
 		LOG_ERROR(fmt::format("[Error] Raids: Cant place monster {}", monsterName));
 		return false;
@@ -533,7 +533,7 @@ bool AreaSpawnEvent::executeEvent()
 				return false;
 			}
 
-			auto monster = std::shared_ptr<Monster>(monsterUnique.release());
+			std::shared_ptr<Monster> monster(std::move(monsterUnique));
 			for (int32_t tries = 0; tries < MAXIMUM_TRIES_PER_MONSTER; tries++) {
 				Tile* tile = g_game.map.getTile(static_cast<uint16_t>(uniform_random(fromPos.x, toPos.x)),
 				                                static_cast<uint16_t>(uniform_random(fromPos.y, toPos.y)),

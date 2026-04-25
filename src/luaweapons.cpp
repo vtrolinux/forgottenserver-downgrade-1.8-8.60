@@ -31,7 +31,7 @@ int luaCreateWeapon(lua_State* L)
 			auto weapon = std::make_unique<WeaponMelee>(LuaScriptInterface::getScriptEnv()->getScriptInterface());
 			weapon->weaponType = type;
 			weapon->fromLua = true;
-			pushUserdata<WeaponMelee>(L, weapon.release());
+			pushOwnedUserdata<WeaponMelee>(L, std::move(weapon));
 			setMetatable(L, -1, "Weapon");
 			break;
 		}
@@ -40,7 +40,7 @@ int luaCreateWeapon(lua_State* L)
 			auto weapon = std::make_unique<WeaponDistance>(LuaScriptInterface::getScriptEnv()->getScriptInterface());
 			weapon->weaponType = type;
 			weapon->fromLua = true;
-			pushUserdata<WeaponDistance>(L, weapon.release());
+			pushOwnedUserdata<WeaponDistance>(L, std::move(weapon));
 			setMetatable(L, -1, "Weapon");
 			break;
 		}
@@ -48,7 +48,7 @@ int luaCreateWeapon(lua_State* L)
 			auto weapon = std::make_unique<WeaponWand>(LuaScriptInterface::getScriptEnv()->getScriptInterface());
 			weapon->weaponType = type;
 			weapon->fromLua = true;
-			pushUserdata<WeaponWand>(L, weapon.release());
+			pushOwnedUserdata<WeaponWand>(L, std::move(weapon));
 			setMetatable(L, -1, "Weapon");
 			break;
 		}
@@ -87,8 +87,7 @@ int luaWeaponAction(lua_State* L)
 int luaWeaponRegister(lua_State* L)
 {
 	// weapon:register()
-	Weapon** weaponPtr = getRawUserdata<Weapon>(L, 1);
-	if (auto weapon = *weaponPtr) {
+	if (auto weapon = getUserdata<Weapon>(L, 1)) {
 		if (weapon->weaponType == WEAPON_DISTANCE || weapon->weaponType == WEAPON_AMMO) {
 			weapon = getUserdata<WeaponDistance>(L, 1);
 		} else if (weapon->weaponType == WEAPON_WAND) {
@@ -115,8 +114,8 @@ int luaWeaponRegister(lua_State* L)
 
 		weapon->configureWeapon(it);
 
-		pushBoolean(L, g_weapons->registerLuaEvent(weapon));
-		*weaponPtr = nullptr;
+		std::unique_ptr<Weapon> ownedWeapon(releaseOwnedUserdata<Weapon>(L, 1));
+		pushBoolean(L, g_weapons->registerLuaEvent(std::move(ownedWeapon)));
 	} else {
 		lua_pushnil(L);
 	}
@@ -638,12 +637,7 @@ int luaWeaponExtraElement(lua_State* L)
 
 int luaDeleteWeapon(lua_State* L)
 {
-	Weapon** weaponPtr = getRawUserdata<Weapon>(L, 1);
-	if (weaponPtr && *weaponPtr) {
-		delete *weaponPtr;
-		*weaponPtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 } // namespace
 

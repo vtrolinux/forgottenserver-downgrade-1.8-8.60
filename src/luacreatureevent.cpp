@@ -26,7 +26,7 @@ int luaCreateCreatureEvent(lua_State* L)
 	auto creature = std::make_unique<CreatureEvent>(LuaScriptInterface::getScriptEnv()->getScriptInterface());
 	creature->setName(getString(L, 2));
 	creature->fromLua = true;
-	pushUserdata<CreatureEvent>(L, creature.release());
+	pushOwnedUserdata<CreatureEvent>(L, std::move(creature));
 	setMetatable(L, -1, "CreatureEvent");
 	return 1;
 }
@@ -79,15 +79,13 @@ int luaCreatureEventType(lua_State* L)
 int luaCreatureEventRegister(lua_State* L)
 {
 	// creatureevent:register()
-	CreatureEvent** creaturePtr = getRawUserdata<CreatureEvent>(L, 1);
-	if (auto creature = *creaturePtr) {
+	if (auto creature = getUserdata<CreatureEvent>(L, 1)) {
 		if (!creature->isScripted()) {
 			pushBoolean(L, false);
 			return 1;
 		}
 
-		pushBoolean(L, g_creatureEvents->registerLuaEvent(creature));
-		*creaturePtr = nullptr;
+		pushBoolean(L, g_creatureEvents->registerLuaEvent(releaseOwnedUserdata<CreatureEvent>(L, 1)));
 	} else {
 		lua_pushnil(L);
 	}
@@ -112,12 +110,7 @@ int luaCreatureEventOnCallback(lua_State* L)
 
 int luaDeleteCreatureEvent(lua_State* L)
 {
-	CreatureEvent** creaturePtr = getRawUserdata<CreatureEvent>(L, 1);
-	if (creaturePtr && *creaturePtr) {
-		delete *creaturePtr;
-		*creaturePtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 } // namespace
 

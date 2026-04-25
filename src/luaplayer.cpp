@@ -2782,7 +2782,7 @@ int luaOfflinePlayerCreate(lua_State* L)
 	}
 
 	if (player) {
-		pushUserdata<Player>(L, player.release());
+		pushOwnedUserdata<Player>(L, std::move(player));
 		setMetatable(L, -1, "OfflinePlayer");
 	} else {
 		lua_pushnil(L);
@@ -2793,12 +2793,7 @@ int luaOfflinePlayerCreate(lua_State* L)
 int luaOfflinePlayerRemove(lua_State* L)
 {
 	// offlinePlayer:__close() or offlinePlayer:__gc()
-	Player** playerPtr = getRawUserdata<Player>(L, 1);
-	if (auto player = *playerPtr) {
-		std::unique_ptr<Player> guard(player);
-		*playerPtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 int luaPlayerGetResetCount(lua_State* L)
 {

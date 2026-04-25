@@ -18,19 +18,14 @@ int luaModalWindowCreate(lua_State* L)
 	uint32_t id = getInteger<uint32_t>(L, 2);
 
 	auto window = std::make_unique<ModalWindow>(id, title, message);
-	pushUserdata<ModalWindow>(L, window.release());
+	pushOwnedUserdata<ModalWindow>(L, std::move(window));
 	setMetatable(L, -1, "ModalWindow");
 	return 1;
 }
 
 int luaModalWindowDelete(lua_State* L)
 {
-	ModalWindow** windowPtr = getRawUserdata<ModalWindow>(L, 1);
-	if (windowPtr && *windowPtr) {
-		delete *windowPtr;
-		*windowPtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 
 int luaModalWindowGetId(lua_State* L)

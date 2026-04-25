@@ -1377,7 +1377,7 @@ void Monster::onThinkDefense(uint32_t interval)
 
 			auto summonUnique = Monster::createMonster(summonBlock.name);
 			if (summonUnique) {
-				auto summon = std::shared_ptr<Monster>(summonUnique.release());
+				std::shared_ptr<Monster> summon(std::move(summonUnique));
 				summon->setInstanceID(getInstanceID());
 				if (g_game.placeCreature(summon.get(), getPosition(), false, summonBlock.force, summonBlock.effect)) {
 					auto summonRef = g_game.getCreatureSharedRef<Monster>(summon.get());

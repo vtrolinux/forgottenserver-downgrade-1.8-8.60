@@ -15,7 +15,7 @@ int luaNetworkMessageCreate(lua_State* L)
 {
 	// NetworkMessage([player])
 	auto message = std::make_unique<NetworkMessage>();
-	pushUserdata<NetworkMessage>(L, message.release());
+	pushOwnedUserdata<NetworkMessage>(L, std::move(message));
 	setMetatable(L, -1, "NetworkMessage");
 
 	if (const auto player = getPlayer(L, 1)) {
@@ -27,12 +27,7 @@ int luaNetworkMessageCreate(lua_State* L)
 
 int luaNetworkMessageDelete(lua_State* L)
 {
-	NetworkMessage** messagePtr = getRawUserdata<NetworkMessage>(L, 1);
-	if (messagePtr && *messagePtr) {
-		delete *messagePtr;
-		*messagePtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 
 int luaNetworkMessageGetByte(lua_State* L)

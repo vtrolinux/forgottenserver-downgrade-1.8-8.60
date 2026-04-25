@@ -23,7 +23,7 @@ int luaCreateAction(lua_State* L)
 
 	auto action = std::make_unique<Action>(LuaScriptInterface::getScriptEnv()->getScriptInterface());
 	action->fromLua = true;
-	pushUserdata<Action>(L, action.release());
+	pushOwnedUserdata<Action>(L, std::move(action));
 	setMetatable(L, -1, "Action");
 	return 1;
 }
@@ -49,15 +49,13 @@ int luaActionOnUse(lua_State* L)
 int luaActionRegister(lua_State* L)
 {
 	// action:register()
-	Action** actionPtr = getRawUserdata<Action>(L, 1);
-	if (auto action = *actionPtr) {
+	if (auto action = getUserdata<Action>(L, 1)) {
 		if (!action->isScripted()) {
 			pushBoolean(L, false);
 			return 1;
 		}
 
-		pushBoolean(L, g_actions->registerLuaEvent(action));
-		*actionPtr = nullptr;
+		pushBoolean(L, g_actions->registerLuaEvent(releaseOwnedUserdata<Action>(L, 1)));
 	} else {
 		lua_pushnil(L);
 	}
@@ -208,12 +206,7 @@ int luaActionPosition(lua_State* L)
 
 int luaDeleteAction(lua_State* L)
 {
-	Action** actionPtr = getRawUserdata<Action>(L, 1);
-	if (actionPtr && *actionPtr) {
-		delete *actionPtr;
-		*actionPtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 } // namespace
 

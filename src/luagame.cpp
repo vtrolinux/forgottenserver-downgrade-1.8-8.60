@@ -699,7 +699,7 @@ int luaGameCreateMonster(lua_State* L)
 		lua_pushnil(L);
 		return 1;
 	}
-	auto monster = std::shared_ptr<Monster>(monsterUnique.release());
+	std::shared_ptr<Monster> monster(std::move(monsterUnique));
 
 	const Position& position = getPosition(L, 2);
 	bool extended = getBoolean(L, 3, false);
@@ -730,7 +730,7 @@ int luaGameCreateNpc(lua_State* L)
 		lua_pushnil(L);
 		return 1;
 	}
-	auto npc = std::shared_ptr<Npc>(npcUnique.release());
+	std::shared_ptr<Npc> npc(std::move(npcUnique));
 
 	const Position& position = getPosition(L, 2);
 	bool extended = getBoolean(L, 3, false);

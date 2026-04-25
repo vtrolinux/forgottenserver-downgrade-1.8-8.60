@@ -28,7 +28,7 @@ int luaCreateGlobalEvent(lua_State* L)
 	global->setName(getString(L, 2));
 	global->setEventType(GLOBALEVENT_NONE);
 	global->fromLua = true;
-	pushUserdata<GlobalEvent>(L, global.release());
+	pushOwnedUserdata<GlobalEvent>(L, std::move(global));
 	setMetatable(L, -1, "GlobalEvent");
 	return 1;
 }
@@ -64,8 +64,7 @@ int luaGlobalEventType(lua_State* L)
 int luaGlobalEventRegister(lua_State* L)
 {
 	// globalevent:register()
-	GlobalEvent** globaleventPtr = getRawUserdata<GlobalEvent>(L, 1);
-	if (auto globalevent = *globaleventPtr) {
+	if (auto globalevent = getUserdata<GlobalEvent>(L, 1)) {
 		if (!globalevent->isScripted()) {
 			pushBoolean(L, false);
 			return 1;
@@ -77,8 +76,7 @@ int luaGlobalEventRegister(lua_State* L)
 			return 1;
 		}
 
-		pushBoolean(L, g_globalEvents->registerLuaEvent(globalevent));
-		*globaleventPtr = nullptr;
+		pushBoolean(L, g_globalEvents->registerLuaEvent(releaseOwnedUserdata<GlobalEvent>(L, 1)));
 	} else {
 		lua_pushnil(L);
 	}
@@ -180,12 +178,7 @@ int luaGlobalEventInterval(lua_State* L)
 
 int luaDeleteGlobalEvent(lua_State* L)
 {
-	GlobalEvent** globalPtr = getRawUserdata<GlobalEvent>(L, 1);
-	if (globalPtr && *globalPtr) {
-		delete *globalPtr;
-		*globalPtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 } // namespace
 

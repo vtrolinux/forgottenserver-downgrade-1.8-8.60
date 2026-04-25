@@ -16,7 +16,7 @@ int luaCreateMonsterSpell(lua_State* L)
 {
 	// MonsterSpell() will create a Lua-owned MonsterSpell
 	auto spell = std::make_unique<MonsterSpell>();
-	pushUserdata<MonsterSpell>(L, spell.release());
+	pushOwnedUserdata<MonsterSpell>(L, std::move(spell));
 	setMetatable(L, -1, "MonsterSpell");
 	return 1;
 }
@@ -24,12 +24,7 @@ int luaCreateMonsterSpell(lua_State* L)
 int luaDeleteMonsterSpell(lua_State* L)
 {
 	// monsterSpell:delete() or monsterSpell:__gc() or monsterSpell:__close()
-	MonsterSpell** monsterSpellPtr = getRawUserdata<MonsterSpell>(L, 1);
-	if (monsterSpellPtr && *monsterSpellPtr) {
-		delete *monsterSpellPtr;
-		*monsterSpellPtr = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 
 int luaMonsterSpellSetType(lua_State* L)

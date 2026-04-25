@@ -21,7 +21,7 @@ int luaCreateXmlDocument(lua_State* L)
 
 	auto doc = std::make_unique<XMLDocument>();
 	if (auto result = doc->load_file(filename.c_str())) {
-		pushUserdata<XMLDocument>(L, doc.release());
+		pushOwnedUserdata<XMLDocument>(L, std::move(doc));
 		setMetatable(L, -1, "XMLDocument");
 	} else {
 		printXMLError("Error - luaCreateXmlDocument", filename, result);
@@ -33,12 +33,7 @@ int luaCreateXmlDocument(lua_State* L)
 int luaDeleteXmlDocument(lua_State* L)
 {
 	// doc:delete() or doc:__gc() or doc:__close()
-	XMLDocument** document = getRawUserdata<XMLDocument>(L, 1);
-	if (document && *document) {
-		delete *document;
-		*document = nullptr;
-	}
-	return 0;
+	return deleteOwnedUserdata(L);
 }
 
 int luaXmlDocumentChild(lua_State* L)
@@ -57,7 +52,7 @@ int luaXmlDocumentChild(lua_State* L)
 	}
 
 	auto node = std::make_unique<XMLNode>(document->child(name.c_str()));
-	pushUserdata<XMLNode>(L, node.release());
+	pushOwnedUserdata<XMLNode>(L, std::move(node));
 	setMetatable(L, -1, "XMLNode");
 	return 1;
 }
@@ -65,12 +60,7 @@ int luaXmlDocumentChild(lua_State* L)
 int luaDeleteXmlNode(lua_State* L)
 {
 	// node:delete() or node:__gc() or node:__close()
-	XMLNode** node = getRawUserdata<XMLNode>(L, 1);
-	if (node && *node) {
-		delete *node;
-		*node = nullptr;
-	}
-	return 1;
+	return deleteOwnedUserdata(L);
 }
 
 int luaXmlNodeAttribute(lua_State* L)
@@ -126,7 +116,7 @@ int luaXmlNodeFirstChild(lua_State* L)
 	}
 
 	auto newNode = std::make_unique<XMLNode>(std::move(firstChild));
-	pushUserdata<XMLNode>(L, newNode.release());
+	pushOwnedUserdata<XMLNode>(L, std::move(newNode));
 	setMetatable(L, -1, "XMLNode");
 	return 1;
 }
@@ -147,7 +137,7 @@ int luaXmlNodeNextSibling(lua_State* L)
 	}
 
 	auto newNode = std::make_unique<XMLNode>(std::move(nextSibling));
-	pushUserdata<XMLNode>(L, newNode.release());
+	pushOwnedUserdata<XMLNode>(L, std::move(newNode));
 	setMetatable(L, -1, "XMLNode");
 	return 1;
 }
