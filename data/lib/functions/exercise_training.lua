@@ -44,6 +44,20 @@ MaxAllowedOnADummy = configManager.getNumber(configKeys.MAX_ALLOWED_ON_A_DUMMY)
 local magicLevelRate = configManager.getNumber(configKeys.RATE_MAGIC)
 local skillLevelRate = configManager.getNumber(configKeys.RATE_SKILL)
 
+local function isItemOwnedByPlayer(item, player)
+	local parent = item:getParent()
+	while parent do
+		if parent.isPlayer and parent:isPlayer() then
+			return parent:getId() == player:getId()
+		end
+		if not parent.getParent then
+			return false
+		end
+		parent = parent:getParent()
+	end
+	return false
+end
+
 function LeaveTraining(playerId)
 	if onExerciseTraining[playerId] then
 		stopEvent(onExerciseTraining[playerId].event)
@@ -60,6 +74,11 @@ function ExerciseEvent(playerId, tilePosition, weaponId, dummyId)
 		return LeaveTraining(playerId)
 	end
 
+	local training = onExerciseTraining[playerId]
+	if not training then
+		return false
+	end
+
 	if not Tile(tilePosition):getItemById(dummyId) then
 		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "Someone has moved the dummy, the training has stopped.")
 		LeaveTraining(playerId)
@@ -73,14 +92,20 @@ function ExerciseEvent(playerId, tilePosition, weaponId, dummyId)
         return true
     end
 
-	if player:getItemCount(weaponId) <= 0 then
-		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You need the training weapon in the backpack, the training has stopped.")
+	local weapon = training.weapon
+	if not weapon or not weapon:isItem() or weapon:getId() ~= weaponId then
+		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "The training weapon is no longer available, the training has stopped.")
 		LeaveTraining(playerId)
 		return false
 	end
 
-	local weapon = player:getItemById(weaponId, true)
-	if not weapon:isItem() or not weapon:hasAttribute(ITEM_ATTRIBUTE_CHARGES) then
+	if not isItemOwnedByPlayer(weapon, player) then
+		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "The training weapon is no longer yours, the training has stopped.")
+		LeaveTraining(playerId)
+		return false
+	end
+
+	if not weapon:hasAttribute(ITEM_ATTRIBUTE_CHARGES) then
 		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "The selected item is not a training weapon, the training has stopped.")
 		LeaveTraining(playerId)
 		return false

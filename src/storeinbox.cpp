@@ -8,31 +8,13 @@
 
 StoreInbox::StoreInbox(uint16_t type) : Container(type, 20) {}
 
-ReturnValue StoreInbox::queryAdd(int32_t, const Thing& thing, uint32_t, uint32_t, Creature*) const
+ReturnValue StoreInbox::queryAdd(int32_t index, const Thing& thing, uint32_t count, uint32_t flags, Creature* actor) const
 {
-	const Item* item = thing.getItem();
-	if (!item) {
+	if (actor) {
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
 
-	if (item == this) {
-		return RETURNVALUE_THISISIMPOSSIBLE;
-	}
-
-	if (!item->isPickupable()) {
-		return RETURNVALUE_CANNOTPICKUP;
-	}
-
-	if (!item->isStoreItem()) {
-		return RETURNVALUE_CANNOTMOVEITEMISNOTSTOREITEM;
-	}
-
-	const Container* container = item->getContainer();
-	if (container && !container->empty()) {
-		return RETURNVALUE_ITEMCANNOTBEMOVEDTHERE;
-	}
-
-	return RETURNVALUE_NOERROR;
+	return Container::queryAdd(index, thing, count, flags, actor);
 }
 
 void StoreInbox::postAddNotification(Thing* thing, const Cylinder* oldParent, int32_t index, cylinderlink_t)

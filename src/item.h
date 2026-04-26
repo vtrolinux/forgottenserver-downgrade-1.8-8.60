@@ -849,6 +849,47 @@ public:
 		return items[id].storeItem;
 	}
 
+	bool isExerciseWeapon() const
+	{
+		switch (id) {
+			case 28540:
+			case 28541:
+			case 28542:
+			case 28543:
+			case 28544:
+			case 28545:
+			case 28552:
+			case 28553:
+			case 28554:
+			case 28555:
+			case 28556:
+			case 28557:
+			case 35279:
+			case 35280:
+			case 35281:
+			case 35282:
+			case 35283:
+			case 35284:
+			case 35285:
+			case 35286:
+			case 35287:
+			case 35288:
+			case 35289:
+			case 35290:
+			case 44064:
+			case 44065:
+			case 44066:
+			case 44067:
+			case 50292:
+			case 50293:
+			case 50294:
+			case 50295:
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	std::string_view getName() const
 	{
 		if (hasAttribute(ITEM_ATTRIBUTE_NAME)) {

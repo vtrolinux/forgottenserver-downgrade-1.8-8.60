@@ -5223,6 +5223,23 @@ Container* Player::findNonEmptyContainer(uint16_t itemId)
 
 Container* Player::findGoldPouch() const
 {
+	if (storeInbox) {
+		for (const auto& storeItem : storeInbox->getItemList()) {
+			if (storeItem->getID() == ITEM_GOLD_POUCH) {
+				return storeItem->getContainer();
+			}
+
+			if (const auto container = storeItem->getContainer()) {
+				for (ContainerIterator it = container->iterator(); it.hasNext(); it.advance()) {
+					Item* item = *it;
+					if (item && item->getID() == ITEM_GOLD_POUCH) {
+						return item->getContainer();
+					}
+				}
+			}
+		}
+	}
+
 	for (int32_t slot = CONST_SLOT_FIRST; slot <= CONST_SLOT_LAST; ++slot) {
 		Item* slotItem = inventory[slot].get();
 		if (!slotItem) {
@@ -5268,17 +5285,14 @@ void Player::lootCorpse(Container* container)
 		return;
 	}
 
-	Container* goldPouch = findGoldPouch();
-	if (!goldPouch) {
+	if (!findGoldPouch()) {
 		sendTextMessage(MESSAGE_EVENT_ORANGE, "You need a Gold Pouch to use AutoLoot.");
 		return;
 	}
 
-	static constexpr uint32_t GOLD_POUCH_FREE_LIMIT = 30;
-	bool isFreeAccount = !isPremium();
-
-	if (isFreeAccount && goldPouch->size() >= GOLD_POUCH_FREE_LIMIT) {
-		sendTextMessage(MESSAGE_EVENT_ORANGE, "Your Gold Pouch is full (30/30). Upgrade to VIP for unlimited space.");
+	auto storeInboxDestination = getStoreInbox();
+	if (!storeInboxDestination) {
+		sendTextMessage(MESSAGE_EVENT_ORANGE, "Your store inbox is unavailable.");
 		return;
 	}
 
@@ -5335,17 +5349,20 @@ void Player::lootCorpse(Container* container)
 			continue;
 		}
 
-		if (isFreeAccount && goldPouch->size() >= GOLD_POUCH_FREE_LIMIT) {
-			sendTextMessage(MESSAGE_EVENT_ORANGE, "Your Gold Pouch is full (30/30). Upgrade to VIP for unlimited space.");
-			break;
-		}
-
-		Container* destination = getOrCreateGoldPouchPage(goldPouch);
-		if (!destination) {
+		ReturnValue ret = g_game.internalMoveItem(container, storeInboxDestination, INDEX_WHEREEVER, item,
+		                                          item->getItemCount(), nullptr);
+		if (ret == RETURNVALUE_NOERROR) {
 			continue;
 		}
 
-		g_game.internalMoveItem(container, destination, INDEX_WHEREEVER, item, item->getItemCount(), nullptr, FLAG_NOLIMIT);
+		auto backpackItem = getInventoryItem(CONST_SLOT_BACKPACK);
+		auto backpack = backpackItem ? backpackItem->getContainer() : nullptr;
+		if (backpack && g_game.internalMoveItem(container, backpack, INDEX_WHEREEVER, item, item->getItemCount(),
+		                                        nullptr) == RETURNVALUE_NOERROR) {
+			sendTextMessage(MESSAGE_STATUS_SMALL, "Your store inbox is full. Item sent to backpack.");
+		} else {
+			sendTextMessage(MESSAGE_STATUS_SMALL, "Your store inbox is full. Item left in corpse.");
+		}
 	}
 
 	if (autolootConfig.goldEnabled) {

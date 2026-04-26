@@ -15,6 +15,14 @@ local config = {
 	}
 }
 
+local function sendStoreInboxRewardMessage(player)
+	if player:isUsingOtcV8() then
+		player:sendTextMessage(MESSAGE_INFO_DESCR, "You have claimed your daily reward! Check your store inbox.")
+	else
+		player:sendTextMessage(MESSAGE_INFO_DESCR, "You have claimed your daily reward! Type !storeinbox to open your inbox.")
+	end
+end
+
 local rewardAction = TalkAction("!reward")
 function rewardAction.onSay(player, words, param)
 	if param == "" or param:lower() ~= "exercise" then
@@ -40,17 +48,23 @@ function rewardAction.onSay(player, words, param)
 		return false
 	end
 
-	local storage = PlayerStorageKeys.rewardExercise or 90705
-	local item = player:addItem(weaponId, 1)
-	if item then
-		item:setAttribute(ITEM_ATTRIBUTE_CHARGES, config.charges)
-		player:setStorageValue(storage, os.time() + config.cooldown)
-		player:getPosition():sendMagicEffect(CONST_ME_FIREWORK_YELLOW)
-		player:sendTextMessage(MESSAGE_INFO_DESCR, "You have claimed your daily reward! Received an exercise weapon with 3000 charges.")
-	else
-		player:sendCancelMessage("You do not have enough space in your inventory to receive the reward.")
+	local inbox = player:getStoreInbox()
+	local item = Game.createItem(weaponId, 1)
+	if not inbox or not item then
+		player:sendCancelMessage("Could not create your reward. Please contact an administrator.")
+		return false
 	end
 
+	item:setAttribute(ITEM_ATTRIBUTE_CHARGES, config.charges)
+	if inbox:addItemEx(item) ~= RETURNVALUE_NOERROR then
+		item:remove()
+		player:sendCancelMessage("Your store inbox does not have enough space to receive the reward.")
+		return false
+	end
+
+	player:setStorageValue(storage, os.time() + config.cooldown)
+	player:getPosition():sendMagicEffect(CONST_ME_FIREWORK_YELLOW)
+	sendStoreInboxRewardMessage(player)
 	return false
 end
 rewardAction:separator(" ")

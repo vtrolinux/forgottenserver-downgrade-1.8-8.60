@@ -1,4 +1,25 @@
 local DropLoot = CreatureEvent("DropLoot")
+local ITEM_GOLD_POUCH = 23721
+
+local function protectGoldPouches(item, inbox)
+    if item:getId() == ITEM_GOLD_POUCH then
+        return not inbox or not item:moveTo(inbox, 0)
+    end
+
+    local container = item:getContainer()
+    if not container then
+        return false
+    end
+
+    local blocked = false
+    for _, child in ipairs(container:getItems()) do
+        if protectGoldPouches(child, inbox) then
+            blocked = true
+        end
+    end
+    return blocked
+end
+
 function DropLoot.onDeath(player, corpse, killer, mostDamageKiller, lastHitUnjustified, mostDamageUnjustified)
     if player:hasFlag(PlayerFlag_NotGenerateLoot) or player:getVocation():getId() == VOCATION_NONE then
         return true
@@ -19,9 +40,11 @@ function DropLoot.onDeath(player, corpse, killer, mostDamageKiller, lastHitUnjus
         return true
     end
 
+    local storeInbox = player:getStoreInbox()
     for i = CONST_SLOT_HEAD, CONST_SLOT_AMMO do
         local item = player:getSlotItem(i)
-        if item then
+        local blockedByGoldPouch = item and protectGoldPouches(item, storeInbox)
+        if item and item:getId() ~= ITEM_GOLD_POUCH and not blockedByGoldPouch then
             if isRedOrBlack then
                 if not item:moveTo(corpse) then
                     item:remove()

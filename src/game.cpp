@@ -27,6 +27,7 @@
 #include "stats.h"
 #include "spells.h"
 #include "spy.h"
+#include "storeinbox.h"
 #include "talkaction.h"
 #include "scriptmanager.h"
 #include "weapons.h"
@@ -57,6 +58,44 @@ bool isLocalPositionTalk(SpeakClasses type)
 	return type == TALKTYPE_SAY || type == TALKTYPE_WHISPER || type == TALKTYPE_YELL ||
 	       type == TALKTYPE_MONSTER_SAY || type == TALKTYPE_MONSTER_YELL ||
 	       type == TALKTYPE_PRIVATE_NP || type == TALKTYPE_PRIVATE_PN;
+}
+
+bool isInsideStoreInbox(const Cylinder* cylinder)
+{
+	while (cylinder) {
+		if (dynamic_cast<const StoreInbox*>(cylinder)) {
+			return true;
+		}
+		cylinder = cylinder->getParent();
+	}
+	return false;
+}
+
+ReturnValue getStoreInboxLockedItemMoveReturn(const Item* item)
+{
+	if (!item || !isInsideStoreInbox(item->getParent())) {
+		return RETURNVALUE_NOERROR;
+	}
+
+	if (item->getID() == ITEM_GOLD_POUCH) {
+		return RETURNVALUE_CANNOTMOVEGOLDPOUCH;
+	}
+	if (item->isExerciseWeapon()) {
+		return RETURNVALUE_CANNOTMOVEEXERCISEWEAPON;
+	}
+
+	const auto container = item->getContainer();
+	if (!container) {
+		return RETURNVALUE_NOERROR;
+	}
+
+	for (const auto& child : container->getItemList()) {
+		const ReturnValue ret = getStoreInboxLockedItemMoveReturn(child.get());
+		if (ret != RETURNVALUE_NOERROR) {
+			return ret;
+		}
+	}
+	return RETURNVALUE_NOERROR;
 }
 
 void closeContainersFromOtherInstances(Player* player)
@@ -1441,6 +1480,17 @@ ReturnValue Game::internalMoveItem(Cylinder* fromCylinder, Cylinder* toCylinder,
 		// to prevent infinite loop
 		if (++floorN >= MAP_MAX_LAYERS) {
 			break;
+		}
+	}
+
+	if (actorPlayer) {
+		const ReturnValue storeInboxLockRet = getStoreInboxLockedItemMoveReturn(item);
+		if (storeInboxLockRet != RETURNVALUE_NOERROR) {
+			return storeInboxLockRet;
+		}
+
+		if (isInsideStoreInbox(toCylinder)) {
+			return RETURNVALUE_NOTPOSSIBLE;
 		}
 	}
 
