@@ -638,14 +638,22 @@ if(version >= 860) then
     g_game.enableFeature(GameExtendedClientPing)
     g_game.enableFeature(GameDoublePlayerGoodsMoney)
     g_game.enableFeature(GameCreatureIcons)
+    g_game.enableFeature(GamePurseSlot)
 end
 ```
 
-**2. Extended Sprites (`GameSpritesU32`)**
+**2. Store Inbox compatibility**
+
+- **OTCv8 / Mehah:** the server sends `CONST_SLOT_STORE_INBOX` only to OTClient connections. Enable `GamePurseSlot` for protocol `860` so the client parses the Store Inbox slot normally.
+- **Old CIP 8.60:** the original client does not parse the Store Inbox / purse inventory slot and can crash if that slot is sent. Use `!storeinbox`, `!sinbox`, or `!inbox` to open it through the normal container packet (`0x6E`). Use `!fecharinbox` or `!closeinbox` to close it.
+- Empty Store Inbox containers still open normally. The virtual container uses item ID `23396` and capacity `Vol:20`.
+- Server ownership is handled by `std::shared_ptr<StoreInbox>` in `Player`; `getStoreInbox()` returns a raw pointer only for compatibility with existing C++ and Lua call sites.
+
+**3. Extended Sprites (`GameSpritesU32`)**
 - Download: [Octv8--Classic-8.6](https://github.com/Mateuzkl/Octv8--Classic-8.6)
 - Extract `.spr` and `.dat` to your OTCv8 directory
 
-**3. CIP Client with Mounts (DLL)**
+**4. CIP Client with Mounts (DLL)**
 - Download: [Client 8.60 + DLL Mount](https://github.com/Mateuzkl/Client-cip-8.60-with-DLL-Mount)
 
 ---

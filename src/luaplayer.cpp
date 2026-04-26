@@ -2540,23 +2540,45 @@ int luaPlayerOpenContainer(lua_State* L)
 		return 1;
 	}
 
-	if (player->getContainerID(container) == -1) {
-		player->addContainer(player->getOpenContainers().size(), container);
-		player->onSendContainer(container);
-		pushBoolean(L, true);
-		return 1;
+	int8_t containerId = player->getContainerID(container);
+	if (containerId == -1) {
+		for (uint8_t cid = 0; cid <= 0xF; ++cid) {
+			if (!player->getOpenContainers().contains(cid)) {
+				player->addContainer(cid, container);
+				containerId = static_cast<int8_t>(cid);
+				break;
+			}
+		}
+		if (containerId == -1) {
+			pushBoolean(L, false);
+			return 1;
+		}
 	}
 
-	pushBoolean(L, false);
+	player->onSendContainer(container);
+	pushBoolean(L, true);
 	return 1;
 }
 
 int luaPlayerCloseContainer(lua_State* L)
 {
-	// player:closeContainer(container)
+	// player:closeContainer(container or containerId)
 	Player* player = getUserdata<Player>(L, 1);
 	if (!player) {
 		lua_pushnil(L);
+		return 1;
+	}
+
+	if (isNumber(L, 2)) {
+		uint8_t containerId = getInteger<uint8_t>(L, 2);
+		if (player->getContainerByID(containerId)) {
+			player->sendCloseContainer(containerId);
+			player->closeContainer(containerId);
+			pushBoolean(L, true);
+			return 1;
+		}
+
+		pushBoolean(L, false);
 		return 1;
 	}
 
@@ -3646,6 +3668,7 @@ void LuaScriptInterface::registerPlayer()
 	registerMethod("Player", "setGhostMode", luaPlayerSetGhostMode);
 
 	registerMethod("Player", "getContainerId", luaPlayerGetContainerId);
+	registerMethod("Player", "getContainerID", luaPlayerGetContainerId);
 	registerMethod("Player", "getContainerById", luaPlayerGetContainerById);
 	registerMethod("Player", "getContainerIndex", luaPlayerGetContainerIndex);
 

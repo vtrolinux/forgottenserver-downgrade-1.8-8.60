@@ -2493,7 +2493,9 @@ void ProtocolGame::sendAddCreature(const Creature* creature, const Position& pos
 		sendInventoryItem(static_cast<slots_t>(i), player->getInventoryItem(static_cast<slots_t>(i)));
 	}
 
-	sendInventoryItem(CONST_SLOT_STORE_INBOX, player->getStoreInbox());
+	if (isOTC) {
+		sendInventoryItem(CONST_SLOT_STORE_INBOX, player->getStoreInbox());
+	}
 
 	sendStats();
 	sendSkills();
