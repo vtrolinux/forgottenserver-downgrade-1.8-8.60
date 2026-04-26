@@ -1242,7 +1242,7 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 
 		IOLoginData::updateOnlineStatus(getGUID(), true, client->isBroadcasting(), client->password(), client->description(), client->spectatorList().size());
 
-		g_scheduler.addEvent(createSchedulerTask(500, std::bind(Familiar::restoreFamiliarOnLogin, getID())));
+		g_scheduler.addEvent(createSchedulerTask(500, [id = getID()]() { Familiar::restoreFamiliarOnLogin(id); }));
 	}
 }
 
