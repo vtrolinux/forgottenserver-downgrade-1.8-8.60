@@ -67,28 +67,56 @@ function talkaction.onSay(player, words, param)
     local price = house:getTileCount() * housePrice
 
     local query = db.storeQuery("SELECT `balance` FROM `guilds` WHERE `id` = " .. guild:getId())
-    local balance = 0
+    local guildBalance = 0
     if query then
-        balance = result.getNumber(query, "balance")
+        guildBalance = result.getNumber(query, "balance")
         result.free(query)
     end
 
-    if price > balance then
-        player:sendCancelMessage("Your guild bank does not have enough money, it is missing " .. (price - balance) .. " gold.")
+    local fromGuild = false
+    local fromPlayer = false
+    local playerInventoryMoney = player:getMoney()
+    local playerBankBalance = player:getBankBalance()
+    local playerTotalMoney = playerInventoryMoney + playerBankBalance
+
+    if guildBalance >= price then
+        fromGuild = true
+    elseif playerTotalMoney >= price then
+        fromPlayer = true
+    else
+        player:sendCancelMessage("Neither your guild bank nor you have enough money. Guild bank: " .. guildBalance .. " gold. You have " .. playerTotalMoney .. " gold (inventory: " .. playerInventoryMoney .. ", bank: " .. playerBankBalance .. "). Price: " .. price .. " gold.")
         return false
     end
 
-    local newBalance = balance - price
-    db.query("UPDATE `guilds` SET `balance` = " .. newBalance .. " WHERE `id` = " .. guild:getId())
+    if fromGuild then
+        local newBalance = guildBalance - price
+        db.query("UPDATE `guilds` SET `balance` = " .. newBalance .. " WHERE `id` = " .. guild:getId())
+
+        local currentTime = os.time()
+        db.query(string.format(
+            "INSERT INTO `guild_transactions` (`guild_id`, `player_associated`, `type`, `category`, `balance`, `time`) VALUES (%d, %d, 'WITHDRAW', 'RENT', %d, %d)",
+            guild:getId(),
+            player:getGuid(),
+            price,
+            currentTime
+        ))
+    elseif fromPlayer then
+        if playerInventoryMoney >= price then
+            if not player:removeMoney(price) then
+                player:sendCancelMessage("Error removing money from inventory.")
+                return false
+            end
+        else
+            if not player:removeMoney(playerInventoryMoney) then
+                player:sendCancelMessage("Error removing money from inventory.")
+                return false
+            end
+            local remaining = price - playerInventoryMoney
+            player:setBankBalance(playerBankBalance - remaining)
+        end
+    end
 
     local currentTime = os.time()
-    db.query(string.format(
-        "INSERT INTO `guild_transactions` (`guild_id`, `player_associated`, `type`, `category`, `balance`, `time`) VALUES (%d, %d, 'WITHDRAW', 'RENT', %d, %d)",
-        guild:getId(),
-        player:getGuid(),
-        price,
-        currentTime
-    ))
 
     local receipt = Game.createItem(ITEM_RECEIPT_SUCCESS, 1)
     if receipt then
@@ -158,7 +186,8 @@ function talkaction.onSay(player, words, param)
     end
 
     house:setOwnerGuid(player:getGuid())
-    player:sendTextMessage(MESSAGE_INFO_DESCR, "You have successfully bought this guildhall for " .. price .. " gold. Be sure to have the money for rent in the guild bank.")
+    local paymentSource = fromGuild and "guild bank" or "your personal funds"
+    player:sendTextMessage(MESSAGE_INFO_DESCR, "You have successfully bought this guildhall for " .. price .. " gold from " .. paymentSource .. ". Be sure to have the money for rent in the guild bank.")
     return false
 end
 talkaction:register()

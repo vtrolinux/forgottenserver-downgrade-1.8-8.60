@@ -101,6 +101,8 @@ function globalAnswer:callback(npc, player, message, handler)
     return false
 end
 
+globalAnswer.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
+
 local yesAnswer = globalAnswer:keyword("yes")
 function yesAnswer:callback(npc, player, message, handler)
     local pid = player:getGuid()
@@ -155,6 +157,8 @@ function yesAnswer:callback(npc, player, message, handler)
     return false
 end
 
+yesAnswer.failureResponse = "I don't understand. Please tell me if you want to proceed or not."
+
 local noAnswer = globalAnswer:keyword("no")
 function noAnswer:callback(npc, player, message, handler)
     local pid = player:getGuid()
@@ -191,6 +195,8 @@ function balanceFromInfo:callback(npc, player, message, handler)
     return true, "The {guild account} balance of " .. guild:getName() .. " is " .. bal .. " gold."
 end
 
+balanceFromInfo.failureResponse = "I don't understand. Please tell me what you'd like to know about your {guild account}."
+
 ------------------------------------------------------------------------
 -- Deposit (from guild account menu)
 ------------------------------------------------------------------------
@@ -209,6 +215,8 @@ function depositFromInfo:callback(npc, player, message, handler)
     return true, "Please tell me how much gold you would like to deposit to " .. guild:getName() .. "."
 end
 
+depositFromInfo.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
+
 ------------------------------------------------------------------------
 -- Withdraw (from guild account menu)
 ------------------------------------------------------------------------
@@ -222,6 +230,8 @@ function withdrawFromInfo:callback(npc, player, message, handler)
     state[pid] = TOPIC.WITHDRAW_GOLD
     return true, "Please tell me how much gold you would like to withdraw from " .. guild:getName() .. "."
 end
+
+withdrawFromInfo.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
 
 ------------------------------------------------------------------------
 -- Transfer (from guild account menu)
@@ -239,6 +249,8 @@ function transferFromInfo:callback(npc, player, message, handler)
     return true, "Would you like to transfer money to a {guild} or a {player}?"
 end
 
+transferFromInfo.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
+
 ------------------------------------------------------------------------
 -- Ledger (from guild account menu)
 ------------------------------------------------------------------------
@@ -253,6 +265,8 @@ function ledgerFromInfo:callback(npc, player, message, handler)
     return true, "I have ledger records of all transactions for your {guild account}. Would you like a copy?"
 end
 
+ledgerFromInfo.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
+
 ------------------------------------------------------------------------
 -- Balance (direct from greet)
 ------------------------------------------------------------------------
@@ -265,6 +279,8 @@ function balance:callback(npc, player, message, handler)
     local bal = getGuildBalance(guild:getId())
     return true, "The {guild account} balance of " .. guild:getName() .. " is " .. bal .. " gold."
 end
+
+balance.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
 
 ------------------------------------------------------------------------
 -- Deposit (direct from greet)
@@ -283,6 +299,8 @@ function deposit:callback(npc, player, message, handler)
     state[pid] = TOPIC.DEPOSIT_GOLD
     return true, "Please tell me how much gold you would like to deposit to " .. guild:getName() .. "."
 end
+
+deposit.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
 
 local depositYes = deposit:keyword("yes")
 function depositYes:callback(npc, player, message, handler)
@@ -305,6 +323,8 @@ function depositYes:callback(npc, player, message, handler)
     return true, "You do not have enough gold."
 end
 
+depositYes.failureResponse = "I don't understand. Please tell me if you want to {deposit} or not."
+
 local depositNo = deposit:keyword("no")
 function depositNo:callback(npc, player, message, handler)
     state[player:getGuid()] = TOPIC.NONE
@@ -324,6 +344,8 @@ function withdraw:callback(npc, player, message, handler)
     state[pid] = TOPIC.WITHDRAW_GOLD
     return true, "Please tell me how much gold you would like to withdraw from " .. guild:getName() .. "."
 end
+
+withdraw.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
 
 local withdrawYes = withdraw:keyword("yes")
 function withdrawYes:callback(npc, player, message, handler)
@@ -351,6 +373,8 @@ function withdrawYes:callback(npc, player, message, handler)
     return true, "We removed " .. wd .. " gold from " .. guild:getName() .. " and added it to your personal account."
 end
 
+withdrawYes.failureResponse = "I don't understand. Please tell me if you want to {withdraw} or not."
+
 local withdrawNo = withdraw:keyword("no")
 function withdrawNo:callback(npc, player, message, handler)
     state[player:getGuid()] = TOPIC.NONE
@@ -373,6 +397,8 @@ function transfer:callback(npc, player, message, handler)
     return true, "Would you like to transfer money to a {guild} or a {player}?"
 end
 
+transfer.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
+
 local transferGuild = transfer:keyword({"guild"})
 function transferGuild:callback(npc, player, message, handler)
     local pid = player:getGuid()
@@ -385,12 +411,16 @@ function transferGuild:callback(npc, player, message, handler)
     return true, "Please tell me the amount of gold you would like to transfer to another guild."
 end
 
+transferGuild.failureResponse = "I don't understand. Please tell me if you want to transfer to a {guild} or {player}."
+
 local transferPlayer = transfer:keyword({"player"})
 function transferPlayer:callback(npc, player, message, handler)
     local pid = player:getGuid()
     state[pid] = TOPIC.TRANSFER_PLAYER_GOLD
     return true, "Please tell me the amount of gold you would like to transfer."
 end
+
+transferPlayer.failureResponse = "I don't understand. Please tell me if you want to transfer to a {guild} or {player}."
 
 local transferYes = transfer:keyword("yes")
 function transferYes:callback(npc, player, message, handler)
@@ -435,6 +465,8 @@ function transferYes:callback(npc, player, message, handler)
     return false
 end
 
+transferYes.failureResponse = "I don't understand. Please tell me if you want to {transfer} or not."
+
 local transferNo = transfer:keyword("no")
 function transferNo:callback(npc, player, message, handler)
     state[player:getGuid()] = TOPIC.NONE
@@ -454,6 +486,8 @@ function ledger:callback(npc, player, message, handler)
     state[player:getGuid()] = TOPIC.LEDGER_CONSENT
     return true, "I have ledger records of all transactions for your {guild account}. Would you like a copy?"
 end
+
+ledger.failureResponse = "I don't understand. Please tell me what you'd like to do with your {guild account}."
 
 local ledgerYes = ledger:keyword("yes")
 function ledgerYes:callback(npc, player, message, handler)
@@ -496,6 +530,8 @@ function ledgerYes:callback(npc, player, message, handler)
     state[pid] = TOPIC.NONE
     return true, "Here is your ledger, " .. player:getName() .. ". Come back anytime for an updated copy."
 end
+
+ledgerYes.failureResponse = "I don't understand. Please tell me if you want a {ledger} or not."
 
 local ledgerNo = ledger:keyword("no")
 function ledgerNo:callback(npc, player, message, handler)

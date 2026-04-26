@@ -51,9 +51,27 @@ function talkaction.onSay(player, words, param)
 
     local price = house:getTileCount() * housePrice
 
-    if not player:removeMoney(price) then
-        player:sendCancelMessage("You do not have enough money. Price: " .. price .. " gold.")
+    local inventoryMoney = player:getMoney()
+    local bankBalance = player:getBankBalance()
+    local totalMoney = inventoryMoney + bankBalance
+
+    if totalMoney < price then
+        player:sendCancelMessage("You do not have enough money. Price: " .. price .. " gold. You have " .. totalMoney .. " gold (inventory: " .. inventoryMoney .. ", bank: " .. bankBalance .. ").")
         return false
+    end
+
+    if inventoryMoney >= price then
+        if not player:removeMoney(price) then
+            player:sendCancelMessage("Error removing money from inventory.")
+            return false
+        end
+    else
+        if not player:removeMoney(inventoryMoney) then
+            player:sendCancelMessage("Error removing money from inventory.")
+            return false
+        end
+        local remaining = price - inventoryMoney
+        player:setBankBalance(bankBalance - remaining)
     end
 
     house:setOwnerGuid(player:getGuid())
