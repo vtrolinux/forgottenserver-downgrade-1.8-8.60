@@ -24,7 +24,7 @@ void closeContainersFromOtherInstances(Player* player, uint32_t instanceId)
 
 	std::vector<uint8_t> closeList;
 	for (const auto& it : player->getOpenContainers()) {
-		Container* container = it.second.container;
+		auto container = it.second.container.lock();
 		if (container && container->getInstanceID() != 0 && container->getInstanceID() != instanceId) {
 			closeList.push_back(it.first);
 		}

@@ -10,6 +10,51 @@
 
 extern Game g_game;
 
+namespace {
+
+bool parseMailAddress(std::string_view text, std::string& receiver, std::string& townName)
+{
+	receiver.clear();
+	townName.clear();
+
+	size_t lineStart = 0;
+	bool firstLine = true;
+	while (lineStart <= text.size()) {
+		const size_t lineEnd = text.find('\n', lineStart);
+		const size_t count = lineEnd == std::string_view::npos ? std::string_view::npos : lineEnd - lineStart;
+
+		std::string line{text.substr(lineStart, count)};
+		boost::algorithm::trim(line);
+
+		if (firstLine) {
+			// Keep legacy mailbox semantics: the first address line must contain the receiver.
+			// A blank first line is invalid instead of treating the town line as a player name.
+			if (line.empty()) {
+				return false;
+			}
+			receiver = std::move(line);
+			firstLine = false;
+		} else if (!line.empty()) {
+			townName = std::move(line);
+			break;
+		}
+
+		if (lineEnd == std::string_view::npos) {
+			break;
+		}
+		lineStart = lineEnd + 1;
+	}
+
+	return !receiver.empty();
+}
+
+Inbox* getDestinationInbox(Player& player, const Town* town)
+{
+	return town ? player.getInbox(town->getID()) : player.getInbox();
+}
+
+} // namespace
+
 ReturnValue Mailbox::queryAdd(int32_t, const Thing& thing, uint32_t, uint32_t, Creature*) const
 {
 	const Item* item = thing.getItem();
@@ -70,7 +115,8 @@ void Mailbox::postRemoveNotification(Thing* thing, const Cylinder* newParent, in
 bool Mailbox::sendItem(Item* item) const
 {
 	std::string receiver;
-	if (!getReceiver(item, receiver)) {
+	std::string townName;
+	if (!getReceiver(item, receiver, townName)) {
 		return false;
 	}
 
@@ -79,9 +125,22 @@ bool Mailbox::sendItem(Item* item) const
 		return false;
 	}
 
+	Town* town = nullptr;
+	if (!townName.empty()) {
+		town = g_game.map.towns.getTown(townName);
+		if (!town) {
+			return false;
+		}
+	}
+
 	Player* player = g_game.getPlayerByName(receiver);
 	if (player) {
-		if (g_game.internalMoveItem(item->getParent(), player->getInbox(), INDEX_WHEREEVER, item, item->getItemCount(),
+		Inbox* inbox = getDestinationInbox(*player, town);
+		if (!inbox) {
+			return false;
+		}
+
+		if (g_game.internalMoveItem(item->getParent(), inbox, INDEX_WHEREEVER, item, item->getItemCount(),
 		                            nullptr, FLAG_NOLIMIT) == RETURNVALUE_NOERROR) {
 			g_game.transformItem(item, item->getID() + 1);
 			player->onReceiveMail();
@@ -93,8 +152,13 @@ bool Mailbox::sendItem(Item* item) const
 			return false;
 		}
 
-		if (g_game.internalMoveItem(item->getParent(), tmpPlayer.getInbox(), INDEX_WHEREEVER, item,
-		                            item->getItemCount(), nullptr, FLAG_NOLIMIT) == RETURNVALUE_NOERROR) {
+		Inbox* inbox = getDestinationInbox(tmpPlayer, town);
+		if (!inbox) {
+			return false;
+		}
+
+		if (g_game.internalMoveItem(item->getParent(), inbox, INDEX_WHEREEVER, item, item->getItemCount(), nullptr,
+		                            FLAG_NOLIMIT) == RETURNVALUE_NOERROR) {
 			g_game.transformItem(item, item->getID() + 1);
 			IOLoginData::savePlayer(&tmpPlayer);
 			return true;
@@ -103,12 +167,12 @@ bool Mailbox::sendItem(Item* item) const
 	return false;
 }
 
-bool Mailbox::getReceiver(Item* item, std::string& name) const
+bool Mailbox::getReceiver(Item* item, std::string& receiver, std::string& townName) const
 {
 	const Container* container = item->getContainer();
 	if (container) {
 		for (const auto& containerItem : container->getItemList()) {
-			if (containerItem->getID() == ITEM_LABEL && getReceiver(containerItem.get(), name)) {
+			if (containerItem->getID() == ITEM_LABEL && getReceiver(containerItem.get(), receiver, townName)) {
 				return true;
 			}
 		}
@@ -120,9 +184,7 @@ bool Mailbox::getReceiver(Item* item, std::string& name) const
 		return false;
 	}
 
-	name = getFirstLine(text);
-	boost::algorithm::trim(name);
-	return true;
+	return parseMailAddress(text, receiver, townName);
 }
 
 bool Mailbox::canSend(const Item* item) { return item->getID() == ITEM_PARCEL || item->getID() == ITEM_LETTER; }

@@ -3454,9 +3454,12 @@ void ProtocolGame::syncOpenContainers()
 	const auto& openContainers = player->getOpenContainers();
 	for (const auto& it : openContainers) {
 		auto openContainer = it.second;
-		auto container = openContainer.container;
+		auto container = openContainer.container.lock();
+		if (!container) {
+			continue;
+		}
 		bool hasParent = (dynamic_cast<const Container*>(container->getParent()) != nullptr);
-		sendContainer(it.first, container, hasParent, openContainer.index);
+		sendContainer(it.first, container.get(), hasParent, openContainer.index);
 	}
 }
 

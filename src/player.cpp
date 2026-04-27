@@ -244,10 +244,11 @@ std::string Player::getDescription(int32_t lookDistance) const
 	}
 
 	size_t memberCount = guild->getMemberCount();
+	const auto onlineMembers = guild->getMembersOnlineRefs();
 	if (memberCount == 1) {
-		s << ", which has 1 member, " << guild->getMembersOnline().size() << " of them online.";
+		s << ", which has 1 member, " << onlineMembers.size() << " of them online.";
 	} else {
-		s << ", which has " << memberCount << " members, " << guild->getMembersOnline().size() << " of them online.";
+		s << ", which has " << memberCount << " members, " << onlineMembers.size() << " of them online.";
 	}
 	return s.str();
 }
@@ -723,17 +724,13 @@ void Player::addContainer(uint8_t cid, Container* container)
 		return;
 	}
 
-	auto it = openContainers.find(cid);
-	if (it != openContainers.end()) {
-		OpenContainer& openContainer = it->second;
-		openContainer.container = container;
-		openContainer.index = 0;
-	} else {
-		OpenContainer openContainer;
-		openContainer.container = container;
-		openContainer.index = 0;
-		openContainers[cid] = openContainer;
+	auto containerRef = g_game.getContainerSharedRef(container);
+	if (!containerRef) {
+		openContainers.erase(cid);
+		return;
 	}
+
+	openContainers[cid] = OpenContainer{containerRef, 0};
 }
 
 void Player::closeContainer(uint8_t cid)
@@ -757,17 +754,24 @@ void Player::setContainerIndex(uint8_t cid, uint16_t index)
 
 Container* Player::getContainerByID(uint8_t cid)
 {
+	auto container = getContainerByIDRef(cid);
+	return container.get();
+}
+
+ContainerPtr Player::getContainerByIDRef(uint8_t cid)
+{
 	auto it = openContainers.find(cid);
 	if (it == openContainers.end()) {
 		return nullptr;
 	}
-	return it->second.container;
+	return it->second.container.lock();
 }
 
 int8_t Player::getContainerID(const Container* container) const
 {
 	for (const auto& it : openContainers) {
-		if (it.second.container == container) {
+		auto openContainer = it.second.container.lock();
+		if (openContainer.get() == container) {
 			return it.first;
 		}
 	}
@@ -924,8 +928,7 @@ DepotChest* Player::getDepotChest(uint32_t depotId, bool autoCreate)
 		return nullptr;
 	}
 
-	auto chest = std::make_unique<DepotChest>(ITEM_DEPOT);
-	chest->initializeSharedView();
+	auto chest = std::make_shared<DepotChest>(ITEM_DEPOT);
 	DepotChest* rawPtr = chest.get();
 
 	depotChests.emplace(depotId, std::move(chest));
@@ -1105,9 +1108,16 @@ void Player::sendAddContainerItem(const Container* container, const Item* item)
 		return;
 	}
 
-	for (const auto& it : openContainers) {
-		const OpenContainer& openContainer = it.second;
-		if (openContainer.container != container) {
+	for (auto it = openContainers.begin(); it != openContainers.end();) {
+		OpenContainer& openContainer = it->second;
+		auto openContainerRef = openContainer.container.lock();
+		if (!openContainerRef) {
+			it = openContainers.erase(it);
+			continue;
+		}
+
+		if (openContainerRef.get() != container) {
+			++it;
 			continue;
 		}
 
@@ -1116,8 +1126,9 @@ void Player::sendAddContainerItem(const Container* container, const Item* item)
 		}
 
 		if (item) {
-			client->sendAddContainerItem(it.first, item);
+			client->sendAddContainerItem(it->first, item);
 		}
+		++it;
 	}
 }
 
@@ -1127,22 +1138,32 @@ void Player::sendUpdateContainerItem(const Container* container, uint16_t slot, 
 		return;
 	}
 
-	for (const auto& it : openContainers) {
-		const OpenContainer& openContainer = it.second;
-		if (openContainer.container != container) {
+	for (auto it = openContainers.begin(); it != openContainers.end();) {
+		OpenContainer& openContainer = it->second;
+		auto openContainerRef = openContainer.container.lock();
+		if (!openContainerRef) {
+			it = openContainers.erase(it);
+			continue;
+		}
+
+		if (openContainerRef.get() != container) {
+			++it;
 			continue;
 		}
 
 		if (slot < openContainer.index) {
+			++it;
 			continue;
 		}
 
 		uint16_t pageEnd = openContainer.index + container->capacity();
 		if (slot >= pageEnd) {
+			++it;
 			continue;
 		}
 
-		client->sendUpdateContainerItem(it.first, slot, newItem);
+		client->sendUpdateContainerItem(it->first, slot, newItem);
+		++it;
 	}
 }
 
@@ -1152,19 +1173,27 @@ void Player::sendRemoveContainerItem(const Container* container, uint16_t slot)
 		return;
 	}
 
-	for (auto& it : openContainers) {
-		OpenContainer& openContainer = it.second;
-		if (openContainer.container != container) {
+	for (auto it = openContainers.begin(); it != openContainers.end();) {
+		OpenContainer& openContainer = it->second;
+		auto openContainerRef = openContainer.container.lock();
+		if (!openContainerRef) {
+			it = openContainers.erase(it);
+			continue;
+		}
+
+		if (openContainerRef.get() != container) {
+			++it;
 			continue;
 		}
 
 		uint16_t& firstIndex = openContainer.index;
 		if (firstIndex > 0 && firstIndex >= container->size() - 1) {
 			firstIndex -= static_cast<uint16_t>(container->capacity());
-			sendContainer(it.first, container, false, firstIndex);
+			sendContainer(it->first, container, false, firstIndex);
 		}
 
-		client->sendRemoveContainerItem(it.first, std::max<uint16_t>(slot, firstIndex));
+		client->sendRemoveContainerItem(it->first, std::max<uint16_t>(slot, firstIndex));
+		++it;
 	}
 }
 
@@ -1655,10 +1684,17 @@ void Player::onCloseContainer(const Container* container)
 		return;
 	}
 
-	for (const auto& it : openContainers) {
-		if (it.second.container == container) {
-			client->sendCloseContainer(it.first);
+	for (auto it = openContainers.begin(); it != openContainers.end();) {
+		auto openContainerRef = it->second.container.lock();
+		if (!openContainerRef) {
+			it = openContainers.erase(it);
+			continue;
 		}
+
+		if (openContainerRef.get() == container) {
+			client->sendCloseContainer(it->first);
+		}
+		++it;
 	}
 }
 
@@ -1669,11 +1705,18 @@ void Player::onSendContainer(const Container* container)
 	}
 
 	bool hasParent = dynamic_cast<const Container*>(container->getParent()) != nullptr;
-	for (const auto& it : openContainers) {
-		const OpenContainer& openContainer = it.second;
-		if (openContainer.container == container) {
-			client->sendContainer(it.first, container, hasParent, openContainer.index);
+	for (auto it = openContainers.begin(); it != openContainers.end();) {
+		OpenContainer& openContainer = it->second;
+		auto openContainerRef = openContainer.container.lock();
+		if (!openContainerRef) {
+			it = openContainers.erase(it);
+			continue;
 		}
+
+		if (openContainerRef.get() == container) {
+			client->sendContainer(it->first, container, hasParent, openContainer.index);
+		}
+		++it;
 	}
 }
 
@@ -2683,7 +2726,13 @@ void Player::autoCloseContainers(const Container* container)
 	std::vector<uint32_t> closeList;
 	closeList.reserve(openContainers.size());
 	for (const auto& it : openContainers) {
-		Container* tmpContainer = it.second.container;
+		auto openContainerRef = it.second.container.lock();
+		Container* tmpContainer = openContainerRef.get();
+		if (!tmpContainer) {
+			closeList.push_back(it.first);
+			continue;
+		}
+
 		while (tmpContainer) {
 			if (tmpContainer->isRemoved() || tmpContainer == container) {
 				closeList.push_back(it.first);
@@ -3460,18 +3509,20 @@ void Player::postAddNotification(Thing* thing, const Cylinder* oldParent, int32_
 	} else if (const Creature* creature = thing->getCreature()) {
 		if (creature == this) {
 			// check containers
-			std::vector<Container*> containers;
+			std::vector<ContainerPtr> containers;
 
 			for (const auto& it : openContainers) {
-				Container* container = it.second.container;
-			if (!container) { continue; }
+				auto container = it.second.container.lock();
+				if (!container) {
+					continue;
+				}
 				if (!container->getPosition().isInRange(getPosition(), 1, 1, 0)) {
 					containers.push_back(container);
 				}
 			}
 
-			for (const Container* container : containers) {
-				autoCloseContainers(container);
+			for (const auto& container : containers) {
+				autoCloseContainers(container.get());
 			}
 		}
 	}
@@ -5223,6 +5274,23 @@ Container* Player::findNonEmptyContainer(uint16_t itemId)
 
 Container* Player::findGoldPouch() const
 {
+	if (storeInbox) {
+		for (const auto& storeItem : storeInbox->getItemList()) {
+			if (storeItem->getID() == ITEM_GOLD_POUCH) {
+				return storeItem->getContainer();
+			}
+
+			if (const auto container = storeItem->getContainer()) {
+				for (ContainerIterator it = container->iterator(); it.hasNext(); it.advance()) {
+					Item* item = *it;
+					if (item && item->getID() == ITEM_GOLD_POUCH) {
+						return item->getContainer();
+					}
+				}
+			}
+		}
+	}
+
 	for (int32_t slot = CONST_SLOT_FIRST; slot <= CONST_SLOT_LAST; ++slot) {
 		Item* slotItem = inventory[slot].get();
 		if (!slotItem) {
@@ -5268,17 +5336,15 @@ void Player::lootCorpse(Container* container)
 		return;
 	}
 
-	Container* goldPouch = findGoldPouch();
-	if (!goldPouch) {
+	if (!findGoldPouch()) {
 		sendTextMessage(MESSAGE_EVENT_ORANGE, "You need a Gold Pouch to use AutoLoot.");
 		return;
 	}
 
-	static constexpr uint32_t GOLD_POUCH_FREE_LIMIT = 30;
-	bool isFreeAccount = !isPremium();
-
-	if (isFreeAccount && goldPouch->size() >= GOLD_POUCH_FREE_LIMIT) {
-		sendTextMessage(MESSAGE_EVENT_ORANGE, "Your Gold Pouch is full (30/30). Upgrade to VIP for unlimited space.");
+	auto goldPouchDestination = findGoldPouch();
+	auto storeInboxDestination = getStoreInbox();
+	if (!storeInboxDestination) {
+		sendTextMessage(MESSAGE_EVENT_ORANGE, "Your store inbox is unavailable.");
 		return;
 	}
 
@@ -5335,17 +5401,34 @@ void Player::lootCorpse(Container* container)
 			continue;
 		}
 
-		if (isFreeAccount && goldPouch->size() >= GOLD_POUCH_FREE_LIMIT) {
-			sendTextMessage(MESSAGE_EVENT_ORANGE, "Your Gold Pouch is full (30/30). Upgrade to VIP for unlimited space.");
-			break;
-		}
+		ReturnValue ret;
+		Container* primaryDestination = goldPouchDestination ? goldPouchDestination : storeInboxDestination;
+		Container* fallbackDestination = storeInboxDestination;
+		bool usedGoldPouch = (goldPouchDestination != nullptr);
 
-		Container* destination = getOrCreateGoldPouchPage(goldPouch);
-		if (!destination) {
+		ret = g_game.internalMoveItem(container, primaryDestination, INDEX_WHEREEVER, item,
+		                                          item->getItemCount(), nullptr);
+		if (ret == RETURNVALUE_NOERROR) {
 			continue;
 		}
 
-		g_game.internalMoveItem(container, destination, INDEX_WHEREEVER, item, item->getItemCount(), nullptr, FLAG_NOLIMIT);
+		if (usedGoldPouch && fallbackDestination != primaryDestination) {
+			ret = g_game.internalMoveItem(container, fallbackDestination, INDEX_WHEREEVER, item,
+			                                          item->getItemCount(), nullptr);
+			if (ret == RETURNVALUE_NOERROR) {
+				sendTextMessage(MESSAGE_STATUS_SMALL, "Your gold pouch is full. Item sent to store inbox.");
+				continue;
+			}
+		}
+
+		auto backpackItem = getInventoryItem(CONST_SLOT_BACKPACK);
+		auto backpack = backpackItem ? backpackItem->getContainer() : nullptr;
+		if (backpack && g_game.internalMoveItem(container, backpack, INDEX_WHEREEVER, item, item->getItemCount(),
+		                                        nullptr) == RETURNVALUE_NOERROR) {
+			sendTextMessage(MESSAGE_STATUS_SMALL, "Your store inbox is full. Item sent to backpack.");
+		} else {
+			sendTextMessage(MESSAGE_STATUS_SMALL, "Your store inbox is full. Item left in corpse.");
+		}
 	}
 
 	if (autolootConfig.goldEnabled) {
@@ -6579,7 +6662,15 @@ void Player::applyOfflineTraining(uint32_t trainingTime)
 
 Inbox* Player::getInbox()
 {
-	DepotLocker* depotLocker = getDepotLocker(town->getID());
+	if (!town) {
+		return nullptr;
+	}
+	return getInbox(town->getID());
+}
+
+Inbox* Player::getInbox(uint32_t depotId)
+{
+	DepotLocker* depotLocker = getDepotLocker(depotId);
 	if (!depotLocker) {
 		return nullptr;
 	}

@@ -18,6 +18,8 @@ struct GuildRank
 };
 
 using GuildRank_ptr = std::shared_ptr<GuildRank>;
+using PlayerWeakList = std::list<std::weak_ptr<Player>>;
+using PlayerRefVector = std::vector<std::shared_ptr<Player>>;
 
 class Guild
 {
@@ -31,7 +33,7 @@ public:
 
 	void addMember(Player* player);
 	void removeMember(Player* player);
-	const std::list<Player*>& getMembersOnline() const { return membersOnline; }
+	PlayerRefVector getMembersOnlineRefs() const;
 	uint32_t getMemberCount() const { return memberCount; }
 	void setMemberCount(uint32_t count) { memberCount = count; }
 
@@ -56,7 +58,7 @@ public:
 
 private:
 	
-	std::list<Player*> membersOnline;
+	PlayerWeakList membersOnline;
 	std::vector<GuildRank_ptr> ranks;
 	std::string name;
 	std::string motd;

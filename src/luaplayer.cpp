@@ -2322,9 +2322,9 @@ int luaPlayerGetContainerById(lua_State* L)
 		return 1;
 	}
 
-	Container* container = player->getContainerByID(getInteger<uint8_t>(L, 2));
+	auto container = player->getContainerByIDRef(getInteger<uint8_t>(L, 2));
 	if (container) {
-		pushSharedPtr(L, container->shared_from_this());
+		pushSharedPtr(L, std::static_pointer_cast<Item>(container));
 		setMetatable(L, -1, "Container");
 	} else {
 		lua_pushnil(L);

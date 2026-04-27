@@ -10,6 +10,14 @@ local config = {
     }
 }
 
+local function sendStoreInboxRewardMessage(player, itemName)
+    if player:isUsingOtcV8() then
+        player:sendTextMessage(MESSAGE_INFO_DESCR, "You received your daily " .. itemName .. "! Check your store inbox.")
+    else
+        player:sendTextMessage(MESSAGE_INFO_DESCR, "You received your daily " .. itemName .. "! Type !storeinbox to open your inbox.")
+    end
+end
+
 local dailyReward = TalkAction("!dailyexercise")
 function dailyReward.onSay(player, words, param)
     local storageValue = player:getStorageValue(config.storage) or -1
@@ -28,16 +36,24 @@ function dailyReward.onSay(player, words, param)
         return false
     end
 
-    local item = player:addItem(rewardId, 1)
-    if item then
-        item:setAttribute(ITEM_ATTRIBUTE_CHARGES, config.charges)
-        player:setStorageValue(config.storage, os.time() + config.cooldown)
-        player:sendTextMessage(MESSAGE_INFO_DESCR, "You received your daily " .. item:getName() .. " with " .. config.charges .. " charges!")
-        player:getPosition():sendMagicEffect(CONST_ME_MAGIC_BLUE)
-    else
-        player:sendCancelMessage("You don't have enough space.")
+    local inbox = player:getStoreInbox()
+    local item = Game.createItem(rewardId, 1)
+    if not inbox or not item then
+        player:sendCancelMessage("Could not create your reward. Please contact an administrator.")
+        return false
     end
 
+    item:setAttribute(ITEM_ATTRIBUTE_CHARGES, config.charges)
+    local itemName = item:getName()
+    if inbox:addItemEx(item) ~= RETURNVALUE_NOERROR then
+        item:remove()
+        player:sendCancelMessage("Your store inbox does not have enough space to receive the reward.")
+        return false
+    end
+
+    player:setStorageValue(config.storage, os.time() + config.cooldown)
+    sendStoreInboxRewardMessage(player, itemName)
+    player:getPosition():sendMagicEffect(CONST_ME_MAGIC_BLUE)
     return false
 end
 dailyReward:register()

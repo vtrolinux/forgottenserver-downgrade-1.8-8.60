@@ -9,13 +9,6 @@
 
 DepotChest::DepotChest(uint16_t type) : Container(type) {}
 
-void DepotChest::initializeSharedView()
-{
-	if (!sharedView) {
-		sharedView = std::shared_ptr<Item>(static_cast<Item*>(this), [](Item*) {});
-	}
-}
-
 ReturnValue DepotChest::queryAdd(int32_t index, const Thing& thing, uint32_t count, uint32_t flags,
                                  Creature* actor /* = nullptr*/) const
 {

@@ -73,8 +73,8 @@ struct VIPEntry
 
 struct OpenContainer
 {
-	Container* container; // non-owning
-	uint16_t index;
+	ContainerWeakPtr container;
+	uint16_t index = 0;
 };
 
 inline constexpr int16_t MINIMUM_SKILL_LEVEL = 10;
@@ -308,6 +308,7 @@ public:
 	void setContainerIndex(uint8_t cid, uint16_t index);
 
 	Container* getContainerByID(uint8_t cid);
+	ContainerPtr getContainerByIDRef(uint8_t cid);
 	int8_t getContainerID(const Container* container) const;
 	uint16_t getContainerIndex(uint8_t cid) const;
 
@@ -458,6 +459,7 @@ public:
 	void setLoading(bool b) { loading = b; }
 	RewardChest& getRewardChest();
 	Inbox* getInbox();
+	Inbox* getInbox(uint32_t depotId);
 	StoreInbox* getStoreInbox() const { return storeInbox.get(); }
 	void onReceiveMail() const;
 	bool isNearDepotBox() const;
@@ -1268,7 +1270,7 @@ private:
 
 	std::unordered_map<uint8_t, OpenContainer> openContainers;
 	std::unordered_map<uint32_t, DepotLocker_ptr> depotLockerMap;
-	std::unordered_map<uint32_t, std::unique_ptr<DepotChest>> depotChests;
+	std::unordered_map<uint32_t, std::shared_ptr<DepotChest>> depotChests;
 
 	std::unordered_map<uint16_t, uint8_t> outfits;
 	std::unordered_set<uint16_t> mounts;

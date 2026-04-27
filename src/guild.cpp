@@ -42,7 +42,7 @@ uint64_t parseUint64OrZero(std::string_view value)
 
 struct GuildWarRefreshContext {
 	Guild_ptr guild;
-	std::vector<Player*> members;
+	PlayerRefVector members;
 	bool temporaryGuild = false;
 };
 
@@ -59,24 +59,38 @@ GuildWarRefreshContext prepareGuildWarRefreshContext(uint32_t guildId)
 		}
 	}
 
-	auto addMember = [&context](Player* member) {
-		if (!member || std::find(context.members.begin(), context.members.end(), member) != context.members.end()) {
+	auto addMember = [&context](const std::shared_ptr<Player>& member) {
+		if (!member || member->isRemoved()) {
 			return;
 		}
+
+		const uint32_t memberId = member->getID();
+		const bool exists = std::any_of(context.members.begin(), context.members.end(),
+		                                [memberId](const std::shared_ptr<Player>& existing) {
+			                                return existing && existing->getID() == memberId;
+		                                });
+		if (exists) {
+			return;
+		}
+
 		context.members.push_back(member);
 	};
 
 	if (context.guild) {
-		for (Player* member : context.guild->getMembersOnline()) {
+		for (const auto& member : context.guild->getMembersOnlineRefs()) {
 			addMember(member);
 		}
 	}
 
 	for (const auto& playerEntry : g_game.getPlayers()) {
 		Player* onlinePlayer = playerEntry.second;
+		if (!onlinePlayer) {
+			continue;
+		}
+
 		const auto& onlinePlayerGuild = onlinePlayer->getGuild();
 		if (onlinePlayerGuild && onlinePlayerGuild->getId() == guildId) {
-			addMember(onlinePlayer);
+			addMember(g_game.getPlayerSharedByID(onlinePlayer->getID()));
 		}
 	}
 
@@ -88,39 +102,96 @@ void refreshWarStateForGuilds(uint32_t firstGuildId, uint32_t secondGuildId)
 	auto firstContext = prepareGuildWarRefreshContext(firstGuildId);
 	auto secondContext = prepareGuildWarRefreshContext(secondGuildId);
 
-	std::vector<Player*> membersToRefresh;
+	PlayerRefVector membersToRefresh;
 	membersToRefresh.reserve(firstContext.members.size() + secondContext.members.size());
 	membersToRefresh.insert(membersToRefresh.end(), firstContext.members.begin(), firstContext.members.end());
 	membersToRefresh.insert(membersToRefresh.end(), secondContext.members.begin(), secondContext.members.end());
 
-	for (Player* member : membersToRefresh) {
-		member->reloadWarList(true);
+	for (const auto& member : membersToRefresh) {
+		if (member && !member->isRemoved()) {
+			member->reloadWarList(true);
+		}
 	}
 
-	for (Player* member : membersToRefresh) {
-		g_game.updateCreatureEmblem(member);
+	for (const auto& member : membersToRefresh) {
+		if (member && !member->isRemoved()) {
+			g_game.updateCreatureEmblem(member.get());
+		}
 	}
 
-	if (firstContext.temporaryGuild && firstContext.guild && firstContext.guild->getMembersOnline().empty()) {
+	if (firstContext.temporaryGuild && firstContext.guild && firstContext.guild->getMembersOnlineRefs().empty()) {
 		g_game.removeGuild(firstContext.guild->getId());
 	}
 
-	if (secondContext.temporaryGuild && secondContext.guild && secondContext.guild->getMembersOnline().empty()) {
+	if (secondContext.temporaryGuild && secondContext.guild && secondContext.guild->getMembersOnlineRefs().empty()) {
 		g_game.removeGuild(secondContext.guild->getId());
 	}
 }
 
 } // namespace
 
-void Guild::addMember(Player* player) { membersOnline.push_back(player); }
+void Guild::addMember(Player* player)
+{
+	if (!player) {
+		return;
+	}
+
+	const uint32_t playerId = player->getID();
+
+	for (auto it = membersOnline.begin(); it != membersOnline.end();) {
+		auto member = it->lock();
+		if (!member || member->isRemoved()) {
+			it = membersOnline.erase(it);
+			continue;
+		}
+
+		if (member->getID() == playerId) {
+			return;
+		}
+
+		++it;
+	}
+
+	auto weakPlayer = g_game.getPlayerWeakRef(player);
+	if (!weakPlayer.expired()) {
+		membersOnline.push_back(weakPlayer);
+	}
+}
 
 void Guild::removeMember(Player* player)
 {
-	membersOnline.remove(player);
+	const uint32_t playerId = player ? player->getID() : 0;
+
+	for (auto it = membersOnline.begin(); it != membersOnline.end();) {
+		auto member = it->lock();
+		if (!member || member->isRemoved() || (playerId != 0 && member->getID() == playerId)) {
+			it = membersOnline.erase(it);
+			continue;
+		}
+
+		++it;
+	}
 
 	if (membersOnline.empty()) {
 		g_game.removeGuild(id);
 	}
+}
+
+PlayerRefVector Guild::getMembersOnlineRefs() const
+{
+	PlayerRefVector result;
+	result.reserve(membersOnline.size());
+
+	for (const auto& weakPlayer : membersOnline) {
+		auto player = weakPlayer.lock();
+		if (!player || player->isRemoved()) {
+			continue;
+		}
+
+		result.push_back(std::move(player));
+	}
+
+	return result;
 }
 
 void Guild::addRank(uint32_t rankId, std::string_view rankName, uint8_t level)
