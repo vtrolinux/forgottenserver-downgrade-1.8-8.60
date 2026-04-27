@@ -565,10 +565,37 @@ public:
 
 	std::forward_list<std::shared_ptr<Item>> toDecayItems;
 
-	std::unordered_set<Tile*> getTilesToClean() const { return tilesToClean; }
-	bool isTileInCleanList(Tile* tile) { return tilesToClean.contains(tile); }
-	void addTileToClean(Tile* tile) { tilesToClean.emplace(tile); }
-	void removeTileToClean(Tile* tile) { tilesToClean.erase(tile); }
+	std::unordered_set<TilePtr> getTilesToClean() const { return tilesToClean; }
+	bool isTileInCleanList(Tile* tile)
+	{
+		auto tileRef = getTileSharedRef(tile);
+		return tileRef && tilesToClean.contains(tileRef);
+	}
+	bool isTileInCleanList(const TilePtr& tile) { return tile && tilesToClean.contains(tile); }
+	void addTileToClean(Tile* tile)
+	{
+		if (auto tileRef = getTileSharedRef(tile)) {
+			tilesToClean.emplace(std::move(tileRef));
+		}
+	}
+	void addTileToClean(const TilePtr& tile)
+	{
+		if (tile) {
+			tilesToClean.emplace(tile);
+		}
+	}
+	void removeTileToClean(Tile* tile)
+	{
+		if (auto tileRef = getTileSharedRef(tile)) {
+			tilesToClean.erase(tileRef);
+		}
+	}
+	void removeTileToClean(const TilePtr& tile)
+	{
+		if (tile) {
+			tilesToClean.erase(tile);
+		}
+	}
 	void clearTilesToClean() { tilesToClean.clear(); }
 
 	void loadGameStorageValues();
@@ -619,6 +646,26 @@ public:
 		return {};
 	}
 
+	std::shared_ptr<Player> getPlayerSharedByID(uint32_t playerId) const
+	{
+		return std::dynamic_pointer_cast<Player>(getCreatureSharedRef(playerId));
+	}
+
+	std::shared_ptr<Item> getItemSharedRef(Item* item) const
+	{
+		return item ? item->weak_from_this().lock() : nullptr;
+	}
+
+	std::shared_ptr<Container> getContainerSharedRef(Container* container) const
+	{
+		return std::dynamic_pointer_cast<Container>(getItemSharedRef(container));
+	}
+
+	std::shared_ptr<Tile> getTileSharedRef(Tile* tile) const
+	{
+		return tile ? tile->weak_from_this().lock() : nullptr;
+	}
+
 
 private:
 	StorageMap storageMap;
@@ -665,7 +712,7 @@ private:
 
 	std::unordered_map<uint32_t, std::weak_ptr<BedItem>> bedSleepersMap;
 
-	std::unordered_set<Tile*> tilesToClean;
+	std::unordered_set<TilePtr> tilesToClean;
 
 	// Loot Highlight: maps corpse item lifetime to scheduler event ID
 	LootHighlightEventMap lootHighlightEvents;

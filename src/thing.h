@@ -6,11 +6,23 @@
 
 #include "position.h"
 
+#include <memory>
+
 class Tile;
 class Cylinder;
 class Item;
 class Creature;
 class Container;
+class Player;
+
+using TilePtr = std::shared_ptr<Tile>;
+using TileWeakPtr = std::weak_ptr<Tile>;
+using ItemPtr = std::shared_ptr<Item>;
+using ItemWeakPtr = std::weak_ptr<Item>;
+using ContainerPtr = std::shared_ptr<Container>;
+using ContainerWeakPtr = std::weak_ptr<Container>;
+using PlayerPtr = std::shared_ptr<Player>;
+using PlayerWeakPtr = std::weak_ptr<Player>;
 
 class Thing
 {

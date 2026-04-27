@@ -65,9 +65,9 @@ bool SpySystem::startSpy(Player* god, Player* target) {
 	}
 
 	for (const auto& [cid, openContainer] : target->getOpenContainers()) {
-		if (openContainer.container) {
-			bool hasParent = (dynamic_cast<const Container*>(openContainer.container->getParent()) != nullptr);
-			godProto->sendContainer(cid, openContainer.container, hasParent, openContainer.index);
+		if (auto container = openContainer.container.lock()) {
+			bool hasParent = (dynamic_cast<const Container*>(container->getParent()) != nullptr);
+			godProto->sendContainer(cid, container.get(), hasParent, openContainer.index);
 		}
 	}
 
@@ -145,9 +145,9 @@ bool SpySystem::spyInventory(Player* god, Player* target) {
 	}
 
 	for (const auto& [cid, openContainer] : target->getOpenContainers()) {
-		if (openContainer.container) {
-			bool hasParent = (dynamic_cast<const Container*>(openContainer.container->getParent()) != nullptr);
-			godProto->sendContainer(cid, openContainer.container, hasParent, openContainer.index);
+		if (auto container = openContainer.container.lock()) {
+			bool hasParent = (dynamic_cast<const Container*>(container->getParent()) != nullptr);
+			godProto->sendContainer(cid, container.get(), hasParent, openContainer.index);
 		}
 	}
 
@@ -281,9 +281,9 @@ void SpySystem::restoreInventoryView(Player* god, const ProtocolGame_ptr& godPro
 	}
 
 	for (const auto& [cid, openContainer] : god->getOpenContainers()) {
-		if (openContainer.container) {
-			bool hasParent = (dynamic_cast<const Container*>(openContainer.container->getParent()) != nullptr);
-			godProto->sendContainer(cid, openContainer.container, hasParent, openContainer.index);
+		if (auto container = openContainer.container.lock()) {
+			bool hasParent = (dynamic_cast<const Container*>(container->getParent()) != nullptr);
+			godProto->sendContainer(cid, container.get(), hasParent, openContainer.index);
 		}
 	}
 }
