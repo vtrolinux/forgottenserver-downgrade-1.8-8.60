@@ -6662,7 +6662,15 @@ void Player::applyOfflineTraining(uint32_t trainingTime)
 
 Inbox* Player::getInbox()
 {
-	DepotLocker* depotLocker = getDepotLocker(town->getID());
+	if (!town) {
+		return nullptr;
+	}
+	return getInbox(town->getID());
+}
+
+Inbox* Player::getInbox(uint32_t depotId)
+{
+	DepotLocker* depotLocker = getDepotLocker(depotId);
 	if (!depotLocker) {
 		return nullptr;
 	}

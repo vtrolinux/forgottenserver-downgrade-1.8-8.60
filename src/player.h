@@ -459,6 +459,7 @@ public:
 	void setLoading(bool b) { loading = b; }
 	RewardChest& getRewardChest();
 	Inbox* getInbox();
+	Inbox* getInbox(uint32_t depotId);
 	StoreInbox* getStoreInbox() const { return storeInbox.get(); }
 	void onReceiveMail() const;
 	bool isNearDepotBox() const;
