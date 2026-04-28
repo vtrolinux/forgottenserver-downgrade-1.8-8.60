@@ -2244,7 +2244,8 @@ Item* Game::transformItem(Item* item, uint16_t newId, int32_t newCount /*= -1*/)
 }
 
 ReturnValue Game::internalTeleport(Thing* thing, const Position& newPos, bool pushMove /* = true*/,
-                                   uint32_t flags /*= 0*/)
+                                   uint32_t flags /*= 0*/,
+                                   MagicEffectClasses magicEffect /*= CONST_ME_TELEPORT*/)
 {
 	if (newPos == thing->getPosition()) {
 		return RETURNVALUE_NOERROR;
@@ -2270,11 +2271,15 @@ ReturnValue Game::internalTeleport(Thing* thing, const Position& newPos, bool pu
 		Position origPos = creature->getPosition();
 		uint32_t instanceId = creature->getInstanceID();
 
-		InstanceUtils::sendMagicEffectToInstance(origPos, instanceId, CONST_ME_TELEPORT);
+		if (magicEffect != CONST_ME_NONE) {
+			InstanceUtils::sendMagicEffectToInstance(origPos, instanceId, magicEffect);
+		}
 
 		map.moveCreature(*creature, *toTile, !pushMove);
 
-		InstanceUtils::sendMagicEffectToInstance(newPos, instanceId, CONST_ME_TELEPORT);
+		if (magicEffect != CONST_ME_NONE) {
+			InstanceUtils::sendMagicEffectToInstance(newPos, instanceId, magicEffect);
+		}
 
 		return RETURNVALUE_NOERROR;
 	} else if (Item* item = thing->getItem()) {

@@ -335,7 +335,8 @@ public:
 	 * \param flags optional flags to modify default behavior
 	 * \returns true if the teleportation was successful
 	 */
-	ReturnValue internalTeleport(Thing* thing, const Position& newPos, bool pushMove = true, uint32_t flags = 0);
+	ReturnValue internalTeleport(Thing* thing, const Position& newPos, bool pushMove = true, uint32_t flags = 0,
+	                             MagicEffectClasses magicEffect = CONST_ME_TELEPORT);
 
 	/**
 	 * Turn a creature to a different direction.

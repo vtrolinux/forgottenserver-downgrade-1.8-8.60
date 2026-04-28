@@ -434,7 +434,7 @@ void Creature::onCreatureMove(Creature* creature, const Tile* newTile, const Pos
 					// Player-owned summons follow their master instead of being despawned.
 					if (getPlayer()) {
 						summon->setInstanceID(getInstanceID());
-						g_game.internalTeleport(summon.get(), newPos, false);
+						g_game.internalTeleport(summon.get(), newPos, false, 0, CONST_ME_NONE);
 						g_game.addMagicEffect(newPos, CONST_ME_TELEPORT, summon->getInstanceID());
 					} else {
 						despawnList.push_front(summon.get());

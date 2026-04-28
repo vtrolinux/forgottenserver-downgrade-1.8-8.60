@@ -1022,7 +1022,7 @@ void Monster::onThink(uint32_t interval)
 						if ((!masterInProtectionZone || ConfigManager::getBoolean(ConfigManager::FAMILIAR_ENTER_PZ)) &&
 						    (differentInstance || tooFar)) {
 							setInstanceID(master->getInstanceID());
-							g_game.internalTeleport(this, master->getPosition(), false);
+							g_game.internalTeleport(this, master->getPosition(), false, 0, CONST_ME_NONE);
 							g_game.addMagicEffect(master->getPosition(), CONST_ME_TELEPORT, getInstanceID());
 							isMasterInRange = true;
 						}
@@ -1036,7 +1036,7 @@ void Monster::onThink(uint32_t interval)
 						const bool tooFar = !getPosition().isInRange(master->getPosition(), 7, 7, 0);
 						if (differentInstance || tooFar) {
 							setInstanceID(master->getInstanceID());
-							g_game.internalTeleport(this, master->getPosition(), false);
+							g_game.internalTeleport(this, master->getPosition(), false, 0, CONST_ME_NONE);
 							g_game.addMagicEffect(master->getPosition(), CONST_ME_TELEPORT, getInstanceID());
 							isMasterInRange = true;
 						}
