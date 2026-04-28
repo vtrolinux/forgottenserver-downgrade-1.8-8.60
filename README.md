@@ -681,7 +681,7 @@ If you want to discuss ideas, give suggestions, keep the 8.6 protocol standards,
 
 You’re very welcome 🙂
 
-**[💬 Join the Discord Community!](https://discord.gg/uZyxcxWXp)**
+**[💬 Join the Discord Community!](https://discord.gg/GxTm7DyXVe)**
 
 ---
 

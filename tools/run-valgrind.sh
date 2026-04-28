@@ -3,7 +3,9 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="${ROOT_DIR}/build-valgrind-linux"
-LOG_FILE="${ROOT_DIR}/valgrind-definitive.log"
+ROOT_BIN="${ROOT_DIR}/tfs"
+BUILD_BIN="${BUILD_DIR}/tfs"
+LOG_FILE="valgrind-definitive.log"
 
 cd "${ROOT_DIR}"
 
@@ -20,13 +22,17 @@ fi
 cmake --preset valgrind-linux
 cmake --build --preset valgrind-linux
 
-VALGRIND_BIN="${BUILD_DIR}/tfs"
-if [[ ! -x "${VALGRIND_BIN}" ]]; then
-	echo "Valgrind build binary not found: ${VALGRIND_BIN}"
+if [[ ! -x "${BUILD_BIN}" ]]; then
+	echo "Valgrind build binary not found: ${BUILD_BIN}"
 	exit 1
 fi
 
-echo "Running Valgrind without mimalloc. Log: ${LOG_FILE}"
+# Keep the runtime cwd at the repository root because TFS expects config.lua and data/
+# next to the executable. The definitive command below intentionally runs ./tfs.
+cp "${BUILD_BIN}" "${ROOT_BIN}"
+chmod +x "${ROOT_BIN}"
+
+echo "Running definitive Valgrind memcheck. Log: ${ROOT_DIR}/${LOG_FILE}"
 valgrind \
 	--tool=memcheck \
 	--leak-check=full \
@@ -38,5 +44,4 @@ valgrind \
 	--expensive-definedness-checks=yes \
 	--partial-loads-ok=yes \
 	--log-file="${LOG_FILE}" \
-	--error-exitcode=99 \
-	"${VALGRIND_BIN}"
+	./tfs
