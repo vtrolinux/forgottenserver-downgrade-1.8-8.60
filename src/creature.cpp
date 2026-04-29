@@ -1020,6 +1020,9 @@ void Creature::onTickCondition(ConditionType_t type, bool& bRemove)
 		case CONDITION_CURSED:
 			bRemove = (field->getCombatType() != COMBAT_DEATHDAMAGE);
 			break;
+		case CONDITION_AGONY:
+			bRemove = (field->getCombatType() != COMBAT_AGONYDAMAGE);
+			break;
 		case CONDITION_DROWN:
 			bRemove = (field->getCombatType() != COMBAT_DROWNDAMAGE);
 			break;

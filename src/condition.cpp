@@ -79,8 +79,8 @@ bool Condition::unserializeProp(ConditionAttr_t attr, PropStream& propStream)
 {
 	switch (attr) {
 		case CONDITIONATTR_TYPE: {
-			int32_t value;
-			if (!propStream.read<int32_t>(value)) {
+			uint32_t value;
+			if (!propStream.read<uint32_t>(value)) {
 				return false;
 			}
 
@@ -208,6 +208,7 @@ Condition_ptr Condition::createCondition(ConditionId_t id, ConditionType_t type,
 		case CONDITION_FREEZING:
 		case CONDITION_DAZZLED:
 		case CONDITION_CURSED:
+		case CONDITION_AGONY:
 		case CONDITION_BLEEDING:
 			return std::make_unique<ConditionDamage>(id, type, buff, subId, aggressive);
 
@@ -278,7 +279,7 @@ Condition_ptr Condition::createCondition(PropStream& propStream)
 		return nullptr;
 	}
 
-	if (type == 0 || (type & (type - 1)) != 0 || type > CONDITION_FEARED) {
+	if (type == 0 || (type & (type - 1)) != 0 || type > CONDITION_AGONY) {
 		return nullptr;
 	}
 

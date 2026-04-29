@@ -679,6 +679,7 @@ CombatTypeNames combatTypeNames = {
     {COMBAT_FIREDAMAGE, "fire"},         {COMBAT_UNDEFINEDDAMAGE, "undefined"}, {COMBAT_LIFEDRAIN, "lifedrain"},
     {COMBAT_MANADRAIN, "manadrain"},     {COMBAT_HEALING, "healing"},           {COMBAT_DROWNDAMAGE, "drown"},
     {COMBAT_ICEDAMAGE, "ice"},           {COMBAT_HOLYDAMAGE, "holy"},           {COMBAT_DEATHDAMAGE, "death"},
+    {COMBAT_AGONYDAMAGE, "agony"},
 };
 
 AmmoTypeNames ammoTypeNames = {
@@ -934,6 +935,8 @@ size_t combatTypeToIndex(CombatType_t combatType)
 			return 10;
 		case COMBAT_DEATHDAMAGE:
 			return 11;
+		case COMBAT_AGONYDAMAGE:
+			return 12;
 		default:
 			return 0;
 	}

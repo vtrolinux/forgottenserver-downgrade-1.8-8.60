@@ -4658,6 +4658,10 @@ bool Game::combatBlockHit(CombatDamage& damage, Creature* attacker, Creature* ta
 					hitEffect = CONST_ME_BLOCKHIT;
 					break;
 				}
+				case COMBAT_AGONYDAMAGE: {
+					hitEffect = CONST_ME_AGONY;
+					break;
+				}
 				case COMBAT_EARTHDAMAGE: {
 					hitEffect = CONST_ME_GREEN_RINGS;
 					break;
@@ -4805,6 +4809,11 @@ void Game::combatGetTypeInfo(CombatType_t combatType, Creature* target, TextColo
 		case COMBAT_DEATHDAMAGE: {
 			color = TEXTCOLOR_DARKRED;
 			effect = CONST_ME_SMALLCLOUDS;
+			break;
+		}
+		case COMBAT_AGONYDAMAGE: {
+			color = TEXTCOLOR_DARKRED;
+			effect = CONST_ME_AGONY;
 			break;
 		}
 		case COMBAT_LIFEDRAIN: {

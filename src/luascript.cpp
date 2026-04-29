@@ -1452,6 +1452,7 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(COMBAT_ICEDAMAGE);
 	registerEnum(COMBAT_HOLYDAMAGE);
 	registerEnum(COMBAT_DEATHDAMAGE);
+	registerEnum(COMBAT_AGONYDAMAGE);
 
 	registerEnum(COMBAT_PARAM_TYPE);
 	registerEnum(COMBAT_PARAM_EFFECT);
@@ -1496,6 +1497,7 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(CONDITION_SPELLGROUPCOOLDOWN);
 	registerEnum(CONDITION_ROOTED);
 	registerEnum(CONDITION_FEARED);
+	registerEnum(CONDITION_AGONY);
 
 	registerEnum(CONDITIONID_DEFAULT);
 	registerEnum(CONDITIONID_COMBAT);

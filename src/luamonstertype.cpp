@@ -503,6 +503,9 @@ int luaMonsterTypeCombatImmunities(lua_State* L)
 			} else if (immunity == "death") {
 				monsterType->info.damageImmunities |= COMBAT_DEATHDAMAGE;
 				pushBoolean(L, true);
+			} else if (immunity == "agony") {
+				monsterType->info.damageImmunities |= COMBAT_AGONYDAMAGE;
+				pushBoolean(L, true);
 			} else if (immunity == "lifedrain") {
 				monsterType->info.damageImmunities |= COMBAT_LIFEDRAIN;
 				pushBoolean(L, true);
@@ -552,6 +555,9 @@ int luaMonsterTypeConditionImmunities(lua_State* L)
 				pushBoolean(L, true);
 			} else if (immunity == "death") {
 				monsterType->info.conditionImmunities |= CONDITION_CURSED;
+				pushBoolean(L, true);
+			} else if (immunity == "agony") {
+				monsterType->info.conditionImmunities |= CONDITION_AGONY;
 				pushBoolean(L, true);
 			} else if (immunity == "paralyze") {
 				monsterType->info.conditionImmunities |= CONDITION_PARALYZE;

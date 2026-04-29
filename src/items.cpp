@@ -1704,6 +1704,9 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 					} else if (tmpStrValue == "physical") {
 						conditionDamage = std::make_unique<ConditionDamage>(CONDITIONID_COMBAT, CONDITION_BLEEDING);
 						combatType = COMBAT_PHYSICALDAMAGE;
+					} else if (tmpStrValue == "agony") {
+						conditionDamage = std::make_unique<ConditionDamage>(CONDITIONID_COMBAT, CONDITION_AGONY);
+						combatType = COMBAT_AGONYDAMAGE;
 					} else {
 						LOG_WARN(fmt::format("[Warning - Items::parseItemNode] Unknown field value: {}", valueAttribute.as_string()));
 					}
@@ -1739,13 +1742,18 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 							} else if (tmpStrValue == "damage") {
 								damage = -pugi::cast<int32_t>(subValueAttribute.value());
 								if (start > 0) {
-									std::list<int32_t> damageList;
-									ConditionDamage::generateDamageList(damage, start, damageList);
-									for (int32_t damageValue : damageList) {
-										conditionDamage->addDamage(1, ticks, -damageValue);
+									const int32_t damageEnd = std::max<int32_t>(0, -damage);
+									const int32_t tickInterval = 1000;
+									const int32_t tickCount = std::max<int32_t>(1, static_cast<int32_t>(ticks / tickInterval));
+
+									conditionDamage->setInitDamage(-start);
+									for (int32_t i = 1; i <= tickCount; ++i) {
+										const int32_t damageValue = start - ((start - damageEnd) * i / tickCount);
+										conditionDamage->addDamage(1, tickInterval, -std::max<int32_t>(damageEnd, damageValue));
 									}
 
 									start = 0;
+									initDamage = 0;
 								} else {
 									conditionDamage->addDamage(count, ticks, damage);
 								}

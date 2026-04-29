@@ -127,6 +127,9 @@ CombatType_t Combat::ConditionToDamageType(ConditionType_t type)
 		case CONDITION_CURSED:
 			return COMBAT_DEATHDAMAGE;
 
+		case CONDITION_AGONY:
+			return COMBAT_AGONYDAMAGE;
+
 		default:
 			break;
 	}
@@ -157,6 +160,9 @@ ConditionType_t Combat::DamageToConditionType(CombatType_t type)
 
 		case COMBAT_DEATHDAMAGE:
 			return CONDITION_CURSED;
+
+		case COMBAT_AGONYDAMAGE:
+			return CONDITION_AGONY;
 
 		case COMBAT_PHYSICALDAMAGE:
 			return CONDITION_BLEEDING;
@@ -1615,6 +1621,10 @@ void MagicField::onStepInField(Creature* creature)
 			}
 		}
 
-		creature->addCondition(std::move(conditionCopy));
+		if (conditionCopy->getType() == CONDITION_AGONY) {
+			creature->addCombatCondition(std::move(conditionCopy));
+		} else {
+			creature->addCondition(std::move(conditionCopy));
+		}
 	}
 }

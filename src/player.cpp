@@ -3947,6 +3947,10 @@ void Player::onAddCombatCondition(ConditionType_t type)
 			sendTextMessage(MESSAGE_STATUS_DEFAULT, "You are cursed.");
 			break;
 
+		case CONDITION_AGONY:
+			sendTextMessage(MESSAGE_STATUS_DEFAULT, "You are agonyed.");
+			break;
+
 		case CONDITION_FREEZING:
 			sendTextMessage(MESSAGE_STATUS_DEFAULT, "You are freezing.");
 			break;

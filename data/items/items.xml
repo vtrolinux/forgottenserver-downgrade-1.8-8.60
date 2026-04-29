@@ -67185,6 +67185,11 @@
 		<attribute key="type" value="magicfield" />
 		<attribute key="decayTo" value="0" />
 		<attribute key="duration" value="248" />
+		<attribute key="field" value="agony">
+			<attribute key="ticks" value="5000" />
+			<attribute key="start" value="260" />
+			<attribute key="damage" value="100" />
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="eventType" value="stepin" />
 		</attribute>

@@ -232,8 +232,9 @@ enum CombatType_t : uint16_t
 	COMBAT_ICEDAMAGE = 1 << 9,
 	COMBAT_HOLYDAMAGE = 1 << 10,
 	COMBAT_DEATHDAMAGE = 1 << 11,
+	COMBAT_AGONYDAMAGE = 1 << 12,
 
-	COMBAT_COUNT = 12
+	COMBAT_COUNT = 13
 };
 
 enum CombatParam_t
@@ -417,6 +418,7 @@ enum ConditionType_t
 	CONDITION_SPELLGROUPCOOLDOWN = 1 << 28,
 	CONDITION_ROOTED = 1 << 29,
 	CONDITION_FEARED = 1 << 30,
+	CONDITION_AGONY = static_cast<uint32_t>(1) << 31,
 };
 
 enum ConditionId_t : int8_t
