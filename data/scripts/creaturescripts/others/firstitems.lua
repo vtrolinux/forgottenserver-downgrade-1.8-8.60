@@ -107,16 +107,10 @@ function firstItems.onLogin(player)
 	local lastLogin = player:getLastLoginSaved()
 
 	if not configManager.getBoolean(configKeys.MONK_VOCATION_ENABLED) and (vocationId == 9 or vocationId == 10) then
-		player:setStorageValue(PlayerStorageKeys.firstItems, 1)
-		return true
-	end
-	
-	if player:getStorageValue(PlayerStorageKeys.firstItems) == 1 then
 		return true
 	end
 
 	if lastLogin > 0 then
-		player:setStorageValue(PlayerStorageKeys.firstItems, 1)
 		return true
 	end
 
@@ -124,8 +118,6 @@ function firstItems.onLogin(player)
 	if not targetVocation then
 		return true
 	end
-
-	player:setStorageValue(PlayerStorageKeys.firstItems, 1)
 
 	if targetVocation.items then
 		for i = 1, #targetVocation.items do
