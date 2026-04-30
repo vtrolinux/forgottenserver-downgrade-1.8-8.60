@@ -1230,6 +1230,7 @@ private:
 	void setManagerTalkState(size_t index, bool value) { managerTalkState[index] = value; }
 
 	void gainExperience(uint64_t gainExp, const std::shared_ptr<Creature>& source);
+	void updateSkullAfterPzLockEnded();
 
 	void updateInventoryWeight();
 	void reloadEquipmentStats();

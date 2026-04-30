@@ -3993,9 +3993,7 @@ void Player::onEndCondition(ConditionType_t type)
 		pzLocked = false;
 		clearAttacked();
 
-		if (getSkull() != SKULL_RED && getSkull() != SKULL_BLACK) {
-			setSkull(SKULL_NONE);
-		}
+		updateSkullAfterPzLockEnded();
 	}
 
 	sendIcons();
@@ -4184,10 +4182,8 @@ bool Player::onKilledCreature(const std::shared_ptr<Creature>& target, bool last
 			}
 
 			if (lastHit && hasCondition(CONDITION_INFIGHT)) {
-				pzLocked = true;
-				auto condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_INFIGHT,
-				                                            getInteger(ConfigManager::WHITE_SKULL_TIME) * 1000, 0);
-				addCondition(std::move(condition));
+				addInFightTicks(true);
+				sendIcons();
 			}
 		}
 	}
@@ -4548,6 +4544,24 @@ void Player::removeAttacked(const Player* attacked)
 
 void Player::clearAttacked() { attackedSet.clear(); }
 
+void Player::updateSkullAfterPzLockEnded()
+{
+	const Skulls_t currentSkull = getSkull();
+
+	if (currentSkull == SKULL_YELLOW || currentSkull == SKULL_WHITE) {
+		setSkull(SKULL_NONE);
+		sendIcons();
+		return;
+	}
+
+	if (currentSkull == SKULL_RED) {
+		if (skullTicks < 1) {
+			setSkull(SKULL_NONE);
+			sendIcons();
+		}
+	}
+}
+
 void Player::addUnjustifiedDead(const Player* attacked)
 {
 	if (hasFlag(PlayerFlag_NotGainInFight) || attacked == this || g_game.getWorldType() == WORLD_TYPE_PVP_ENFORCED) {
@@ -4562,15 +4576,32 @@ void Player::addUnjustifiedDead(const Player* attacked)
 		if (getInteger(ConfigManager::KILLS_TO_BLACK) != 0 &&
 		    skullTicks > (getInteger(ConfigManager::KILLS_TO_BLACK) - 1) * getInteger(ConfigManager::FRAG_TIME)) {
 			setSkull(SKULL_BLACK);
+			sendIcons();
 		} else if (getSkull() != SKULL_RED && getInteger(ConfigManager::KILLS_TO_RED) != 0 &&
 		           skullTicks > (getInteger(ConfigManager::KILLS_TO_RED) - 1) * getInteger(ConfigManager::FRAG_TIME)) {
 			setSkull(SKULL_RED);
+			sendIcons();
 		}
 	}
 }
 
 void Player::checkSkullTicks(int64_t ticks)
 {
+	if (skullTicks < 1) {
+		if (skull == SKULL_RED && !pzLocked) {
+			setSkull(SKULL_NONE);
+			sendIcons();
+		} else if (skull == SKULL_BLACK && !hasCondition(CONDITION_INFIGHT)) {
+			setSkull(SKULL_NONE);
+			sendIcons();
+		}
+		return;
+	}
+
+	if (getZone() == ZONE_PROTECTION) {
+		return;
+	}
+
 	int64_t newTicks = skullTicks - ticks;
 	if (newTicks < 0) {
 		skullTicks = 0;
@@ -4578,8 +4609,14 @@ void Player::checkSkullTicks(int64_t ticks)
 		skullTicks = newTicks;
 	}
 
-	if ((skull == SKULL_RED || skull == SKULL_BLACK) && skullTicks < 1 && !hasCondition(CONDITION_INFIGHT)) {
+	if (skull == SKULL_RED && skullTicks < 1) {
+		if (!pzLocked) {
+			setSkull(SKULL_NONE);
+			sendIcons();
+		}
+	} else if (skull == SKULL_BLACK && skullTicks < 1 && !hasCondition(CONDITION_INFIGHT)) {
 		setSkull(SKULL_NONE);
+		sendIcons();
 	}
 }
 
