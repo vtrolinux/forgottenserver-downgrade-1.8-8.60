@@ -523,11 +523,7 @@ local function creatureSayCallback(npc, creature, type, message)
 		}, npc, creature, 10)
 	elseif MsgContains(message, "hints") then
 		for i = 0, 35, 1 do
-			if i <= 35 then
-				npcHandler:say({ hints[i] })
-			elseif i == 35 then
-				i = 0
-			end
+			npcHandler:say({ hints[i] })
 		end
 	elseif MsgContains(message, "rookgaard") and player:getLevel() <= 9 then
 		if Player.getAccountStorage(player, Storage.Dawnport.Mainland, true) == 1 then

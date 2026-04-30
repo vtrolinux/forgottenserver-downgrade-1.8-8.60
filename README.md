@@ -14,7 +14,7 @@
 ![Engine](https://img.shields.io/badge/ENGINE-TFS%201.8-7c3aed?style=for-the-badge)
 ![Protocol](https://img.shields.io/badge/PROTOCOL-8.60-f97316?style=for-the-badge)
 ![C++](https://img.shields.io/badge/C++-23-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)
-![Lua](https://img.shields.io/badge/Lua-5.4-2C2D72?style=for-the-badge&logo=lua&logoColor=white)
+![Lua](https://img.shields.io/badge/Lua-5.5-2C2D72?style=for-the-badge&logo=lua&logoColor=white)
 ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04%2B-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-vcpkg-0078D4?style=for-the-badge&logo=windows&logoColor=white)
@@ -36,7 +36,7 @@ Developed and maintained by [Mateuzkl](https://github.com/Mateuzkl), based on [N
 
 | Area | Features |
 |---|---|
-| Core | TFS 1.8 engine, protocol 8.60, C++23, Lua 5.4, MariaDB, optimized decay |
+| Core | TFS 1.8 engine, protocol 8.60, C++23, Lua 5.5, MariaDB, optimized decay |
 | ClientID | Native `.dat` loading, no ServerID/ClientID conversion layer |
 | RPG systems | Forge, Imbuements, Reward Boss, Monk Harmony, Offline Training |
 | World systems | Instances, Zones, Guild Halls, House Protection, Live Cast |
@@ -343,21 +343,42 @@ familiarSystemEnabled = false
 
 ### Ubuntu 22.04 / 24.04
 
-Requires **Boost 1.75+** and **Lua 5.4**.
+Requires **Boost 1.75+** and **Lua 5.5**.
 
-Ubuntu 24.04 is recommended because it already ships the required versions. Ubuntu 22.04 may require a manual Boost update.
+Ubuntu 24.04 is recommended because it already ships the required Boost version. Lua 5.5 is installed manually below.
 
 Install dependencies:
 
 ```bash
 sudo apt update
 sudo apt install -y \
-  git cmake build-essential pkg-config \
-  liblua5.4-dev libmysqlclient-dev \
+  git wget cmake build-essential pkg-config \
+  libmysqlclient-dev \
   libboost-system-dev libboost-iostreams-dev libboost-filesystem-dev \
   libboost-locale-dev libboost-regex-dev libboost-json-dev \
   libpugixml-dev libfmt-dev libssl-dev libspdlog-dev libmimalloc-dev \
   libabsl-dev
+```
+
+Install Lua 5.5 manually:
+
+```bash
+cd /tmp
+wget https://www.lua.org/ftp/lua-5.5.0.tar.gz
+tar -xzf lua-5.5.0.tar.gz
+cd lua-5.5.0
+
+make linux
+sudo make install
+
+lua -v
+```
+
+If CMake cannot find the manually installed Lua, pass the paths explicitly:
+
+```bash
+-DLUA_INCLUDE_DIR=/usr/local/include \
+-DLUA_LIBRARY=/usr/local/lib/liblua.a
 ```
 
 Install `simdutf` manually on Linux:

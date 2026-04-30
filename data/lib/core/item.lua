@@ -514,15 +514,16 @@ do
 		do
 			for skill, value in pairs(abilities.specialSkills) do
 				if value ~= 0 then
+					local formattedValue
 					if skill - 1 >= 6 then
 						-- fatal, dodge, momentum
-						value = fmt("%0.2f", value / 100)
+						formattedValue = fmt("%0.2f", value / 100)
 					else
 						-- critical chance, critical amount, leech chance, leech amount
-						value = fmt("%+.2f", value / 100)
+						formattedValue = fmt("%+.2f", value / 100)
 					end
 
-					descriptions[#descriptions + 1] = fmt("%s %s%%", getSpecialSkillName(skill - 1), value)
+					descriptions[#descriptions + 1] = fmt("%s %s%%", getSpecialSkillName(skill - 1), formattedValue)
 				end
 			end
 		end

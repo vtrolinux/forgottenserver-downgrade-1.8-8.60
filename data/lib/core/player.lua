@@ -238,6 +238,10 @@ function Player.removeTotalMoney(self, amount)
 	return false
 end
 
+function Player.removeMoneyBank(self, amount)
+	return self:removeTotalMoney(amount)
+end
+
 function Player.addLevel(self, amount, round)
 	round = round or false
 	local level, amount = self:getLevel(), amount or 1
