@@ -1,4 +1,5 @@
 local ITEM_GOLD_POUCH = 23721
+local PROTECT_AMULET = 9802
 
 local function isPlayerOrPlayerSummon(creature)
     if not creature then
@@ -86,9 +87,15 @@ function DropLoot.onDeath(player, corpse, killer, mostDamageKiller, lastHitUnjus
 
     local isRedOrBlack = table.contains({SKULL_RED, SKULL_BLACK}, player:getSkull())
     local killedByPlayer = isPlayerOrPlayerSummon(killer)
-
-
     local amulet = player:getSlotItem(CONST_SLOT_NECKLACE)
+
+    if player:getSkull() == SKULL_RED and amulet and amulet:getId() == PROTECT_AMULET then
+        if not player:getSlotItem(CONST_SLOT_BACKPACK) then
+            player:addItem(ITEM_BAG, 1, false, CONST_SLOT_BACKPACK)
+        end
+        return true
+    end
+
     if amulet and amulet:getId() == ITEM_AMULETOFLOSS and not isRedOrBlack then
         if not killedByPlayer or not player:hasBlessing(6) then
             player:removeItem(ITEM_AMULETOFLOSS, 1, -1, false)

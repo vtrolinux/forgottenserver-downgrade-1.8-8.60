@@ -23488,6 +23488,9 @@
 	<item id="9802" article="a" name="friendship amulet">
 		<attribute key="description" value="It shines as beautifully as a good friendship. This amulet was rewarded by Tibiafriends" />
 		<attribute key="weight" value="520" />
+		<attribute key="script" value="moveevent">
+			<attribute key="slot" value="necklace" />
+		</attribute>
 	</item>
 	<item id="9803" article="a" name="friendship amulet">
 		<attribute key="description" value="It shines as beautifully as a good friendship. This amulet was rewarded by Tibiafriends" />
