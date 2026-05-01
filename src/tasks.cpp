@@ -47,9 +47,9 @@ void Dispatcher::threadMain()
         }
         taskSignal.acquire();
         if (g_stats.isEnabled()) {
-            g_stats.dispatcherWaitTime(dispatcherId) += std::chrono::duration_cast<std::chrono::nanoseconds>(
+            g_stats.addDispatcherWaitTime(static_cast<std::size_t>(dispatcherId), std::chrono::duration_cast<std::chrono::nanoseconds>(
                 std::chrono::high_resolution_clock::now() - time_point
-            ).count();
+            ).count());
         }
 #else
         taskSignal.acquire();

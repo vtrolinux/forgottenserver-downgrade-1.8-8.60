@@ -68,8 +68,6 @@ void mainLoader(const std::shared_ptr<ServiceManager>& services)
 
 	setupLoggerSignalHandlers();
 
-	g_threadPool.start();
-
 	srand(static_cast<unsigned int>(OTSYS_TIME()));
 #ifdef _WIN32
 	SetConsoleTitle(STATUS_SERVER_NAME);
@@ -111,6 +109,10 @@ void mainLoader(const std::shared_ptr<ServiceManager>& services)
 		return;
 	}
 	g_logger().setLevel(parseLogLevel(getString(ConfigManager::LOG_LEVEL)));
+
+	const auto workerThreads = static_cast<uint32_t>(
+		std::clamp<int64_t>(getInteger(ConfigManager::NETWORK_THREADS), 1, 64));
+	g_threadPool.start(workerThreads);
 
 #ifdef _WIN32
 	auto defaultPriority = getString(ConfigManager::DEFAULT_PRIORITY);
@@ -307,10 +309,6 @@ void mainLoader(const std::shared_ptr<ServiceManager>& services)
 	// Pre-warm the OutputMessage pool to avoid operator new() on first connections
 	OutputMessagePool::prewarmPool(128);
 
-#ifdef STATS_ENABLED
-	g_stats.setEnabled(true);
-#endif
-
 	g_loaderSignal.notify_all();
 }
 
@@ -330,11 +328,12 @@ void startServer()
 
 	auto serviceManager = std::make_shared<ServiceManager>();
 
+#ifdef STATS_ENABLED
+	g_stats.setEnabled(false);
+#endif
+
 	g_dispatcher.start();
 	g_scheduler.start();
-#ifdef STATS_ENABLED
-	g_stats.start();
-#endif
 
 	{
 		auto loaderTask = createTaskWithStats([services = serviceManager]() { mainLoader(services); }, "MainLoader", "");
@@ -345,17 +344,21 @@ void startServer()
 	g_loaderSignal.wait(g_loaderUniqueLock);
 
 	if (serviceManager->is_running()) {
+		const auto networkThreads = std::clamp<int64_t>(getInteger(ConfigManager::NETWORK_THREADS), 1, 64);
+#ifdef STATS_ENABLED
+		g_stats.configureDispatchers(static_cast<std::size_t>(networkThreads) + 1);
+		g_stats.start();
+		g_stats.setEnabled(true);
+#endif
+
 		LOG_INFO(">> Version TFS: {} | Protocol: {} | Ports: {} / {} | IP: {}",
 			fmt::format(fg(fmt::color::lime_green), "{}", STATUS_SERVER_VERSION),
 			fmt::format(fg(fmt::color::lime_green), "{}", CLIENT_VERSION_STR),
 			fmt::format(fg(fmt::color::lime_green), "{}", getInteger(ConfigManager::LOGIN_PORT)),
 			fmt::format(fg(fmt::color::lime_green), "{}", getInteger(ConfigManager::GAME_PORT)),
 			fmt::format(fg(fmt::color::lime_green), "{}", getString(ConfigManager::IP)));
-		{
-			int networkThreads = std::max(1, static_cast<int>(getInteger(ConfigManager::NETWORK_THREADS)));
-			if (networkThreads > 1) {
-				LOG_NETWORK(">> I/O threads: {}", networkThreads);
-			}
+		if (networkThreads > 1) {
+			LOG_NETWORK(">> I/O threads: {}", networkThreads);
 		}
 		LOG_INFO("");
 		LOG_INFO(">> {} Server Online!", getString(ConfigManager::SERVER_NAME));

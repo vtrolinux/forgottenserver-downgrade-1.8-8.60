@@ -14,6 +14,15 @@ static constexpr uint32_t DEFAULT_MIN_THREADS = 4;
 
 void ThreadPool::start(uint32_t requestedThreads)
 {
+	{
+		std::scoped_lock lock(queueMutex);
+		if (!workers.empty() && !stopped.load(std::memory_order_relaxed)) {
+			LOG_WARN("ThreadPool: start() called while already running");
+			return;
+		}
+		stopped.store(false, std::memory_order_relaxed);
+	}
+
 	if (requestedThreads == 0) {
 		threadCount = std::max<uint32_t>(std::thread::hardware_concurrency(), DEFAULT_MIN_THREADS);
 	} else {

@@ -14,6 +14,11 @@ int64_t Stats::DUMP_INTERVAL = 30000; // 30 sec
 uint32_t Stats::SLOW_EXECUTION_TIME = 10000000; // 10 ms
 uint32_t Stats::VERY_SLOW_EXECUTION_TIME = 50000000; // 50 ms
 
+Stats::Stats()
+{
+	configureDispatchers(1);
+}
+
 Stats::~Stats() = default;
 
 thread_local AutoStatRecursive* AutoStatRecursive::activeStat = nullptr;
@@ -103,9 +108,31 @@ void Stats::threadMain() {
 	}
 }
 
-void Stats::addDispatcherTask(int index, std::unique_ptr<Task> task) {
+void Stats::configureDispatchers(std::size_t count) {
+	if (isRunning()) {
+		LOG_STATS_WARNING("Stats::configureDispatchers must be called before Stats::start()");
+		return;
+	}
+
 	std::scoped_lock lockClass(statsLock);
+	dispatchers.clear();
+	dispatchers.resize(std::max<std::size_t>(1, count));
+}
+
+void Stats::addDispatcherTask(std::size_t index, std::unique_ptr<Task> task) {
+	std::scoped_lock lockClass(statsLock);
+	if (index >= dispatchers.size()) {
+		LOG_STATS_WARNING("Stats dispatcher index {} is out of range (size: {})", index, dispatchers.size());
+		return;
+	}
 	dispatchers[index].queue.push_front(std::move(task));
+}
+
+void Stats::addDispatcherWaitTime(std::size_t index, uint64_t waitTime) noexcept {
+	if (index >= dispatchers.size()) {
+		return;
+	}
+	dispatchers[index].waitTime.fetch_add(waitTime, std::memory_order_relaxed);
 }
 
 void Stats::addLuaStats(std::unique_ptr<Stat> stats) {
@@ -124,9 +151,9 @@ void Stats::addSpecialStats(std::unique_ptr<Stat> stats) {
 }
 
 void Stats::parseDispatchersQueue(std::vector<std::forward_list<std::unique_ptr<Task>>>&& queues) {
-	int i = 0;
-	for(auto& dispatcher : dispatchers) {
-		for(const auto& task : queues[i++]) {
+	for(std::size_t i = 0; i < dispatchers.size() && i < queues.size(); ++i) {
+		auto& dispatcher = dispatchers[i];
+		for(const auto& task : queues[i]) {
 			auto it = dispatcher.stats.emplace(task->description, statsData(0, 0, task->extraDescription)).first;
 			it->second.calls += 1;
 			it->second.executionTime += task->executionTime;

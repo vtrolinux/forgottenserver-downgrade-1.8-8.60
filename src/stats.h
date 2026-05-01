@@ -39,6 +39,7 @@ using statsMap = std::unordered_map<std::string, statsData>;
 
 class Stats : public ThreadHolder<Stats> {
 public:
+	Stats();
 	~Stats();
 
 	void threadMain();
@@ -56,13 +57,12 @@ public:
 
 	bool isRunning() const { return getState() == THREAD_STATE_RUNNING; }
 
-	void addDispatcherTask(int index, std::unique_ptr<Task> task);
+	void configureDispatchers(std::size_t count);
+	void addDispatcherTask(std::size_t index, std::unique_ptr<Task> task);
+	void addDispatcherWaitTime(std::size_t index, uint64_t waitTime) noexcept;
 	void addLuaStats(std::unique_ptr<Stat> stats);
 	void addSqlStats(std::unique_ptr<Stat> stats);
 	void addSpecialStats(std::unique_ptr<Stat> stats);
-	std::atomic<uint64_t>& dispatcherWaitTime(int index) {
-		return dispatchers[index].waitTime;
-	}
 
 	static uint32_t SLOW_EXECUTION_TIME;
 	static uint32_t VERY_SLOW_EXECUTION_TIME;
@@ -79,12 +79,32 @@ private:
 	static void writeStats(const std::string& file, const statsMap& stats, const std::string& extraInfo = "");
 
 	std::mutex statsLock;
-	struct {
+	struct DispatcherStats {
 		std::forward_list<std::unique_ptr<Task>> queue;
 		statsMap stats;
-		std::atomic<uint64_t> waitTime;
-		int64_t lastDump;
-	} dispatchers[3];
+		std::atomic<uint64_t> waitTime{0};
+		int64_t lastDump = 0;
+
+		DispatcherStats() = default;
+		DispatcherStats(const DispatcherStats&) = delete;
+		DispatcherStats& operator=(const DispatcherStats&) = delete;
+		DispatcherStats(DispatcherStats&& other) noexcept :
+			queue(std::move(other.queue)),
+			stats(std::move(other.stats)),
+			waitTime(other.waitTime.load(std::memory_order_relaxed)),
+			lastDump(other.lastDump) {}
+		DispatcherStats& operator=(DispatcherStats&& other) noexcept {
+			if (this == &other) {
+				return *this;
+			}
+			queue = std::move(other.queue);
+			stats = std::move(other.stats);
+			waitTime.store(other.waitTime.load(std::memory_order_relaxed), std::memory_order_relaxed);
+			lastDump = other.lastDump;
+			return *this;
+		}
+	};
+	std::vector<DispatcherStats> dispatchers;
 	struct {
 		std::forward_list<std::unique_ptr<Stat>> queue;
 		statsMap stats;
