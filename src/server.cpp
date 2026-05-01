@@ -287,6 +287,14 @@ void ServicePort::open(uint16_t port)
 	} catch (boost::system::system_error& e) {
 		LOG_NETWORK(fmt::format("Error - ServicePort::open: {}", e.what()));
 
+		if (e.code() == boost::asio::error::address_in_use) {
+			LOG_ERROR("\x1b[31mATTENTION: network port is already in use. There is likely another TFS process running.\x1b[0m");
+			LOG_ERROR("\x1b[31mTo check, run: ps aux | grep ./tfs\x1b[0m");
+			LOG_ERROR("\x1b[31mTry this first: kill PID\x1b[0m");
+			LOG_ERROR("\x1b[31mIf it does not stop, then use: kill -9 PID\x1b[0m");
+			LOG_ERROR("\x1b[31mThen start the server again.\x1b[0m");
+		}
+
 		pendingStart = true;
 		g_scheduler.addEvent(createSchedulerTask(
 		    15000,
