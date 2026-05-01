@@ -13,13 +13,12 @@ handler:setFarewellResponse({"Farewell, |PLAYERNAME|."})
 local greet = handler:keyword(handler.greetWords)
 greet:setGreetResponse({"Welcome on board, |PLAYERNAME|."})
 greet:keyword("captain"):respond("I am the captain of this sailing-ship.")
-greet:keyword("trip"):respond("Where do you want to go? To Trekolt, Rhyves, Varak or Saund?")
-greet:keyword("ice"):respond("I'm sorry, but we don't serve the routes to the Ice Islands.")
+greet:keyword("trip"):respond("Where do you want to go? To Classic City, Timberport, Sandstone or Ice?")
 
 local destinations = {
-    trekolt = { position = Position(998, 998, 7), money = 100, premium = true },
-    rhyves  = { position = Position(998, 998, 7), money = 120, premium = true },
-    varak   = { position = Position(998, 998, 7), money = 160, premium = true },
-    saund   = { position = Position(998, 998, 7), money = 150, premium = true }
+    classiccity  = { position = Position(1014, 926, 6), money = 100, premium = true },
+    timberport   = { position = Position(733, 973, 6), money = 120, premium = true },
+    sandstone    = { position = Position(1022, 1084, 6), money = 160, premium = true },
+    ice          = { position = Position(1167, 902, 7), money = 150, premium = true }
 }
 handler:travelTo(destinations)

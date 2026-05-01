@@ -216,6 +216,9 @@
 	<spawn centerx="1105" centery="919" centerz="6" radius="1">
 		<monster name="Wasp" x="-1" y="1" z="6" spawntime="60" />
 	</spawn>
+	<spawn centerx="1013" centery="924" centerz="6" radius="1">
+		<npc name="Captain" x="0" y="0" z="6" spawntime="60" direction="2" />
+	</spawn>
 	<spawn centerx="916" centery="933" centerz="6" radius="1">
 		<monster name="Valkyrie" x="0" y="1" z="6" spawntime="60" />
 	</spawn>
@@ -248,6 +251,9 @@
 	</spawn>
 	<spawn centerx="1109" centery="970" centerz="6" radius="1">
 		<monster name="Bear" x="1" y="-1" z="6" spawntime="60" />
+	</spawn>
+	<spawn centerx="734" centery="971" centerz="6" radius="1">
+		<npc name="Captain" x="0" y="0" z="6" spawntime="60" direction="2" />
 	</spawn>
 	<spawn centerx="937" centery="988" centerz="6" radius="1">
 		<monster name="Goblin" x="0" y="1" z="6" spawntime="60" />
@@ -483,6 +489,9 @@
 	</spawn>
 	<spawn centerx="816" centery="901" centerz="7" radius="1">
 		<monster name="Orc" x="0" y="0" z="7" spawntime="60" />
+	</spawn>
+	<spawn centerx="1165" centery="903" centerz="7" radius="1">
+		<npc name="Captain" x="0" y="0" z="7" spawntime="60" direction="2" />
 	</spawn>
 	<spawn centerx="780" centery="908" centerz="7" radius="1">
 		<monster name="Orc Spearman" x="0" y="0" z="7" spawntime="60" />
