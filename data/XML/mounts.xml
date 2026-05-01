@@ -245,4 +245,11 @@
 	<mount id="243" clientid="1866" name="White Gloom Maw" speed="20" premium="yes" />
 	<mount id="244" clientid="1867" name="Gloom Maw" speed="20" premium="yes" />
 	<mount id="245" clientid="1873" name="Battle Werewolf" speed="20" premium="no" />
+	<mount id="246" clientid="1882" name="Battlefrazzle" speed="20" premium="no" />
+	<mount id="247" clientid="1908" name="Tidal Seawater Predator" speed="20" premium="no" />
+	<mount id="248" clientid="1909" name="Ashen Coast Predator" speed="20" premium="no" />
+	<mount id="249" clientid="1910" name="Crimson Bay Predator" speed="20" premium="no" />
+	<mount id="250" clientid="1919" name="Flame Bear" speed="20" premium="no" />
+	<mount id="251" clientid="1934" name="Reliable Ram" speed="20" premium="no" />	
+	<mount id="252" clientid="1935" name="Guardian Lion" speed="20" premium="no" />
 </mounts>

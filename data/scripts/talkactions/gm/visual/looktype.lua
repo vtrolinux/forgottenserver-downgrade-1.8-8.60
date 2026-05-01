@@ -50,12 +50,12 @@ local invalidTypes = {
     1789, 1790, 1791, 1805, 1806, 1807, 1811, 1812, 1821, 1822,
     1829, 1839, 1841, 1863, 1864, 1865, 1870, 1871, 1872, 1876,
     1877, 1878, 1891, 1892, 1893, 1894, 1897, 1898, 1911, 1912,
-    1915, 1916, 1917, 1918
+    1915, 1916, 1917, 1918, 1922, 1923, 1924, 1925, 1926, 1932, 1933
 }
 
 function talkaction.onSay(player, words, param)
 	local lookType = tonumber(param)
-	if lookType >= 0 and lookType < 1922 and
+	if lookType >= 0 and lookType < 1937 and
 		not table.contains(invalidTypes, lookType) then
 		local playerOutfit = player:getOutfit()
 		playerOutfit.lookType = lookType
