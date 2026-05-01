@@ -143,7 +143,8 @@ allowMountInPz = false
 -- NPC Lua backend.
 -- "tfs"     loads data/npc/lib/tfs and Lua NPCs from data/npc/lua.
 -- "crystal" loads data/npc/lib/crystal and disables the default TFS Lua NPC folder.
--- Crystal Lua NPCs are loaded from data/npc/crystal or data/npc/npc_Crystal_Server_15x when present.
+-- Crystal Lua NPCs are loaded from data/npc/crystalserver (preferred),
+-- then data/npc/crystal and data/npc/npc_Crystal_Server_15x for compatibility.
 -- XML NPCs remain supported in both modes.
 npcSystem = "tfs"
 

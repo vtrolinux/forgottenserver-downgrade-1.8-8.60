@@ -67,7 +67,7 @@ std::vector<fs::path> getNpcScriptDirectories(const std::string& npcSystem)
 		return scriptDirs;
 	}
 
-	for (const fs::path& path : {fs::path{"data/npc/crystal"}, fs::path{"data/npc/npc_Crystal_Server_15x"}}) {
+	for (const fs::path& path : {fs::path{"data/npc/crystalserver"}, fs::path{"data/npc/crystal"}, fs::path{"data/npc/npc_Crystal_Server_15x"}}) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			scriptDirs.emplace_back(path);
 		}
