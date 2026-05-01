@@ -867,6 +867,60 @@ ensure_lua_alternatives() {
   fi
 }
 
+remove_old_lua_versions() {
+  # Remove apt-managed Lua packages for versions other than 5.5
+  local old_ver pkg
+  local -a old_pkgs=()
+
+  for old_ver in 5.1 5.2 5.3 5.4; do
+    for pkg in \
+      "lua${old_ver}" \
+      "liblua${old_ver}-dev" \
+      "liblua${old_ver}" \
+      "lua${old_ver}-dev" \
+      "lua-${old_ver}" \
+      "liblua-${old_ver}-0" \
+      "liblua-${old_ver}-0-dev"; do
+      if apt_package_installed "${pkg}"; then
+        old_pkgs+=("${pkg}")
+      fi
+    done
+  done
+
+  if ((${#old_pkgs[@]} > 0)); then
+    info "Removendo versoes antigas de Lua: $(join_by_space "${old_pkgs[@]}")"
+    apt_update_once
+    "${SUDO[@]}" apt remove -y "${old_pkgs[@]}" || true
+    "${SUDO[@]}" apt autoremove -y || true
+  fi
+
+  # Remove manually-installed Lua binaries for versions other than 5.5
+  local bin_dir="${LUA_PREFIX}/bin"
+  local bin_path
+  for old_ver in 5.1 5.2 5.3 5.4; do
+    for bin_path in "${bin_dir}/lua${old_ver}" "${bin_dir}/luac${old_ver}"; do
+      if [[ -f "${bin_path}" ]]; then
+        info "Removendo binario Lua antigo: ${bin_path}"
+        "${SUDO[@]}" rm -f "${bin_path}"
+      fi
+    done
+  done
+
+  # Remove old alternatives pointing to non-5.5 binaries
+  if command -v update-alternatives >/dev/null 2>&1; then
+    local alt_path
+    for old_ver in 5.1 5.2 5.3 5.4; do
+      alt_path="${LUA_PREFIX}/bin/lua${old_ver}"
+      "${SUDO[@]}" update-alternatives --remove lua "${alt_path}" >/dev/null 2>&1 || true
+      alt_path="${LUA_PREFIX}/bin/luac${old_ver}"
+      "${SUDO[@]}" update-alternatives --remove luac "${alt_path}" >/dev/null 2>&1 || true
+      # also check /usr/bin paths
+      "${SUDO[@]}" update-alternatives --remove lua "/usr/bin/lua${old_ver}" >/dev/null 2>&1 || true
+      "${SUDO[@]}" update-alternatives --remove luac "/usr/bin/luac${old_ver}" >/dev/null 2>&1 || true
+    done
+  fi
+}
+
 install_lua_55() {
   sayf lua_install "${LUA_VERSION}"
 
@@ -898,6 +952,7 @@ ensure_lua_55() {
   fi
 
   warn "$(msg lua_old)"
+  remove_old_lua_versions
   install_lua_55
 
   if ! lua_local_is_55; then
