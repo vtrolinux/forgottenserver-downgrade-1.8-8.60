@@ -5,6 +5,8 @@ local SECOND_CURRENCY_ENABLED = true
 local ACCOUNT_TABLE = "accounts"
 local PRIMARY_CURRENCY_COLUMN = "tibia_coins"
 local SECOND_CURRENCY_COLUMN = "points_second"
+local MAX_OFFER_NAME_LENGTH = 100
+local MAX_TARGET_NAME_LENGTH = 50
 
 local LoginEvent = CreatureEvent("GameStoreLogin")
 
@@ -221,6 +223,10 @@ function gameStorePurchase(player, offer)
 		return errorMsg(player, "Invalid store request.")
 	end
 
+	if #offer.name > MAX_OFFER_NAME_LENGTH or #offer.parent > MAX_OFFER_NAME_LENGTH then
+		return errorMsg(player, "Invalid store request.")
+	end
+
 	local clientPrice = tonumber(offer.price)
 	local clientCount = tonumber(offer.count)
 	if not clientPrice or not clientCount then
@@ -235,27 +241,45 @@ function gameStorePurchase(player, offer)
 	for i = 1, #offers do
 		local serverOffer = offers[i]
 		if serverOffer.name == offer.name and serverOffer.price == clientPrice and serverOffer.count == clientCount then
-			local points = 0
 			local query = ""
 			if serverOffer.isSecondPrice then
-				points = getSecondCurrency(player)
 				query = SECOND_CURRENCY_COLUMN
 			else
-				points = getPoints(player)
 				query = PRIMARY_CURRENCY_COLUMN
 			end
-			
+
+			local aid = player:getAccountId()
+			db.query("START TRANSACTION")
+
+			local lockedBalance = db.storeQuery("SELECT `" .. query .. "` AS `points` FROM `" .. ACCOUNT_TABLE .. "` WHERE `id` = " .. aid .. " FOR UPDATE")
+			if lockedBalance == false then
+				db.query("ROLLBACK")
+				return errorMsg(player, "Store is busy, please try again.")
+			end
+
+			local points = result.getDataInt(lockedBalance, "points")
+			result.free(lockedBalance)
+
 			if serverOffer.price > points then
+				db.query("ROLLBACK")
+				return errorMsg(player, "You don't have enough points!")
+			end
+
+			local debitOk = db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. query .. "` = `" .. query .. "` - " .. serverOffer.price .. " WHERE `id` = " .. aid .. " AND `" .. query .. "` >= " .. serverOffer.price)
+			if not debitOk then
+				db.query("ROLLBACK")
 				return errorMsg(player, "You don't have enough points!")
 			end
 
 			local safeOffer = buildSafeOffer(serverOffer, offer)
 			local status = finalizePurchase(player, safeOffer)
 			if status then
+				db.query("ROLLBACK")
 				return errorMsg(player, status)
 			end
 
-			local aid = player:getAccountId()
+			db.query("COMMIT")
+
 			local escapeName = db.escapeString(serverOffer.name)
 			local escapePrice = db.escapeString(-serverOffer.price)
 			local escapeIsSecondPrice = db.escapeString(serverOffer.isSecondPrice and "1" or "0")
@@ -264,7 +288,6 @@ function gameStorePurchase(player, offer)
 				escapeCount = 0
 			end
 
-			db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. query .. "` = `" .. query .. "` - " .. serverOffer.price .. " WHERE `id` = " .. aid)
 			db.asyncQuery("INSERT INTO `shop_history` VALUES (NULL, " .. aid .. ", " .. player:getGuid() .. ", NOW(), " .. escapeName .. ", " .. escapePrice .. ", " .. escapeIsSecondPrice .. ", " .. escapeCount .. ", NULL)")
 			addEvent(gameStoreUpdateHistory, 1000, player:getId())
 			addEvent(gameStoreUpdatePoints, 1000, player:getId())
@@ -463,7 +486,7 @@ function validName(name)
 
 	for i = 1, #forbiddenWords do
 		for word in string.gmatch(name, "%a+") do
-			if word:lower() == forbiddenWords[i] then
+			if word:lower() == forbiddenWords[i]:lower() then
 				return false
 			end
 		end
@@ -532,8 +555,6 @@ function ExtendedEvent.onExtendedOpcode(player, opcode, buffer)
 			gameStorePurchase(player, data)
 		elseif action == "transfer" then
 			gameStoreTransferCoins(player, data)
-		elseif action == "changeName" then
-			gameStoreChangeName(player, data)
 		end
 	end
 end
@@ -558,70 +579,16 @@ function gameStoreUpdatePoints(player)
 		points = getPoints(player), secondPoints = getSecondCurrency(player)}})
 end
 
-function gameStoreUpdatePointsAndRemovePlayer(player)
-	if type(player) == "number" then
-		player = Player(player)
-	end
-
-	sendGameStoreData(player, {action = "points", data = {
-		points = getPoints(player), secondPoints = getSecondCurrency(player)}})
-	player:remove()
-end
-
-function gameStoreChangeName(player, offer)
-	local offers = GAME_STORE.offers[offer.category]
-	if not offers then
-		return errorMsg(player, "Something went wrong, try again or contact server admin [#1]!")
-	end
-	
-	if not offer.nick then
-		return errorMsg(player, "You need to choose a new nickname.")
-	end
-
-	for i = 1, #offers do
-		if offers[i].title == offer.title and offers[i].price == offer.price then
-			local callback = offers[i].callback
-			if not callback then
-				return errorMsg(player, "Something went wrong, try again or contact server admin [#2]!")
-			end
-
-			local points = getPoints(player)
-			if offers[i].price > points then
-				return errorMsg(player, "You don't have enough points!")
-			end
-
-			if player:getName() == offer.nick then
-				return errorMsg(player, "Please choose a new nickname different from your previous one")
-			end
-
-			local status = callback(player, offer)
-			if status ~= true then
-				return errorMsg(player, status)
-			end
-
-			local aid = player:getAccountId()
-			local escapeTitle = db.escapeString(offers[i].title)
-			local escapePrice = db.escapeString(-offers[i].price)
-			local escapeIsSecondPrice = db.escapeString(-offers[i].isSecondPrice)
-			local escapeCount = offers[i].count and db.escapeString(offers[i].count) or 0
-			db.query("UPDATE `" .. ACCOUNT_TABLE .. "` set `" .. PRIMARY_CURRENCY_COLUMN .. "` = `" .. PRIMARY_CURRENCY_COLUMN .. "` - " .. offers[i].price .. " WHERE `id` = " .. aid)
-			db.asyncQuery("INSERT INTO `shop_history` VALUES (NULL, '" .. aid .. "', '" .. player:getGuid() .. "', NOW(), " .. escapeTitle .. ", " .. escapePrice .. ", " .. escapeIsSecondPrice .. ", " .. escapeCount .. ", NULL)")
-
-			addEvent(gameStoreUpdateHistory, 1000, player:getId())
-			addEvent(gameStoreUpdatePointsAndRemovePlayer, 1000, player:getId())
-			return infoMsg(player, "You've bought " .. offers[i].title .. "! Please log out of your account and join us with your new name already set.", true)
-		end
-	end
-
-	return errorMsg(player, "Something went wrong, try again or contact server admin [#4]!")
-end
-
 function gameStoreTransferCoins(player, transfer)
 	if type(transfer) ~= "table" or type(transfer.target) ~= "string" then
 		return errorMsg(player, "Invalid transfer request.")
 	end
 
 	local receiver = transfer.target:trim()
+	if #receiver > MAX_TARGET_NAME_LENGTH then
+		return errorMsg(player, "Target player not found!")
+	end
+
 	local amount = normalizeUnsignedInteger(transfer.amount)
 	local amountSecond = normalizeUnsignedInteger(transfer.amountSecond)
 	if not amount or not amountSecond then
@@ -672,16 +639,28 @@ function gameStoreTransferCoins(player, transfer)
 	local title = "Coin Transfer from " .. player:getName() .. " to " .. receiver
 	local escapeTitle = db.escapeString(title)
 	if amount > 0 then
-		db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. PRIMARY_CURRENCY_COLUMN .. "` = `" .. PRIMARY_CURRENCY_COLUMN .. "` - " .. amount .. " WHERE `id` = " .. aid)
-		db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. PRIMARY_CURRENCY_COLUMN .. "` = `" .. PRIMARY_CURRENCY_COLUMN .. "` + " .. amount .. " WHERE `id` = " .. accountId)
-		
+		db.query("START TRANSACTION")
+		local ok1 = db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. PRIMARY_CURRENCY_COLUMN .. "` = `" .. PRIMARY_CURRENCY_COLUMN .. "` - " .. amount .. " WHERE `id` = " .. aid)
+		local ok2 = db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. PRIMARY_CURRENCY_COLUMN .. "` = `" .. PRIMARY_CURRENCY_COLUMN .. "` + " .. amount .. " WHERE `id` = " .. accountId)
+		if not ok1 or not ok2 then
+			db.query("ROLLBACK")
+			return errorMsg(player, "Transfer failed, please try again.")
+		end
+		db.query("COMMIT")
+
 		db.asyncQuery("INSERT INTO `shop_history` VALUES (NULL, '" .. aid .. "', '" .. player:getGuid() .. "', NOW(), " .. escapeTitle .. ", " .. db.escapeString(-amount) .. ", 0, 1, " .. db.escapeString(receiver) .. ")")
 		db.asyncQuery("INSERT INTO `shop_history` VALUES (NULL, '" .. accountId .. "', '" .. GUID .. "', NOW(), " .. escapeTitle .. ", " .. db.escapeString(amount) .. ", 0, 1, " .. db.escapeString(player:getName()) .. ")")
 	end
 
 	if amountSecond > 0 then
-		db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. SECOND_CURRENCY_COLUMN .. "` = `" .. SECOND_CURRENCY_COLUMN .. "` - " .. amountSecond .. " WHERE `id` = " .. aid)
-		db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. SECOND_CURRENCY_COLUMN .. "` = `" .. SECOND_CURRENCY_COLUMN .. "` + " .. amountSecond .. " WHERE `id` = " .. accountId)
+		db.query("START TRANSACTION")
+		local ok1 = db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. SECOND_CURRENCY_COLUMN .. "` = `" .. SECOND_CURRENCY_COLUMN .. "` - " .. amountSecond .. " WHERE `id` = " .. aid)
+		local ok2 = db.query("UPDATE `" .. ACCOUNT_TABLE .. "` SET `" .. SECOND_CURRENCY_COLUMN .. "` = `" .. SECOND_CURRENCY_COLUMN .. "` + " .. amountSecond .. " WHERE `id` = " .. accountId)
+		if not ok1 or not ok2 then
+			db.query("ROLLBACK")
+			return errorMsg(player, "Transfer failed, please try again.")
+		end
+		db.query("COMMIT")
 	
 		db.asyncQuery("INSERT INTO `shop_history` VALUES (NULL, '" .. aid .. "', '" .. player:getGuid() .. "', NOW(), " .. escapeTitle .. ", " .. db.escapeString(-amountSecond) .. ", 1, 1, " .. db.escapeString(receiver) .. ")")
 		db.asyncQuery("INSERT INTO `shop_history` VALUES (NULL, '" .. accountId .. "', '" .. GUID .. "', NOW(), " .. escapeTitle .. ", " .. db.escapeString(amountSecond) .. ", 1, 1, " .. db.escapeString(player:getName()) .. ")")
