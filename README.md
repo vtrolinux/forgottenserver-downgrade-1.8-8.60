@@ -472,6 +472,10 @@ Full guide: [Windows Compilation Wiki](https://github.com/MillhioreBT/forgottens
 
 ## Client Configuration
 
+### 📢 Client Update: Version 15.24
+
+**Client version upgraded to 15.24.** The items.otb and sprite files (.spr and .dat) have been updated to support version 15.24 for both OTCv8 and the classic CIP client. Download the latest assets below.
+
 ### OTCv8 / Mehah
 
 Enable the required features for protocol 860 in `modules/game_features/game_features.lua`:
