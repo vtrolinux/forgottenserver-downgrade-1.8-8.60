@@ -1365,7 +1365,7 @@ void Player::onChangeZone(ZoneType_t zone)
 			uint32_t gain = ConfigManager::getInteger(ConfigManager::STAMINA_PZ_GAIN);
 			sendTextMessage(MESSAGE_STATUS_SMALL, fmt::format("You're in the protection zone. Every {} minutes, gain {} stamina.", delay, gain));
 		}
-		if (!group->access && isMounted()) {
+		if (!group->access && isMounted() && !ConfigManager::getBoolean(ConfigManager::ALLOW_MOUNT_IN_PZ)) {
 			dismount();
 			g_game.internalCreatureChangeOutfit(this, defaultOutfit);
 			wasMounted = true;
@@ -4917,7 +4917,8 @@ bool Player::toggleMount(bool mount)
 			return false;
 		}
 
-		if (!group->access && getTile() && getTile()->hasFlag(TILESTATE_PROTECTIONZONE)) {
+		if (!group->access && getTile() && getTile()->hasFlag(TILESTATE_PROTECTIONZONE)
+						   && !ConfigManager::getBoolean(ConfigManager::ALLOW_MOUNT_IN_PZ)) {
 			sendCancelMessage(RETURNVALUE_ACTIONNOTPERMITTEDINPROTECTIONZONE);
 			return false;
 		}

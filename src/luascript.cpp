@@ -2508,6 +2508,7 @@ void LuaScriptInterface::registerFunctions()
 	registerEnumIn("configKeys", ConfigManager::IMBUEMENT_SYSTEM_ENABLED);
 	registerEnumIn("configKeys", ConfigManager::MONK_VOCATION_ENABLED);
 	registerEnumIn("configKeys", ConfigManager::FAMILIAR_SYSTEM_ENABLED);
+	registerEnumIn("configKeys", ConfigManager::ALLOW_MOUNT_IN_PZ);
 
 	registerEnumIn("configKeys", ConfigManager::MAP_NAME);
 	registerEnumIn("configKeys", ConfigManager::HOUSE_RENT_PERIOD);
