@@ -761,6 +761,15 @@ do
 		local handler = NpcHandler.__modernCompatLastCreated
 		local shopItems = normalizeShopItems(npcConfig.shop)
 		local currency = resolveCurrencyId(npcConfig.currency)
+		local speechBubble = npcConfig.speechBubble or npcConfig.speechbubble or 0
+
+		if #shopItems > 0 then
+			if speechBubble == 3 then
+				speechBubble = 4
+			elseif speechBubble == 0 then
+				speechBubble = 2
+			end
+		end
 
 		if npcConfig.health then
 			self:health(npcConfig.health)
@@ -779,6 +788,9 @@ do
 		end
 		if npcConfig.outfit then
 			self:outfit(normalizeOutfit(npcConfig.outfit))
+		end
+		if speechBubble ~= nil then
+			self:speechBubble(speechBubble)
 		end
 		if npcConfig.flags then
 			if npcConfig.flags.floorchange ~= nil then
