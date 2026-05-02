@@ -277,7 +277,7 @@ void mainLoader(const std::shared_ptr<ServiceManager>& services)
 
 	RentPeriod_t rentPeriod;
 	auto strRentPeriod =
-	    boost::algorithm::to_lower_copy<std::string>(std::string{getString(ConfigManager::HOUSE_RENT_PERIOD)});
+		boost::algorithm::to_lower_copy<std::string>(std::string{getString(ConfigManager::HOUSE_RENT_PERIOD)});
 
 	if (strRentPeriod == "yearly") {
 		rentPeriod = RENTPERIOD_YEARLY;
@@ -350,7 +350,6 @@ void startServer()
 		g_stats.start();
 		g_stats.setEnabled(true);
 #endif
-
 		LOG_INFO(">> Version TFS: {} | Protocol: {} | Ports: {} / {} | IP: {}",
 			fmt::format(fg(fmt::color::lime_green), "{}", STATUS_SERVER_VERSION),
 			fmt::format(fg(fmt::color::lime_green), "{}", CLIENT_VERSION_STR),
@@ -418,7 +417,6 @@ void printServerVersion()
 	LOG_INFO(fmt::format("{} - Version {}", STATUS_SERVER_NAME, STATUS_SERVER_VERSION));
 #endif
 	LOG_INFO("");
-
 	LOG_INFO(fmt::format("Compiled with {}", BOOST_COMPILER));
 	LOG_INFO(fmt::format("Compiled on {} {} for platform ", __DATE__, __TIME__));
 #if defined(__amd64__) || defined(_M_X64)
@@ -436,21 +434,10 @@ void printServerVersion()
 	LOG_INFO(fmt::format("Linked with {} for Lua support", LUA_RELEASE));
 #endif
 	LOG_INFO("");
-
 	LOG_INFO(fmt::format("A server developed by {}", STATUS_SERVER_DEVELOPERS));
 	LOG_INFO(fmt::format(fg(fmt::color::red), "Downgraded and further developed by Nekiro / MillhioreBT"));
 	LOG_INFO("Visit our forum for updates, support, and resources: http://otland.net/.");
-	LOG_INFO("");
-	printCustomInfo();
-	LOG_INFO("");
-}
-
-void printCustomInfo()
-{
-	LOG_INFO("");
-	LOG_INFO(fmt::format(fg(fmt::color::red), "Further developed by Mateuzkl (Custom Modified Version)"));
-	LOG_INFO(fmt::format(fg(fmt::color::yellow), "Repository ORIGINAL: https://github.com/MillhioreBT/forgottenserver-downgrade"));
-	LOG_INFO(fmt::format(fg(fmt::color::yellow), "Repository CUSTOM: https://github.com/Mateuzkl/forgottenserver-downgrade"));
+	LOG_INFO(fmt::format(fg(fmt::color::yellow), "Repository: https://github.com/Mateuzkl/forgottenserver-downgrade"));
 	LOG_INFO("");
 }
 

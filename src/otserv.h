@@ -5,7 +5,6 @@
 #define FS_OTSERV_H
 
 void printServerVersion();
-void printCustomInfo();
 void printServerLinks();
 void startServer();
 
