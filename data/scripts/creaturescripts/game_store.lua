@@ -174,15 +174,13 @@ function addItem(parent, name, id, price, isSecondPrice, count, description)
 		GAME_STORE.offers[parent] = {}
 	end
 
-	local serverId = id
 	if type(id) == "number" and GAME_STORE.categoriesId[parent] == CATEGORY_ITEM then
-		id = ItemType(id):getClientId()
+		id = ItemType(id):getId()
 	end
 
 	table.insert(GAME_STORE.offers[parent], {
 		parent = parent,
 		name = name,
-		serverId = serverId,
 		id = id,
 		price = price,
 		isSecondPrice = isSecondPrice,
@@ -207,7 +205,6 @@ local function buildSafeOffer(serverOffer, clientOffer)
 	return {
 		parent = serverOffer.parent,
 		name = serverOffer.name,
-		serverId = serverOffer.serverId,
 		id = serverOffer.id,
 		price = serverOffer.price,
 		isSecondPrice = serverOffer.isSecondPrice,
@@ -323,7 +320,7 @@ function defaultPremiumCallback(player, offer)
 end
 
 function defaultItemCallback(player, offer)
-	local weight = ItemType(offer.serverId):getWeight(offer.count)
+	local weight = ItemType(offer.id):getWeight(offer.count)
 	if player:getFreeCapacity() < weight then
 		return "This item is too heavy for you!"
 	end
@@ -338,7 +335,7 @@ function defaultItemCallback(player, offer)
 		return "You don't have enough space in backpack."
 	end
 
-	if player:addItem(offer.serverId, offer.count, false) then
+	if player:addItem(offer.id, offer.count, false) then
 		return false
 	end
 

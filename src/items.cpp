@@ -332,7 +332,6 @@ Items::Items()
 void Items::clear()
 {
 	items.clear();
-	clientIdToServerIdMap.clear();
 	nameToItems.clear();
 	currencyItems.clear();
 	inventory.clear();
@@ -420,7 +419,7 @@ bool Items::loadFromOtb(const std::string& file)
 			return false;
 		}
 
-		uint16_t serverId = 0;
+		uint16_t ignoredLegacyId = 0;
 		uint16_t clientId = 0;
 		uint16_t speed = 0;
 		uint16_t wareId = 0;
@@ -441,7 +440,7 @@ bool Items::loadFromOtb(const std::string& file)
 						return false;
 					}
 
-					if (!stream.read<uint16_t>(serverId)) {
+					if (!stream.read<uint16_t>(ignoredLegacyId)) {
 						return false;
 					}
 					break;
@@ -523,13 +522,11 @@ bool Items::loadFromOtb(const std::string& file)
 			}
 		}
 
-		clientIdToServerIdMap.emplace(clientId, serverId);
-
 		// store the found item
-		if (serverId >= items.size()) {
-			items.resize(serverId + 1);
+		if (clientId >= items.size()) {
+			items.resize(clientId + 1);
 		}
-		ItemType& iType = items[serverId];
+		ItemType& iType = items[clientId];
 
 		iType.group = static_cast<itemgroup_t>(itemNode.type);
 		switch (itemNode.type) {
@@ -580,8 +577,7 @@ bool Items::loadFromOtb(const std::string& file)
 		// iType.walkStack = !hasBitSet(FLAG_FULLTILE, flags);
 		iType.forceUse = hasBitSet(FLAG_FORCEUSE, flags);
 
-		iType.id = serverId;
-		iType.clientId = clientId;
+		iType.id = clientId;
 		iType.speed = speed;
 		iType.lightLevel = lightLevel;
 		iType.lightColor = lightColor;
@@ -2343,7 +2339,7 @@ void Items::buildInventoryList()
 		    type.extraDefense != 0 || type.armor != 0 || type.slotPosition & SLOTP_NECKLACE ||
 		    type.slotPosition & SLOTP_RING || type.slotPosition & SLOTP_AMMO || type.slotPosition & SLOTP_FEET ||
 		    type.slotPosition & SLOTP_HEAD || type.slotPosition & SLOTP_ARMOR || type.slotPosition & SLOTP_LEGS) {
-			inventory.push_back(type.clientId);
+			inventory.push_back(type.id);
 		}
 	}
 	inventory.shrink_to_fit();
@@ -2362,16 +2358,6 @@ const ItemType& Items::getItemType(size_t id) const
 {
 	if (id < items.size()) {
 		return items[id];
-	}
-	return items.front();
-}
-
-const ItemType& Items::getItemIdByClientId(uint16_t spriteId) const
-{
-	if (spriteId >= 100) {
-		if (uint16_t serverId = clientIdToServerIdMap.getServerId(spriteId)) {
-			return getItemType(serverId);
-		}
 	}
 	return items.front();
 }
@@ -2416,5 +2402,4 @@ Items::~Items()
 	currencyItems.clear();
 	items.clear();
 	inventory.clear();
-	clientIdToServerIdMap.clear();
 }

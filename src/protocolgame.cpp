@@ -3275,7 +3275,7 @@ void ProtocolGame::MoveDownCreature(NetworkMessage& msg, const Creature* creatur
 void ProtocolGame::AddShopItem(NetworkMessage& msg, const ShopInfo& item)
 {
 	const ItemType& it = Item::items[item.itemId];
-	msg.add<uint16_t>(it.clientId);
+	msg.add<uint16_t>(it.id);
 
 	if (it.isSplash() || it.isFluidContainer()) {
 		msg.addByte(serverFluidToClient(static_cast<uint8_t>(item.subType)));

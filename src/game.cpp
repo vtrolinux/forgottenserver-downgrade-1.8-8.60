@@ -424,7 +424,7 @@ Thing* Game::internalGetThing(Player* player, const Position& pos, int32_t index
 		uint8_t slot = pos.z;
 		return parentContainer->getItemByIndex(player->getContainerIndex(fromCid) + slot);
 	} else if (pos.y == 0 && pos.z == 0) {
-		const ItemType& it = Item::items.getItemIdByClientId(static_cast<uint16_t>(spriteId));
+		const ItemType& it = Item::items[static_cast<uint16_t>(spriteId)];
 		if (it.id == 0) {
 			return nullptr;
 		}
@@ -3610,7 +3610,7 @@ void Game::playerPurchaseItem(uint32_t playerId, uint16_t spriteId, uint8_t coun
 		return;
 	}
 
-	const ItemType& it = Item::items.getItemIdByClientId(spriteId);
+	const ItemType& it = Item::items[spriteId];
 	if (it.id == 0) {
 		return;
 	}
@@ -3649,7 +3649,7 @@ void Game::playerSellItem(uint32_t playerId, uint16_t spriteId, uint8_t count, u
 		return;
 	}
 
-	const ItemType& it = Item::items.getItemIdByClientId(spriteId);
+	const ItemType& it = Item::items[spriteId];
 	if (it.id == 0) {
 		return;
 	}
@@ -3690,7 +3690,7 @@ void Game::playerLookInShop(uint32_t playerId, uint16_t spriteId, uint8_t count)
 		return;
 	}
 
-	const ItemType& it = Item::items.getItemIdByClientId(spriteId);
+	const ItemType& it = Item::items[spriteId];
 	if (it.id == 0) {
 		return;
 	}

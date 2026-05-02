@@ -240,7 +240,7 @@ int luaItemTypeGetClientId(lua_State* L)
 	// itemType:getClientId()
 	const ItemType* itemType = getUserdata<const ItemType>(L, 1);
 	if (itemType) {
-		lua_pushinteger(L, itemType->clientId);
+		lua_pushinteger(L, itemType->id);
 	} else {
 		lua_pushnil(L);
 	}

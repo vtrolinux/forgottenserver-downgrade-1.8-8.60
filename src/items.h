@@ -331,7 +331,6 @@ public:
 	itemgroup_t group = ITEM_GROUP_NONE;
 	ItemTypes_t type = ITEM_TYPE_NONE;
 	uint16_t id = 0;
-	uint16_t clientId = 0;
 	bool stackable = false;
 
 	std::string name;
@@ -462,7 +461,6 @@ public:
 	const ItemType& operator[](size_t id) const { return getItemType(id); }
 	const ItemType& getItemType(size_t id) const;
 	ItemType& getItemType(size_t id);
-	const ItemType& getItemIdByClientId(uint16_t spriteId) const;
 
 	uint16_t getItemIdByName(const std::string& name);
 
@@ -485,34 +483,5 @@ public:
 private:
 	std::vector<ItemType> items;
 	InventoryVector inventory;
-	class ClientIdToServerIdMap
-	{
-	public:
-		ClientIdToServerIdMap() { vec.reserve(30000); }
-
-		void emplace(uint16_t clientId, uint16_t serverId)
-		{
-			if (clientId >= vec.size()) {
-				vec.resize(clientId + 1, 0);
-			}
-			if (vec[clientId] == 0) {
-				vec[clientId] = serverId;
-			}
-		}
-
-		uint16_t getServerId(uint16_t clientId) const
-		{
-			uint16_t serverId = 0;
-			if (clientId < vec.size()) {
-				serverId = vec[clientId];
-			}
-			return serverId;
-		}
-
-		void clear() { vec.clear(); }
-
-	private:
-		std::vector<uint16_t> vec;
-	} clientIdToServerIdMap;
 };
 #endif
