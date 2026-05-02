@@ -440,6 +440,8 @@ bool ConfigManager::load()
 	integers[Integer::PLAYER_MAX_SPEED] = getGlobalInteger(L, "playerMaxSpeed", 900);
 	integers[Integer::MAX_GOD_SPEED] = getGlobalInteger(L, "maxGodSpeed", 5000);
 
+	integers[Integer::REWARD_CHEST_EXPIRE_DAYS] = getGlobalInteger(L, "rewardChestExpireDays", 7);
+
 	floats[REWARD_BASE_RATE] = getGlobalFloat(L, "rewardBaseRate", 1.0f);
 	floats[REWARD_RATE_DAMAGE_DONE] = getGlobalFloat(L, "rewardRateDamageDone", 1.0f);
 	floats[REWARD_RATE_DAMAGE_TAKEN] = getGlobalFloat(L, "rewardRateDamageTaken", 1.0f);

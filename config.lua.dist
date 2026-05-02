@@ -173,6 +173,8 @@ blockedTeleportIds = { 1949, 10840, 10842, 11553, 11554 }
 
 -- Rates for reward boss system
 -- If a player meets their share of the expectedScore (totalScore/contributors), they receive a lootRate according to the rewardBaseRate.
+-- Number of days before unclaimed reward chest items are automatically removed.
+rewardChestExpireDays = 7
 rewardBaseRate = 1
 rewardRateDamageDone = 1
 rewardRateDamageTaken = 0.5

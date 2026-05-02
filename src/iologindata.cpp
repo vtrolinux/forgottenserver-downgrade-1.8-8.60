@@ -779,7 +779,8 @@ bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result)
 			std::unordered_map<int64_t, std::shared_ptr<Item>> rewardContainers;
 
 			time_t now = std::time(nullptr);
-			time_t seven_days_ago = now - (7 * 24 * 60 * 60);
+			int expireDays = ConfigManager::getInteger(ConfigManager::REWARD_CHEST_EXPIRE_DAYS);
+			time_t expire_cutoff = now - (static_cast<time_t>(expireDays) * 24 * 60 * 60);
 
 			for (ItemMap::reverse_iterator it = itemMap.rbegin(), end = itemMap.rend(); it != end; ++it) {
 				auto item = std::move(it->second.first);
@@ -788,7 +789,7 @@ bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result)
 				}
 
 				int64_t rewardDate = item->getIntAttr(ITEM_ATTRIBUTE_DATE);
-				if (rewardDate < static_cast<int64_t>(seven_days_ago)) {
+				if (rewardDate < static_cast<int64_t>(expire_cutoff)) {
 					continue;
 				}
 
