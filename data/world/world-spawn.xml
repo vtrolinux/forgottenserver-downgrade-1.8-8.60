@@ -207,6 +207,9 @@
 	<spawn centerx="1179" centery="863" centerz="6" radius="1">
 		<monster name="Winter Wolf" x="0" y="0" z="6" spawntime="60" />
 	</spawn>
+	<spawn centerx="1157" centery="901" centerz="6" radius="1">
+		<npc name="Captain" x="0" y="0" z="6" spawntime="10" direction="2" />
+	</spawn>
 	<spawn centerx="816" centery="908" centerz="6" radius="1">
 		<monster name="Orc" x="0" y="0" z="6" spawntime="60" />
 	</spawn>
@@ -489,9 +492,6 @@
 	</spawn>
 	<spawn centerx="816" centery="901" centerz="7" radius="1">
 		<monster name="Orc" x="0" y="0" z="7" spawntime="60" />
-	</spawn>
-	<spawn centerx="1165" centery="903" centerz="7" radius="1">
-		<npc name="Captain" x="0" y="0" z="7" spawntime="60" direction="2" />
 	</spawn>
 	<spawn centerx="780" centery="908" centerz="7" radius="1">
 		<monster name="Orc Spearman" x="0" y="0" z="7" spawntime="60" />

@@ -19,6 +19,6 @@ local destinations = {
     classiccity  = { position = Position(1014, 926, 6), money = 100, premium = true },
     timberport   = { position = Position(733, 973, 6), money = 120, premium = true },
     sandstone    = { position = Position(1022, 1084, 6), money = 160, premium = true },
-    ice          = { position = Position(1167, 902, 7), money = 150, premium = true }
+    ice          = { position = Position(1159, 902, 6), money = 150, premium = true }
 }
 handler:travelTo(destinations)
