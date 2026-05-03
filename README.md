@@ -514,8 +514,9 @@ Store Inbox compatibility:
 
 Extended sprites:
 
-- [Octv8--Classic-8.6](https://github.com/Mateuzkl/Octv8--Classic-8.6)
-- Extract `.spr` and `.dat` to your OTCv8 directory.
+- [Otcv8--Classic-8.6](https://github.com/Mateuzkl/Otcv8--Classic-8.6)
+- [OTC-Fonticak (Fork Mehah)](https://github.com/soyfabi/OTC-Fonticak)
+- Extract `.spr` and `.dat` to your OTC directory.
 
 CIP client with mounts:
 
