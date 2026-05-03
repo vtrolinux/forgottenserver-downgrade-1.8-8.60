@@ -136,7 +136,7 @@ bool Mounts::loadFromXml()
 		if (auto imbuingNode = mountNode.child("imbuing")) {
 			for (auto imbuingChild : imbuingNode.children()) {
 				const std::string imbuingName  = imbuingChild.name();
-				const double      imbuingValue = imbuingChild.attribute("value").as_double() * 100.0;
+				const double      imbuingValue = imbuingChild.attribute("value").as_double();
 
 				if (imbuingName == "lifeLeechChance" || imbuingName == "lifeleechchance") {
 					mount.lifeLeechChance += imbuingValue;

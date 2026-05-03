@@ -146,7 +146,7 @@ bool Outfits::loadFromXml()
 			for (auto imbuing : imbuingNode.children()) {
 				const std::string imbuingName = imbuing.name();
 				const int32_t imbuingValue = static_cast<int32_t>(
-				    imbuing.attribute("value").as_double() * 100.0);
+				    imbuing.attribute("value").as_double());
 
 				if (imbuingName == "lifeLeechChance" || imbuingName == "lifeleechchance") {
 					outfit.specialSkills[SPECIALSKILL_LIFELEECHCHANCE] += imbuingValue;
