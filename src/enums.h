@@ -438,6 +438,7 @@ enum ConditionId_t : int8_t
 	CONDITIONID_FEET,
 	CONDITIONID_RING,
 	CONDITIONID_AMMO,
+	CONDITIONID_MOUNT,
 };
 
 enum PlayerSex_t : uint8_t

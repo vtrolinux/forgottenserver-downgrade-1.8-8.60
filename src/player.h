@@ -141,6 +141,7 @@ public:
 	void setCurrentMount(uint16_t mountId);
 	bool isMounted() const { return defaultOutfit.lookMount != 0; }
 	bool toggleMount(bool mount);
+	bool changeMount(uint8_t mountId, bool checkList = true);
 	bool tameMount(uint16_t mountId);
 	bool untameMount(uint16_t mountId);
 	bool hasMount(const Mount* mount) const;
@@ -1398,6 +1399,7 @@ private:
 	bool wasMounted = false;
 	bool requestedOutfit = false;
 	bool outfitAttributes = false;
+	bool mountAttributes = false;
 	bool pzLocked = false;
 	bool isConnecting = false;
 	bool logoutRequested = false;

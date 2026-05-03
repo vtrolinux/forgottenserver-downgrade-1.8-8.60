@@ -1281,6 +1281,7 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 			Mount* currentMount = g_game.mounts.getMountByClientID(currentMountId);
 			if (currentMount && hasMount(currentMount)) {
 				g_game.changeSpeed(this, currentMount->speed);
+				mountAttributes = g_game.mounts.addAttributes(getID(), currentMount->id);
 			} else {
 				defaultOutfit.lookMount = 0;
 				g_game.internalCreatureChangeOutfit(this, defaultOutfit);
@@ -4995,6 +4996,8 @@ bool Player::toggleMount(bool mount)
 		if (currentMount->speed != 0) {
 			g_game.changeSpeed(this, currentMount->speed);
 		}
+
+		changeMount(currentMount->id, false);
 	} else {
 		if (!isMounted()) {
 			return false;
@@ -5070,7 +5073,34 @@ void Player::dismount()
 		g_game.changeSpeed(this, -mount->speed);
 	}
 
+	if (mountAttributes && mount) {
+		g_game.mounts.removeAttributes(getID(), mount->id);
+		mountAttributes = false;
+	}
+
 	defaultOutfit.lookMount = 0;
+}
+
+bool Player::changeMount(uint8_t mountId, bool checkList)
+{
+	Mount* mount = g_game.mounts.getMountByID(mountId);
+	if (!mount) {
+		return false;
+	}
+
+	if (checkList && !hasMount(mount)) {
+		return false;
+	}
+
+	if (mountAttributes) {
+		Mount* currentMount = g_game.mounts.getMountByID(getCurrentMount());
+		if (currentMount) {
+			mountAttributes = !g_game.mounts.removeAttributes(getID(), currentMount->id);
+		}
+	}
+
+	mountAttributes = g_game.mounts.addAttributes(getID(), mountId);
+	return true;
 }
 
 bool Player::hasModalWindowOpen(uint32_t modalWindowId) const

@@ -4061,6 +4061,7 @@ void Game::playerChangeOutfit(uint32_t playerId, Outfit_t outfit, bool randomize
 		}
 
 		changeSpeed(player, speedChange);
+		player->changeMount(mount->id, true);
 		player->setCurrentMount(mount->id);
 	} else {
 		if (player->isMounted()) {
