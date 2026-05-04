@@ -1263,8 +1263,12 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 		}
 		storedConditionList.clear();
 
-		if (defaultOutfit.lookAddons == 3) {
+		if (defaultOutfit.lookAddons == getInteger(ConfigManager::MAX_ADDON_ATTRIBUTES)) {
 			uint32_t outfitId = Outfits::getInstance().getOutfitId(sex, defaultOutfit.lookType);
+			if (outfitAttributes) {
+				Outfits::getInstance().removeAttributes(getID(), outfitId, sex);
+				outfitAttributes = false;
+			}
 			outfitAttributes = Outfits::getInstance().addAttributes(getID(), outfitId, sex);
 		}
 
@@ -1275,14 +1279,21 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 			bed->wakeUp(this);
 		}
 
-		// load mount speed bonus
-		uint16_t currentMountId = currentOutfit.lookMount;
-		if (currentMountId != 0) {
-			Mount* currentMount = g_game.mounts.getMountByClientID(currentMountId);
-			if (currentMount && hasMount(currentMount)) {
-				g_game.changeSpeed(this, currentMount->speed);
-				mountAttributes = g_game.mounts.addAttributes(getID(), currentMount->id);
+		if (currentMount != 0) {
+			Mount* mount = g_game.mounts.getMountByID(currentMount);
+			if (mount && hasMount(mount)) {
+				if (mountAttributes) {
+					g_game.mounts.removeAttributes(getID(), currentMount);
+					mountAttributes = false;
+				}
+				
+				mountAttributes = g_game.mounts.addAttributes(getID(), currentMount);
+				
+				if (defaultOutfit.lookMount != 0) {
+					g_game.changeSpeed(this, mount->speed);
+				}
 			} else {
+				currentMount = 0;
 				defaultOutfit.lookMount = 0;
 				g_game.internalCreatureChangeOutfit(this, defaultOutfit);
 			}
@@ -4456,7 +4467,8 @@ bool Player::changeOutfit(Outfit_t outfit, bool checkList)
 
 	if (outfitAttributes) {
 		uint32_t oldId = Outfits::getInstance().getOutfitId(sex, defaultOutfit.lookType);
-		outfitAttributes = !Outfits::getInstance().removeAttributes(getID(), oldId, sex);
+		Outfits::getInstance().removeAttributes(getID(), oldId, sex);
+		outfitAttributes = false;
 	}
 
 	defaultOutfit = outfit;
