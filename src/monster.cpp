@@ -2080,6 +2080,7 @@ void Monster::death(Creature*)
 			rewardContainer->setIntAttr(ITEM_ATTRIBUTE_DATE, currentTime);
 			rewardContainer->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
 			bool hasLoot = false;
+			std::unordered_map<uint16_t, std::vector<std::shared_ptr<Item>>> stackableItems;
 			for (const auto& lootBlock : creatureLoot) {
 				// Skip items with invalid IDs — CreateItem would return a recycled/garbage pointer
 				if (lootBlock.id == 0) {
@@ -2089,11 +2090,20 @@ void Monster::death(Creature*)
 				    (lootBlock.chance * lootRate) * ConfigManager::getInteger(ConfigManager::RATE_LOOT);
 				if (lootBlock.unique && mostScoreContributor == playerId) {
 					// Ensure that the mostScoreContributor can receive multiple unique items
-					auto lootItem = Item::CreateItem(lootBlock.id, uniform_random(1, lootBlock.countmax));
+					const ItemType& itemType = Item::items[lootBlock.id];
+					if (itemType.stackable) {
+						auto lootItem = Item::CreateItem(lootBlock.id, uniform_random(1, lootBlock.countmax));
+						if (lootItem) {
+							stackableItems[lootBlock.id].push_back(std::move(lootItem));
+						}
+						continue;
+					}
+
+					uint32_t count = uniform_random(1, lootBlock.countmax);
+					auto lootItem = Item::CreateItem(lootBlock.id, count);
 					if (!lootItem) {
 						continue;
 					}
-					const ItemType& itemType = Item::items[lootBlock.id];
 					if (!itemType.stackable) {
 						lootItem->setIntAttr(ITEM_ATTRIBUTE_DATE, currentTime);
 						lootItem->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
@@ -2104,11 +2114,20 @@ void Monster::death(Creature*)
 				} else if (!lootBlock.unique) {
 					// Normal loot distribution for non-unique items
 					if (uniform_random(1, MAX_LOOTCHANCE) <= adjustedChance) {
-						auto lootItem = Item::CreateItem(lootBlock.id, uniform_random(1, lootBlock.countmax));
+						const ItemType& itemType = Item::items[lootBlock.id];
+						if (itemType.stackable) {
+							auto lootItem = Item::CreateItem(lootBlock.id, uniform_random(1, lootBlock.countmax));
+							if (lootItem) {
+								stackableItems[lootBlock.id].push_back(std::move(lootItem));
+							}
+							continue;
+						}
+
+						uint32_t count = uniform_random(1, lootBlock.countmax);
+						auto lootItem = Item::CreateItem(lootBlock.id, count);
 						if (!lootItem) {
 							continue;
 						}
-						const ItemType& itemType = Item::items[lootBlock.id];
 						if (!itemType.stackable) {
 							lootItem->setIntAttr(ITEM_ATTRIBUTE_DATE, currentTime);
 							lootItem->setIntAttr(ITEM_ATTRIBUTE_REWARDID, getMonster()->getID());
@@ -2117,6 +2136,23 @@ void Monster::death(Creature*)
 						rewardContainer->internalAddThing(rawLoot);
 						hasLoot = true;
 					}
+				}
+			}
+			for (auto& [itemId, itemVec] : stackableItems) {
+				uint32_t totalCount = 0;
+				for (const auto& item : itemVec) {
+					totalCount += item->getItemCount();
+				}
+
+				while (totalCount > 0) {
+					uint32_t batch = std::min<uint32_t>(totalCount, 100u);
+					auto mergedItem = Item::CreateItem(itemId, batch);
+					if (mergedItem) {
+						Item* rawLoot = mergedItem.get();
+						rewardContainer->internalAddThing(rawLoot);
+						hasLoot = true;
+					}
+					totalCount -= batch;
 				}
 			}
 			if (hasLoot) {
