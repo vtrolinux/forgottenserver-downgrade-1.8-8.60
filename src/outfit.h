@@ -6,8 +6,6 @@
 
 #include "enums.h"
 
-inline constexpr ConditionId_t CONDITIONID_OUTFIT = static_cast<ConditionId_t>(11);
-
 struct OutfitEntry
 {
 	constexpr explicit OutfitEntry(uint16_t initLookType, uint8_t initAddons) :

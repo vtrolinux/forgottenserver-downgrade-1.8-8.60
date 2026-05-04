@@ -1263,7 +1263,7 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 		}
 		storedConditionList.clear();
 
-		if (defaultOutfit.lookAddons == getInteger(ConfigManager::MAX_ADDON_ATTRIBUTES)) {
+		if (defaultOutfit.lookAddons >= getInteger(ConfigManager::MAX_ADDON_ATTRIBUTES)) {
 			uint32_t outfitId = Outfits::getInstance().getOutfitId(sex, defaultOutfit.lookType);
 			if (outfitAttributes) {
 				Outfits::getInstance().removeAttributes(getID(), outfitId, sex);
@@ -1286,10 +1286,8 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 					g_game.mounts.removeAttributes(getID(), currentMount);
 					mountAttributes = false;
 				}
-				
-				mountAttributes = g_game.mounts.addAttributes(getID(), currentMount);
-				
 				if (defaultOutfit.lookMount != 0) {
+					mountAttributes = g_game.mounts.addAttributes(getID(), currentMount);
 					g_game.changeSpeed(this, mount->speed);
 				}
 			} else {
@@ -4473,7 +4471,7 @@ bool Player::changeOutfit(Outfit_t outfit, bool checkList)
 
 	defaultOutfit = outfit;
 
-	if (outfit.lookAddons == getInteger(ConfigManager::MAX_ADDON_ATTRIBUTES)) {
+	if (outfit.lookAddons >= getInteger(ConfigManager::MAX_ADDON_ATTRIBUTES)) {
 		uint32_t outfitId = Outfits::getInstance().getOutfitId(sex, outfit.lookType);
 		outfitAttributes = Outfits::getInstance().addAttributes(getID(), outfitId, sex);
 	} else {
@@ -5093,7 +5091,7 @@ void Player::dismount()
 	defaultOutfit.lookMount = 0;
 }
 
-bool Player::changeMount(uint8_t mountId, bool checkList)
+bool Player::changeMount(uint16_t mountId, bool checkList)
 {
 	Mount* mount = g_game.mounts.getMountByID(mountId);
 	if (!mount) {
@@ -5112,6 +5110,7 @@ bool Player::changeMount(uint8_t mountId, bool checkList)
 	}
 
 	mountAttributes = g_game.mounts.addAttributes(getID(), mountId);
+	setCurrentMount(mountId);
 	return true;
 }
 

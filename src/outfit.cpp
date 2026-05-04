@@ -285,6 +285,11 @@ bool Outfits::addAttributes(uint32_t playerId, uint32_t outfitId, PlayerSex_t se
 		}
 	}
 
+	if (outfit.attackSpeed != 0) {
+		player->setAttackSpeed(player->getAttackSpeed() + outfit.attackSpeed);
+		needsUpdate = true;
+	}
+
 	if (needsUpdate) {
 		player->sendStats();
 		player->sendSkills();
@@ -341,6 +346,11 @@ bool Outfits::removeAttributes(uint32_t playerId, uint32_t outfitId, PlayerSex_t
 			player->setVarStats(static_cast<stats_t>(s), -outfit.stats[s]);
 			needsUpdate = true;
 		}
+	}
+
+	if (outfit.attackSpeed != 0) {
+		player->setAttackSpeed(player->getAttackSpeed() - outfit.attackSpeed);
+		needsUpdate = true;
 	}
 
 	if (needsUpdate) {

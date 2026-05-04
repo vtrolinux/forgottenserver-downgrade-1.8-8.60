@@ -3,7 +3,7 @@
 maxProtocolOutfits = 255
 
 -- Addon things
--- NOTE: The number of addons required to grant outfit attributes.
+-- NOTE: The minimum number of addons required to grant outfit attributes.
 -- Attributes are defined in: data/XML/outfits.xml
 maxAddonAttributes = 3
 

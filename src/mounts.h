@@ -52,8 +52,8 @@ public:
 	Mount* getMountByName(std::string_view name);
 	Mount* getMountByClientID(uint16_t clientId);
 
-	bool addAttributes(uint32_t playerId, uint8_t mountId);
-	bool removeAttributes(uint32_t playerId, uint8_t mountId);
+	bool addAttributes(uint32_t playerId, uint16_t mountId);
+	bool removeAttributes(uint32_t playerId, uint16_t mountId);
 
 	const std::vector<Mount>& getMounts() const { return mounts; }
 

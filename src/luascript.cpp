@@ -1511,6 +1511,8 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(CONDITIONID_FEET);
 	registerEnum(CONDITIONID_RING);
 	registerEnum(CONDITIONID_AMMO);
+	registerEnum(CONDITIONID_OUTFIT);
+	registerEnum(CONDITIONID_MOUNT);
 
 	registerEnum(CONDITION_PARAM_OWNER);
 	registerEnum(CONDITION_PARAM_TICKS);

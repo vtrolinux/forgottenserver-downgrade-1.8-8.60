@@ -140,7 +140,7 @@ bool Mounts::loadFromXml()
 
 				if (imbuingName == "lifeLeechChance" || imbuingName == "lifeleechchance") {
 					mount.lifeLeechChance += imbuingValue;
-				} else if (imbuingName == "lifeleechAmount" || imbuingName == "lifeleechamount") {
+				} else if (imbuingName == "lifeLeechAmount" || imbuingName == "lifeleechamount") {
 					mount.lifeLeechAmount += imbuingValue;
 				} else if (imbuingName == "manaLeechChance" || imbuingName == "manaleechchance") {
 					mount.manaLeechChance += imbuingValue;
@@ -184,7 +184,7 @@ Mount* Mounts::getMountByClientID(uint16_t clientId)
 	return it != mounts.end() ? &*it : nullptr;
 }
 
-bool Mounts::addAttributes(uint32_t playerId, uint8_t mountId)
+bool Mounts::addAttributes(uint32_t playerId, uint16_t mountId)
 {
 	auto player = g_game.getPlayerByID(playerId);
 	if (!player) {
@@ -280,6 +280,11 @@ bool Mounts::addAttributes(uint32_t playerId, uint8_t mountId)
 		}
 	}
 
+	if (mount->attackSpeed != 0) {
+		player->setAttackSpeed(player->getAttackSpeed() + mount->attackSpeed);
+		update = true;
+	}
+
 	if (update) {
 		player->sendStats();
 		player->sendSkills();
@@ -288,7 +293,7 @@ bool Mounts::addAttributes(uint32_t playerId, uint8_t mountId)
 	return true;
 }
 
-bool Mounts::removeAttributes(uint32_t playerId, uint8_t mountId)
+bool Mounts::removeAttributes(uint32_t playerId, uint16_t mountId)
 {
 	auto player = g_game.getPlayerByID(playerId);
 	if (!player) {
@@ -362,6 +367,11 @@ bool Mounts::removeAttributes(uint32_t playerId, uint8_t mountId)
 			player->setVarStats(static_cast<stats_t>(s), -mount->stats[s]);
 			update = true;
 		}
+	}
+
+	if (mount->attackSpeed != 0) {
+		player->setAttackSpeed(player->getAttackSpeed() - mount->attackSpeed);
+		update = true;
 	}
 
 	if (update) {
