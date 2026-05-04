@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mounts>
-	<!-- Example of new attributies  -->
+	<!-- Example of new attributes (commented for reference):
 	<mount id="1" clientid="368" name="Widow Queen" speed="220" premium="yes" healthGain="35" healthTicks="35" manaGain="5" manaTicks="15" manaShield="yes" attackSpeed="150">
 		<skills>
 			<fist value="1" />

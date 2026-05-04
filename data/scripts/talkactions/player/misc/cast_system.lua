@@ -179,6 +179,7 @@ cast_login:register()
 
 local event = Event()
 event.onGainExperience = function(self, source, exp, rawExp)
+	exp = tonumber(exp) or 0
 
 	local cast = 0
 	if self:getStorageValue(Storage.isCasting) == 1 and self:getStorageValue(Storage.isCastingPassword) == -1 then
