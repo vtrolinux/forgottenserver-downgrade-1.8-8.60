@@ -13,6 +13,7 @@
 #include "game.h"
 #include "house.h"
 #include "mailbox.h"
+#include "player.h"
 #include "scheduler.h"
 #include "scriptmanager.h"
 #include "spells.h"

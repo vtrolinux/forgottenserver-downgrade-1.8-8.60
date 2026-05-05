@@ -570,19 +570,10 @@ void Player::updateInventoryWeight()
 	}
 
 	const float reductionPercent = weightReduction > 1.0f ? 1.0f : weightReduction;
-	uint64_t reductionWeight = 0;
-	for (const std::shared_ptr<Item>& containerItem : backpack->getItemList()) {
-		if (!containerItem) {
-			continue;
-		}
-
-		uint32_t directWeight = containerItem->getWeight();
-		if (std::dynamic_pointer_cast<Container>(containerItem)) {
-			directWeight = containerItem->getBaseWeight();
-		}
-
-		reductionWeight += static_cast<uint32_t>(directWeight * reductionPercent);
-	}
+	const uint32_t backpackWeight = backpack->getWeight();
+	const uint32_t backpackBaseWeight = backpack->getBaseWeight();
+	const uint64_t containedWeight = backpackWeight > backpackBaseWeight ? backpackWeight - backpackBaseWeight : 0;
+	const uint64_t reductionWeight = static_cast<uint64_t>(containedWeight * reductionPercent);
 
 	const uint64_t maxReduction = std::min<uint64_t>(reductionWeight, inventoryWeight);
 	inventoryWeight -= static_cast<uint32_t>(maxReduction);
