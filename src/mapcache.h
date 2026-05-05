@@ -12,9 +12,8 @@ class House;
 struct Position;
 
 // Hash combine utility (similar to boost::hash_combine)
-template <typename T>
-inline void hash_combine(size_t& seed, const T& value) {
-    seed ^= std::hash<T>{}(value) + 0x9e3779b97f4a7c15ULL + (seed << 6) + (seed >> 2);
+inline void hash_combine(size_t& seed, size_t value) {
+    seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 /**
@@ -39,23 +38,27 @@ struct BasicItem {
      * Calculate hash for deduplication
      */
     size_t hash() const {
-        size_t h = std::hash<uint16_t>{}(id);
+        size_t h = 0;
         
-        hash_combine(h, charges);
-        hash_combine(h, actionId);
-        hash_combine(h, uniqueId);
-        hash_combine(h, destX);
-        hash_combine(h, destY);
-        hash_combine(h, destZ);
-        hash_combine(h, doorOrDepotId);
-        hash_combine(h, text);
-
-        hash_combine(h, items.size());
-        for (const auto& item : items) {
-            if (item) {
-                hash_combine(h, item->hash());
-            } else {
-                hash_combine(h, 0x9e3779b97f4a7c15ULL);
+        if (id > 0) hash_combine(h, id);
+        if (charges > 0) hash_combine(h, charges);
+        if (actionId > 0) hash_combine(h, actionId);
+        if (uniqueId > 0) hash_combine(h, uniqueId);
+        if (destX > 0) hash_combine(h, destX);
+        if (destY > 0) hash_combine(h, destY);
+        if (destZ > 0) hash_combine(h, destZ);
+        if (doorOrDepotId > 0) hash_combine(h, doorOrDepotId);
+        
+        if (!text.empty()) {
+            hash_combine(h, std::hash<std::string>{}(text));
+        }
+        
+        if (!items.empty()) {
+            hash_combine(h, items.size());
+            for (const auto& item : items) {
+                if (item) {  // Null-safety
+                    hash_combine(h, item->hash());
+                }
             }
         }
         
@@ -122,26 +125,26 @@ struct BasicTile {
     size_t hash() const {
         size_t h = 0;
         
-        hash_combine(h, flags);
-        hash_combine(h, houseId);
-        hash_combine(h, isStatic);
-        hash_combine(h, zoneIds.size());
-        for (ZoneId zoneId : zoneIds) {
-            hash_combine(h, zoneId);
+        if (flags > 0) hash_combine(h, flags);
+        if (houseId > 0) hash_combine(h, houseId);
+        if (isStatic) hash_combine(h, 1);
+        if (!zoneIds.empty()) {
+            hash_combine(h, zoneIds.size());
+            for (ZoneId zoneId : zoneIds) {
+                hash_combine(h, zoneId);
+            }
         }
         
         if (ground != nullptr) {
             hash_combine(h, ground->hash());
-        } else {
-            hash_combine(h, 0x9e3779b97f4a7c15ULL);
         }
         
-        hash_combine(h, items.size());
-        for (const auto& item : items) {
-            if (item) {
-                hash_combine(h, item->hash());
-            } else {
-                hash_combine(h, 0x9e3779b97f4a7c15ULL);
+        if (!items.empty()) {
+            hash_combine(h, items.size());
+            for (const auto& item : items) {
+                if (item) {  // Null-safety
+                    hash_combine(h, item->hash());
+                }
             }
         }
         
@@ -233,8 +236,8 @@ public:
     static size_t getTileCacheSize();
 
 private:
-    static std::unordered_map<size_t, std::shared_ptr<BasicItem>> itemCache;
-    static std::unordered_map<size_t, std::shared_ptr<BasicTile>> tileCache;
+    static std::unordered_map<size_t, std::weak_ptr<BasicItem>> itemCache;
+    static std::unordered_map<size_t, std::weak_ptr<BasicTile>> tileCache;
     static std::mutex itemCacheMutex;
     static std::mutex tileCacheMutex;
     

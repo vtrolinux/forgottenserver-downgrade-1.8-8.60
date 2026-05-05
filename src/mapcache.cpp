@@ -17,9 +17,9 @@
 
 #include <algorithm>
 
-// Static cache storage for deduplication during map loading.
-std::unordered_map<size_t, std::shared_ptr<BasicItem>> MapCache::itemCache;
-std::unordered_map<size_t, std::shared_ptr<BasicTile>> MapCache::tileCache;
+// Static cache storage with weak_ptr for automatic cleanup
+std::unordered_map<size_t, std::weak_ptr<BasicItem>> MapCache::itemCache;
+std::unordered_map<size_t, std::weak_ptr<BasicTile>> MapCache::tileCache;
 std::mutex MapCache::itemCacheMutex;
 std::mutex MapCache::tileCacheMutex;
 
@@ -34,26 +34,31 @@ std::shared_ptr<BasicItem> MapCache::tryGetItemFromCache(const std::shared_ptr<B
         return nullptr;
     }
     
-    const size_t h = item->hash();
+    size_t h = item->hash();
     
     std::scoped_lock lock(itemCacheMutex);
     
     auto it = itemCache.find(h);
     if (it != itemCache.end()) {
-        const auto& cached = it->second;
-        if (cached && *cached == *item) {
-            ++itemCacheHits;
-            return cached;
+        if (auto cached = it->second.lock()) {
+            // Verify hash collision
+            if (*cached == *item) {
+                ++itemCacheHits;
+                return cached;
+            } else {
+                // #ifdef _DEBUG
+                // LOG_WARN(fmt::format("[MapCache] Hash collision detected for item ID {} (hash: {})", 
+                //                        item->id, h));
+                // #endif
+            }
+        } else {
+            // Expired weak_ptr, remove it
+            itemCache.erase(it);
         }
-
-        // Hash collision: keep the existing cache entry intact and return the
-        // new item uncached to preserve correctness.
-        ++itemCacheMisses;
-        return item;
     }
     
     ++itemCacheMisses;
-    itemCache.emplace(h, item);
+    itemCache[h] = item;
     return item;
 }
 
@@ -62,26 +67,30 @@ std::shared_ptr<BasicTile> MapCache::tryGetTileFromCache(const std::shared_ptr<B
         return nullptr;
     }
     
-    const size_t h = tile->hash();
+    size_t h = tile->hash();
     
     std::scoped_lock lock(tileCacheMutex);
     
     auto it = tileCache.find(h);
     if (it != tileCache.end()) {
-        const auto& cached = it->second;
-        if (cached && *cached == *tile) {
-            ++tileCacheHits;
-            return cached;
+        if (auto cached = it->second.lock()) {
+            // Verify hash collision
+            if (*cached == *tile) {
+                ++tileCacheHits;
+                return cached;
+            } else {
+                // #ifdef _DEBUG
+                // LOG_WARN(fmt::format("[MapCache] Hash collision detected for tile (hash: {})", h));
+                // #endif
+            }
+        } else {
+            // Expired weak_ptr, remove it
+            tileCache.erase(it);
         }
-
-        // Hash collision: keep the existing cache entry intact and return the
-        // new tile uncached to preserve correctness.
-        ++tileCacheMisses;
-        return tile;
     }
     
     ++tileCacheMisses;
-    tileCache.emplace(h, tile);
+    tileCache[h] = tile;
     return tile;
 }
 
@@ -119,12 +128,12 @@ void MapCache::flush() {
 void MapCache::cleanupExpiredEntries() {
     {
         std::scoped_lock lock(itemCacheMutex);
-        std::erase_if(itemCache, [](const auto& entry) { return !entry.second; });
+        std::erase_if(itemCache, [](const auto& entry) { return entry.second.expired(); });
     }
     
     {
         std::scoped_lock lock(tileCacheMutex);
-        std::erase_if(tileCache, [](const auto& entry) { return !entry.second; });
+        std::erase_if(tileCache, [](const auto& entry) { return entry.second.expired(); });
     }
 }
 
