@@ -44,6 +44,14 @@ local message = Event()
 
 local expTracker = {}
 
+local expTrackerLogout = CreatureEvent("ExpTrackerLogout")
+function expTrackerLogout.onLogout(player)
+	expTracker[player:getGuid()] = nil
+	return true
+end
+
+expTrackerLogout:register()
+
 function message.onGainExperience(self, source, exp, rawExp, sendText)
 	if sendText and exp ~= 0 then
 		local monsterName = source and source:getName() or "Unknown"
@@ -64,7 +72,7 @@ function message.onGainExperience(self, source, exp, rawExp, sendText)
 			local tracker = expTracker[playerGuid] and expTracker[playerGuid][monsterName]
 			if not tracker then return end
 
-			local expValue = math.floor(tracker.totalExp + 0.5)
+			local expValue = math.floor(tracker.totalExp)
 			local count = tracker.count
 
 			if expValue > 0 then

@@ -60,8 +60,8 @@ thread_local AutoStatRecursive* AutoStatRecursive::activeStat = nullptr;
 
 AutoStat::AutoStat(const std::string& description, const std::string& extraDescription)
 {
+	time_point = std::chrono::steady_clock::now();
 	if (g_stats.isEnabled()) {
-		time_point = std::chrono::steady_clock::now();
 		stat = std::make_unique<Stat>(0, description, extraDescription);
 	}
 }
