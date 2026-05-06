@@ -938,6 +938,31 @@ int luaItemSetInstanceId(lua_State *L)
 	}
 	return 1;
 }
+
+int luaItemGetItemUID(lua_State* L)
+{
+	// item:getItemUID()
+	const Item* item = getItemUserdata<const Item>(L, 1);
+	if (!item) [[unlikely]] {
+		lua_pushnil(L);
+		return 1;
+	}
+	// Return as string to avoid Lua number precision loss on uint64
+	pushString(L, std::to_string(item->getItemUID()));
+	return 1;
+}
+
+int luaItemHasItemUID(lua_State* L)
+{
+	// item:hasItemUID()
+	const Item* item = getItemUserdata<const Item>(L, 1);
+	if (!item) [[unlikely]] {
+		pushBoolean(L, false);
+		return 1;
+	}
+	pushBoolean(L, item->hasItemUID());
+	return 1;
+}
 } // namespace
 
 // Forge Tier Lua bindings
@@ -1127,6 +1152,10 @@ void LuaScriptInterface::registerItem()
 
 	registerMethod("Item", "getInstanceId", luaItemGetInstanceId);
 	registerMethod("Item", "setInstanceId", luaItemSetInstanceId);
+
+	// UID tracking (anti-dupe)
+	registerMethod("Item", "getItemUID", luaItemGetItemUID);
+	registerMethod("Item", "hasItemUID", luaItemHasItemUID);
 
 	registerMethod("Item", "getImbuementSlots", LuaScriptInterface::luaItemGetImbuementSlots);
 	registerMethod("Item", "getFreeImbuementSlots", LuaScriptInterface::luaItemGetFreeImbuementSlots);

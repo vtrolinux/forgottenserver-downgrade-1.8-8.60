@@ -5,6 +5,9 @@
 
 #include "item.h"
 
+#include <atomic>
+#include <chrono>
+
 #include "actions.h"
 #include "bed.h"
 #include "container.h"
@@ -31,6 +34,10 @@ Items Item::items;
 // Freed explicitly in clearGlobalRegistry(); null-checked after that.
 static std::unique_ptr<std::unordered_set<Item*>> g_validItems = std::make_unique<std::unordered_set<Item*>>();
 
+namespace {
+	std::atomic<uint64_t> g_uidCounter{1};
+} // namespace
+
 std::shared_ptr<Item> Item::CreateItem(const uint16_t type, uint16_t count /*= 0*/)
 {
 	const ItemType& it = Item::items[type];
@@ -45,6 +52,14 @@ std::shared_ptr<Item> Item::CreateItem(const uint16_t type, uint16_t count /*= 0
 	if (it.id == 0) {
 		return nullptr;
 	}
+
+	// Helper: assign UID to non-stackable items
+	const auto assignUID = [](const std::shared_ptr<Item>& item) {
+		if (item && !item->isStackable()) [[likely]] {
+			item->setItemUID(Item::generateItemUID());
+		}
+		return item;
+	};
 
 	if (it.isDepot()) {
 		return std::make_shared<DepotLocker>(type);
@@ -69,17 +84,17 @@ std::shared_ptr<Item> Item::CreateItem(const uint16_t type, uint16_t count /*= 0
 	} else if (it.isBed()) {
 		return std::make_shared<BedItem>(type);
 	} else if (it.id >= 3094 && it.id <= 3096) { // magic rings
-		return std::make_shared<Item>(type - 3, count);
+		return assignUID(std::make_shared<Item>(type - 3, count));
 	} else if (it.id == 3099 || it.id == 3100) { // magic rings
-		return std::make_shared<Item>(type - 2, count);
+		return assignUID(std::make_shared<Item>(type - 2, count));
 	} else if (it.id >= 3086 && it.id <= 3090) { // magic rings
-		return std::make_shared<Item>(type - 37, count);
+		return assignUID(std::make_shared<Item>(type - 37, count));
 	} else if (it.id == 3549) { // soft boots
-		return std::make_shared<Item>(6529, count);
+		return assignUID(std::make_shared<Item>(6529, count));
 	} else if (it.id == 6299) { // death ring
-		return std::make_shared<Item>(6300, count);
+		return assignUID(std::make_shared<Item>(6300, count));
 	}
-	return std::make_shared<Item>(type, count);
+	return assignUID(std::make_shared<Item>(type, count));
 }
 
 std::shared_ptr<Container> Item::CreateItemAsContainer(const uint16_t type, uint16_t size)
@@ -186,6 +201,39 @@ bool isValidItemPointer(Item* item)
 void Item::clearGlobalRegistry()
 {
 	g_validItems.reset();
+}
+
+uint64_t Item::generateItemUID() noexcept
+{
+	const uint64_t ts = static_cast<uint64_t>(
+		std::chrono::duration_cast<std::chrono::milliseconds>(
+			std::chrono::steady_clock::now().time_since_epoch()
+		).count()
+	);
+	const uint64_t cnt = g_uidCounter.fetch_add(1, std::memory_order_relaxed);
+	return (ts << 20) | (cnt & 0xFFFFF);
+}
+
+uint64_t Item::getItemUID() const noexcept
+{
+	if (!attributes) [[unlikely]] {
+		return 0;
+	}
+	const auto* attr = const_cast<Item*>(this)->getCustomAttribute("__uid");
+	if (!attr) [[unlikely]] {
+		return 0;
+	}
+	return static_cast<uint64_t>(boost::get<int64_t>(attr->value));
+}
+
+void Item::setItemUID(uint64_t uid) noexcept
+{
+	setCustomAttribute("__uid", static_cast<int64_t>(uid));
+}
+
+bool Item::hasItemUID() const noexcept
+{
+	return getItemUID() != 0;
 }
 
 std::shared_ptr<Item> Item::clone() const

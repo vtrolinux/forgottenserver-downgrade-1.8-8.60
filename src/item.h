@@ -896,6 +896,12 @@ public:
 		}
 	}
 
+	// UID tracking system for non-stackable items (anti-dupe)
+	[[nodiscard]] uint64_t getItemUID() const noexcept;
+	void setItemUID(uint64_t uid) noexcept;
+	[[nodiscard]] bool hasItemUID() const noexcept;
+	[[nodiscard]] static uint64_t generateItemUID() noexcept;
+
 	std::string_view getName() const
 	{
 		if (hasAttribute(ITEM_ATTRIBUTE_NAME)) {
