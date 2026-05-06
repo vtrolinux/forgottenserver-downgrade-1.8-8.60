@@ -55,10 +55,11 @@ public:
 	bool addAttributes(uint32_t playerId, uint16_t mountId);
 	bool removeAttributes(uint32_t playerId, uint16_t mountId);
 
-	const std::vector<Mount>& getMounts() const { return mounts; }
+	// Direct value storage with O(1) lookup by ID — no pointer indirection.
+	const std::unordered_map<uint16_t, Mount>& getMounts() const { return mounts; }
 
 private:
-	std::vector<Mount> mounts;
+	std::unordered_map<uint16_t, Mount> mounts;
 };
 
 #endif // FS_MOUNTS_H

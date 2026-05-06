@@ -40,12 +40,18 @@ bool Mounts::loadFromXml()
 			continue;
 		}
 
-		mounts.emplace_back(
-		    static_cast<uint16_t>(nodeId), pugi::cast<uint16_t>(mountNode.attribute("clientid").value()),
-		    mountNode.attribute("name").as_string(), pugi::cast<int32_t>(mountNode.attribute("speed").value()),
-		    mountNode.attribute("premium").as_bool());
+		// Direct insertion into map with value semantics — no heap indirection.
+		auto [it, inserted] = mounts.emplace(
+		    nodeId, Mount {
+				static_cast<uint16_t>(nodeId),
+		        pugi::cast<uint16_t>(mountNode.attribute("clientid").value()),
+		        mountNode.attribute("name").as_string(),
+		        pugi::cast<int32_t>(mountNode.attribute("speed").value()),
+		        mountNode.attribute("premium").as_bool()
+		    }
+		);
 
-		Mount& mount = mounts.back();
+		Mount& mount = it->second;
 
 		if (auto typeAttr = mountNode.attribute("type")) {
 			mount.type = typeAttr.as_string();
@@ -154,34 +160,33 @@ bool Mounts::loadFromXml()
 			}
 		}
 	}
-	mounts.shrink_to_fit();
 	return true;
 }
 
 Mount* Mounts::getMountByID(uint16_t id)
 {
-	auto it = std::find_if(mounts.begin(), mounts.end(), [id](const Mount& mount) { return mount.id == id; });
-
-	return it != mounts.end() ? &*it : nullptr;
+	auto it = mounts.find(id);
+	return it != mounts.end() ? &it->second : nullptr;
 }
 
 Mount* Mounts::getMountByName(std::string_view name)
 {
-	for (auto& mount : mounts) {
+	for (auto& [id, mount] : mounts) {
 		if (caseInsensitiveEqual(name, mount.name)) {
 			return &mount;
 		}
 	}
-
 	return nullptr;
 }
 
 Mount* Mounts::getMountByClientID(uint16_t clientId)
 {
-	auto it = std::find_if(mounts.begin(), mounts.end(),
-	                       [clientId](const Mount& mount) { return mount.clientId == clientId; });
-
-	return it != mounts.end() ? &*it : nullptr;
+	for (auto& [id, mount] : mounts) {
+		if (mount.clientId == clientId) {
+			return &mount;
+		}
+	}
+	return nullptr;
 }
 
 bool Mounts::addAttributes(uint32_t playerId, uint16_t mountId)
@@ -191,7 +196,7 @@ bool Mounts::addAttributes(uint32_t playerId, uint16_t mountId)
 		return false;
 	}
 
-	const Mount* mount = getMountByID(mountId);
+	Mount* mount = getMountByID(mountId);
 	if (!mount) {
 		return false;
 	}
@@ -300,7 +305,7 @@ bool Mounts::removeAttributes(uint32_t playerId, uint16_t mountId)
 		return false;
 	}
 
-	const Mount* mount = getMountByID(mountId);
+	Mount* mount = getMountByID(mountId);
 	if (!mount) {
 		return false;
 	}
