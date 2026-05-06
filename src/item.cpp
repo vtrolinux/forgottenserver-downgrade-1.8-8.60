@@ -1067,9 +1067,8 @@ std::string Item::getNameDescription() const
 std::string Item::getWeightDescription(const ItemType& it, uint32_t weight, uint32_t count /*= 1*/)
 {
 	std::ostringstream s;
-	if (const float reduction = it.weightReduction; reduction > 0.0f) {
-		const int32_t percent = static_cast<int32_t>(reduction * 100.0f);
-		s << "Weight Reduction: -" << percent << "% for items inside this backpack.\n";
+	if (const uint8_t reduction = it.weightReduction; reduction > 0) {
+		s << "Weight Reduction: -" << static_cast<uint16_t>(reduction) << "% for items inside this backpack.\n";
 	}
 
 	if (it.stackable && count > 1 && it.showCount != 0) {
@@ -1101,6 +1100,22 @@ std::string Item::getWeightDescription(uint32_t weight) const
 std::string Item::getWeightDescription() const
 {
 	uint32_t weight = getWeight();
+	const std::shared_ptr<const Item> self = weak_from_this().lock();
+	const std::shared_ptr<const Container> container = std::dynamic_pointer_cast<const Container>(self);
+	if (container && getWeightReduction() > 0) {
+		const bool isEquippedBackpack =
+		    getHoldingPlayer() && getHoldingPlayer()->hasInventoryItem(CONST_SLOT_BACKPACK, self);
+
+		if (isEquippedBackpack) {
+			const uint64_t rawWeight = getWeight();
+			const uint64_t contentWeight = container->getWeightReductionContentWeight();
+			const uint64_t reductionWeight = contentWeight * getWeightReduction() / 100;
+			weight = static_cast<uint32_t>(reductionWeight >= rawWeight ? 0 : rawWeight - reductionWeight);
+		} else {
+			weight = getBaseWeight();
+		}
+	}
+
 	if (weight == 0) {
 		return {};
 	}

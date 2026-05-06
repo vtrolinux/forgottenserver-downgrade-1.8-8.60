@@ -720,7 +720,7 @@ public:
 		return items[id].weight;
 	}
 
-	float getWeightReduction() const
+	uint8_t getWeightReduction() const
 	{
 		return items[id].weightReduction;
 	}

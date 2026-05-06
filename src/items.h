@@ -349,7 +349,7 @@ public:
 	uint32_t classification = 0;
 	uint32_t tier = 0;
 	uint32_t weight = 0;
-	float weightReduction = 0.0f;
+	uint8_t weightReduction = 0;
 	uint32_t levelDoor = 0;
 	uint32_t decayTimeMin = 0;
 	uint32_t decayTimeMax = 0;

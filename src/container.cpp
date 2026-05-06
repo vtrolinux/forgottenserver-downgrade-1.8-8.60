@@ -121,6 +121,32 @@ void Container::updateItemWeight(int32_t diff)
 
 uint32_t Container::getWeight() const { return Item::getWeight() + totalWeight; }
 
+uint64_t Container::getWeightReductionContentWeight() const
+{
+	constexpr uint32_t equipmentSlotBits = SLOTP_HEAD | SLOTP_NECKLACE | SLOTP_ARMOR | SLOTP_LEGS |
+	                                       SLOTP_FEET | SLOTP_RING | SLOTP_AMMO | SLOTP_TWO_HAND;
+
+	uint64_t weight = 0;
+	for (const std::shared_ptr<Item>& item : itemlist) {
+		if (!item) {
+			continue;
+		}
+
+		const std::shared_ptr<const Container> container = std::dynamic_pointer_cast<const Container>(item);
+		const bool isEquipment = (item->getSlotPosition() & equipmentSlotBits) != 0 ||
+		                         item->getWeaponType() != WEAPON_NONE || item->getAttack() != 0 ||
+		                         item->getDefense() != 0 || item->getExtraDefense() != 0 || item->getArmor() != 0;
+		if (!isEquipment) {
+			weight += container ? container->getBaseWeight() : item->getWeight();
+		}
+
+		if (container) {
+			weight += container->getWeightReductionContentWeight();
+		}
+	}
+	return weight;
+}
+
 Item* Container::getItemByIndex(size_t index) const
 {
 	if (index >= size()) {

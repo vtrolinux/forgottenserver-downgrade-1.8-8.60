@@ -721,7 +721,7 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id)
 
 				case ITEM_PARSE_WEIGHTREDUCTION: {
 					const int32_t intValue = pugi::cast<int32_t>(valueAttribute.value());
-					it.weightReduction = static_cast<float>(intValue) / 100.0f;
+					it.weightReduction = static_cast<uint8_t>(std::min<int32_t>(std::max<int32_t>(intValue, 0), 100));
 					break;
 				}
 

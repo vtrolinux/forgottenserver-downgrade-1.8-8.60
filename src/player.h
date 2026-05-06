@@ -427,6 +427,7 @@ public:
 
 	Item* getInventoryItem(slots_t slot) const;
 	Item* getInventoryItem(uint32_t slot) const;
+	bool hasInventoryItem(slots_t slot, const std::shared_ptr<const Item>& item) const;
 	bool isInventorySlot(slots_t slot) const;
 
 	bool isItemAbilityEnabled(slots_t slot) const { return inventoryAbilities[slot]; }

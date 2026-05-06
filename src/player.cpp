@@ -269,6 +269,16 @@ Item* Player::getInventoryItem(uint32_t slot) const
 	return inventory[slot].get();
 }
 
+bool Player::hasInventoryItem(slots_t slot, const std::shared_ptr<const Item>& item) const
+{
+	if (!item || slot < CONST_SLOT_FIRST || slot > CONST_SLOT_LAST) {
+		return false;
+	}
+
+	const std::shared_ptr<Item>& inventoryItem = inventory[slot];
+	return inventoryItem && std::static_pointer_cast<const Item>(inventoryItem) == item;
+}
+
 bool Player::isInventorySlot(slots_t slot) const
 {
 	return slot >= CONST_SLOT_FIRST && slot <= CONST_SLOT_LAST;
@@ -544,39 +554,49 @@ uint16_t Player::getClientIcons() const
 
 void Player::updateInventoryWeight()
 {
+	inventoryWeight = 0;
+
 	if (hasFlag(PlayerFlag_HasInfiniteCapacity)) {
 		return;
 	}
 
-	inventoryWeight = 0;
+	auto finishInventoryWeight = [this](uint64_t totalWeight) {
+		inventoryWeight = static_cast<uint32_t>(std::min<uint64_t>(totalWeight, std::numeric_limits<uint32_t>::max()));
+	};
+
+	uint64_t totalWeight = 0;
 	for (int i = CONST_SLOT_FIRST; i <= CONST_SLOT_LAST; ++i) {
 		const std::shared_ptr<Item>& inventoryItem = inventory[i];
 		if (!inventoryItem) {
 			continue;
 		}
 
-		inventoryWeight += inventoryItem->getWeight();
+		totalWeight += inventoryItem->getWeight();
 	}
 
-	const Item* backpackItem = getInventoryItem(CONST_SLOT_BACKPACK);
-	const Container* backpack = backpackItem ? backpackItem->getContainer() : nullptr;
+	const std::shared_ptr<const Container> backpack =
+	    std::dynamic_pointer_cast<const Container>(inventory[CONST_SLOT_BACKPACK]);
 	if (!backpack) {
+		finishInventoryWeight(totalWeight);
 		return;
 	}
 
-	const float weightReduction = backpack->getWeightReduction();
-	if (weightReduction <= 0.0f) {
+	const uint8_t weightReduction = backpack->getWeightReduction();
+	if (weightReduction == 0) {
+		finishInventoryWeight(totalWeight);
 		return;
 	}
 
-	const float reductionPercent = weightReduction > 1.0f ? 1.0f : weightReduction;
-	const uint32_t backpackWeight = backpack->getWeight();
-	const uint32_t backpackBaseWeight = backpack->getBaseWeight();
-	const uint64_t containedWeight = backpackWeight > backpackBaseWeight ? backpackWeight - backpackBaseWeight : 0;
-	const uint64_t reductionWeight = static_cast<uint64_t>(containedWeight * reductionPercent);
+	const uint64_t containedWeight = backpack->getWeightReductionContentWeight();
+	const uint64_t reductionWeight = containedWeight * weightReduction / 100;
 
-	const uint64_t maxReduction = std::min<uint64_t>(reductionWeight, inventoryWeight);
-	inventoryWeight -= static_cast<uint32_t>(maxReduction);
+	if (reductionWeight >= totalWeight) {
+		totalWeight = 0;
+	} else {
+		totalWeight -= reductionWeight;
+	}
+
+	finishInventoryWeight(totalWeight);
 }
 
 void Player::reloadEquipmentStats()

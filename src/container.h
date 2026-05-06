@@ -92,6 +92,7 @@ public:
 
 	uint32_t getItemHoldingCount() const;
 	uint32_t getWeight() const override final;
+	uint64_t getWeightReductionContentWeight() const;
 
 	// cylinder implementations
 	virtual ReturnValue queryAdd(int32_t index, const Thing& thing, uint32_t count, uint32_t flags,
