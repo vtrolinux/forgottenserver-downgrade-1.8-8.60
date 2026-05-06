@@ -16,6 +16,8 @@
 bool Mounts::reload()
 {
 	mounts.clear();
+	clientIdToId.clear();
+	nameToId.clear();
 	return loadFromXml();
 }
 
@@ -41,17 +43,21 @@ bool Mounts::loadFromXml()
 		}
 
 		// Direct insertion into map with value semantics — no heap indirection.
-		auto [it, inserted] = mounts.emplace(
+		auto it = mounts.emplace(
 		    nodeId, Mount {
-				static_cast<uint16_t>(nodeId),
+				nodeId,
 		        pugi::cast<uint16_t>(mountNode.attribute("clientid").value()),
 		        mountNode.attribute("name").as_string(),
 		        pugi::cast<int32_t>(mountNode.attribute("speed").value()),
 		        mountNode.attribute("premium").as_bool()
 		    }
-		);
+		).first;
 
 		Mount& mount = it->second;
+
+		// Populate secondary indexes for O(1) lookups
+		clientIdToId[mount.clientId] = nodeId;
+		nameToId[asLowerCaseString(mount.name)] = nodeId;
 
 		if (auto typeAttr = mountNode.attribute("type")) {
 			mount.type = typeAttr.as_string();
@@ -171,9 +177,11 @@ Mount* Mounts::getMountByID(uint16_t id)
 
 Mount* Mounts::getMountByName(std::string_view name)
 {
-	for (auto& [id, mount] : mounts) {
-		if (caseInsensitiveEqual(name, mount.name)) {
-			return &mount;
+	auto it = nameToId.find(asLowerCaseString(std::string(name)));
+	if (it != nameToId.end()) {
+		auto mountIt = mounts.find(it->second);
+		if (mountIt != mounts.end()) {
+			return &mountIt->second;
 		}
 	}
 	return nullptr;
@@ -181,9 +189,11 @@ Mount* Mounts::getMountByName(std::string_view name)
 
 Mount* Mounts::getMountByClientID(uint16_t clientId)
 {
-	for (auto& [id, mount] : mounts) {
-		if (mount.clientId == clientId) {
-			return &mount;
+	auto it = clientIdToId.find(clientId);
+	if (it != clientIdToId.end()) {
+		auto mountIt = mounts.find(it->second);
+		if (mountIt != mounts.end()) {
+			return &mountIt->second;
 		}
 	}
 	return nullptr;

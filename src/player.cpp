@@ -4983,6 +4983,10 @@ uint16_t Player::getRandomMount() const
 		}
 	}
 
+	if (mountsId.empty()) {
+		return 0;
+	}
+
 	return mountsId[uniform_random(0, mountsId.size() - 1)];
 }
 
