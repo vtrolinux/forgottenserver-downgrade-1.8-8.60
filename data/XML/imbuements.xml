@@ -1,7 +1,7 @@
 <imbuements>
-	<base id="1" name="Basic" price="7500" removecost="15000" duration="72000" />
-	<base id="2" name="Intricate" price="60000" removecost="15000" duration="72000" />
-	<base id="3" name="Powerful" price="250000" removecost="15000" duration="72000" />
+	<base id="1" name="Basic" price="5000" removecost="15000" duration="72000" />
+	<base id="2" name="Intricate" price="25000" removecost="15000" duration="72000" />
+	<base id="3" name="Powerful" price="100000" removecost="15000" duration="72000" />
 	<!-- Category Names -->
 	<category id="0" name="Elemental Damage" agressive="1" />
 	<category id="1" name="Life Leech" agressive="1" />

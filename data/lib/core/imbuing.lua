@@ -4,13 +4,58 @@ local WINDOW_OPCODE = 0xEB
 local CLOSE_OPCODE = 0xEC
 local RESOURCE_BALANCE_OPCODE = 0xEE
 
-local SUCCESS_RATE = 100
-local PROTECTION_COST = 0
+local SUCCESS_RATES = {
+	[1] = 90,
+	[2] = 70,
+	[3] = 50,
+}
+
+local PROTECTION_COSTS = {
+	[1] = 10000,
+	[2] = 30000,
+	[3] = 50000,
+}
 
 local sessions = {}
 local cachedDefinitions = nil
 local definitionsById = {}
 local definitionsByTypeBase = {}
+
+local IMBUEMENT_BASE_NAMES = {
+	[1] = "Basic",
+	[2] = "Intricate",
+	[3] = "Powerful",
+}
+
+local IMBUEMENT_TYPE_NAMES = {
+	[IMBUEMENT_TYPE_SWORD_SKILL] = "Slash",
+	[IMBUEMENT_TYPE_AXE_SKILL] = "Chop",
+	[IMBUEMENT_TYPE_CLUB_SKILL] = "Bash",
+	[IMBUEMENT_TYPE_DISTANCE_SKILL] = "Precision",
+	[IMBUEMENT_TYPE_SHIELD_SKILL] = "Blockade",
+	[IMBUEMENT_TYPE_FIST_SKILL] = "Punch",
+	[IMBUEMENT_TYPE_FISHING_SKILL] = "Fish",
+	[IMBUEMENT_TYPE_MAGIC_LEVEL] = "Epiphany",
+	[IMBUEMENT_TYPE_LIFE_LEECH] = "Vampirism",
+	[IMBUEMENT_TYPE_MANA_LEECH] = "Void",
+	[IMBUEMENT_TYPE_CRITICAL_CHANCE] = "Strike",
+	[IMBUEMENT_TYPE_CRITICAL_AMOUNT] = "Strike",
+	[IMBUEMENT_TYPE_FIRE_DAMAGE] = "Scorch",
+	[IMBUEMENT_TYPE_EARTH_DAMAGE] = "Venom",
+	[IMBUEMENT_TYPE_ICE_DAMAGE] = "Frost",
+	[IMBUEMENT_TYPE_ENERGY_DAMAGE] = "Electrify",
+	[IMBUEMENT_TYPE_DEATH_DAMAGE] = "Reap",
+	[IMBUEMENT_TYPE_HOLY_DAMAGE] = "Divine",
+	[IMBUEMENT_TYPE_FIRE_RESIST] = "Dragon Hide",
+	[IMBUEMENT_TYPE_EARTH_RESIST] = "Snake Skin",
+	[IMBUEMENT_TYPE_ICE_RESIST] = "Quara Scale",
+	[IMBUEMENT_TYPE_ENERGY_RESIST] = "Cloud Fabric",
+	[IMBUEMENT_TYPE_DEATH_RESIST] = "Lich Shroud",
+	[IMBUEMENT_TYPE_HOLY_RESIST] = "Demon Presence",
+	[IMBUEMENT_TYPE_PARALYSIS_DEFLECTION] = "Vibrancy",
+	[IMBUEMENT_TYPE_SPEED_BOOST] = "Swiftness",
+	[IMBUEMENT_TYPE_CAPACITY_BOOST] = "Featherweight",
+}
 
 local function isEnabled()
 	return configManager.getBoolean(configKeys.IMBUEMENT_SYSTEM_ENABLED)
@@ -18,6 +63,10 @@ end
 
 local function protocolId(def)
 	return (def.imbuementType * 100) + def.baseId
+end
+
+local function definitionKey(imbuementType, baseId)
+	return string.format("%d:%d", tonumber(imbuementType) or 0, tonumber(baseId) or 0)
 end
 
 local function ensureDefinitions()
@@ -36,7 +85,7 @@ local function ensureDefinitions()
 	for _, def in ipairs(cachedDefinitions) do
 		local id = protocolId(def)
 		definitionsById[id] = def
-		definitionsByTypeBase[def.imbuementType .. ":" .. def.baseId] = def
+		definitionsByTypeBase[definitionKey(def.imbuementType, def.baseId)] = def
 	end
 end
 
@@ -46,7 +95,7 @@ local function getDefinitionByImbuement(imbuement)
 	end
 
 	ensureDefinitions()
-	return definitionsByTypeBase[imbuement:getType() .. ":" .. imbuement:getBaseId()]
+	return definitionsByTypeBase[definitionKey(imbuement:getType(), imbuement:getBaseId())]
 end
 
 local function displayName(def)
@@ -54,6 +103,34 @@ local function displayName(def)
 		return def.baseName .. " " .. def.name
 	end
 	return def.name
+end
+
+local function getSuccessRate(defOrImbuement)
+	local baseId = defOrImbuement and tonumber(defOrImbuement.baseId)
+	if not baseId and defOrImbuement and defOrImbuement.getBaseId then
+		baseId = tonumber(defOrImbuement:getBaseId())
+	end
+	return SUCCESS_RATES[baseId] or 90
+end
+
+local function getProtectionCost(defOrImbuement)
+	local baseId = defOrImbuement and tonumber(defOrImbuement.baseId)
+	if not baseId and defOrImbuement and defOrImbuement.getBaseId then
+		baseId = tonumber(defOrImbuement:getBaseId())
+	end
+	return PROTECTION_COSTS[baseId] or PROTECTION_COSTS[1]
+end
+
+local function fallbackImbuementName(imbuement)
+	local imbuementType = imbuement and tonumber(imbuement:getType()) or nil
+	local baseId = imbuement and tonumber(imbuement:getBaseId()) or nil
+	local name = IMBUEMENT_TYPE_NAMES[imbuementType] or "Unknown Imbuement"
+	local baseName = IMBUEMENT_BASE_NAMES[baseId] or ""
+
+	if baseName ~= "" and name ~= "Unknown Imbuement" then
+		return baseName .. " " .. name, name
+	end
+	return name, name
 end
 
 local function getItemName(itemId)
@@ -87,22 +164,23 @@ local function writeImbuementInfo(msg, def)
 	end
 
 	msg:addU32(def.price or 0)
-	msg:addByte(SUCCESS_RATE)
-	msg:addU32(PROTECTION_COST)
+	msg:addByte(getSuccessRate(def))
+	msg:addU32(getProtectionCost(def))
 end
 
 local function writeFallbackImbuementInfo(msg, imbuement)
 	msg:addU32(0)
-	msg:addString("Unknown Imbuement")
+	local name, group = fallbackImbuementName(imbuement)
+	msg:addString(name)
 	msg:addString("")
-	msg:addString("Unknown")
+	msg:addString(group)
 	msg:addU16(0)
 	msg:addU32(imbuement and imbuement:getDuration() or 0)
 	msg:addByte(0)
 	msg:addByte(0)
 	msg:addU32(0)
-	msg:addByte(SUCCESS_RATE)
-	msg:addU32(PROTECTION_COST)
+	msg:addByte(getSuccessRate(imbuement))
+	msg:addU32(getProtectionCost(imbuement))
 end
 
 local function getActiveImbuements(item)
@@ -191,6 +269,29 @@ local function itemBelongsToPlayer(player, item)
 	return item and item:getTopParent() == player
 end
 
+local function containerHasItem(container, target)
+	if not container or not target then
+		return false
+	end
+
+	for _, item in ipairs(container:getItems(true)) do
+		if item == target then
+			return true
+		end
+	end
+	return false
+end
+
+local function itemIsInPlayerBackpack(player, item)
+	if not itemBelongsToPlayer(player, item) then
+		return false
+	end
+
+	local backpack = player:getSlotItem(CONST_SLOT_BACKPACK)
+	local container = backpack and backpack:getContainer()
+	return container and containerHasItem(container, item)
+end
+
 local function validateSessionItem(player, item)
 	if not item or item:getImbuementSlots() <= 0 then
 		clearSession(player)
@@ -212,26 +313,39 @@ local function getSessionEquipment(player)
 		return nil
 	end
 
-	local item = Item(session.itemUid)
+	local item = session.item
 	if not validateSessionItem(player, item) then
 		return nil
 	end
 
-	if session.containerUid then
-		local container = Container(session.containerUid)
+	if session.container then
+		local container = session.container
 		if not container then
 			clearSession(player)
 			return nil
 		end
 
+		local ok, size = pcall(function()
+			return container:getSize()
+		end)
+		if not ok then
+			clearSession(player)
+			return nil
+		end
+
 		local found = false
-		for i = 0, container:getSize() - 1 do
+		for i = 0, size - 1 do
 			if container:getItem(i) == item then
 				found = true
 				break
 			end
 		end
 		if not found then
+			clearSession(player)
+			return nil
+		end
+	elseif session.backpackOnly then
+		if not itemIsInPlayerBackpack(player, item) then
 			clearSession(player)
 			return nil
 		end
@@ -309,7 +423,7 @@ function ImbuingWindow.open(player, container, silent)
 		return true
 	end
 
-	sessions[player:getId()] = {containerUid = container.uid, itemUid = item.uid}
+	sessions[player:getId()] = {container = container, item = item}
 	return sendWindow(player, item)
 end
 
@@ -328,9 +442,9 @@ function ImbuingWindow.openItem(player, item, silent)
 		return false
 	end
 
-	if not itemBelongsToPlayer(player, item) then
+	if not itemIsInPlayerBackpack(player, item) then
 		if not silent then
-			player:sendCancelMessage(RETURNVALUE_NOTPOSSIBLE)
+			player:sendTextMessage(MESSAGE_STATUS_SMALL, "Use an item from your backpack.")
 		end
 		return false
 	end
@@ -341,7 +455,7 @@ function ImbuingWindow.openItem(player, item, silent)
 		return true
 	end
 
-	sessions[player:getId()] = {itemUid = item.uid}
+	sessions[player:getId()] = {item = item, backpackOnly = true}
 	return sendWindow(player, item)
 end
 
@@ -400,10 +514,24 @@ function ImbuingWindow.apply(player, slot, imbuementId, protection)
 
 	local cost = def.price or 0
 	if protection then
-		cost = cost + PROTECTION_COST
+		cost = cost + getProtectionCost(def)
 	end
 	if cost > 0 and player:getMoney() + player:getBankBalance() < cost then
 		player:sendTextMessage(MESSAGE_STATUS_SMALL, "You do not have enough gold.")
+		sendWindow(player, item)
+		return
+	end
+
+	local success = protection or math.random(100) <= getSuccessRate(def)
+	if not success then
+		for _, req in ipairs(def.items or {}) do
+			player:removeItem(req.itemId, req.count, -1, true)
+		end
+		if cost > 0 then
+			player:removeTotalMoney(cost)
+		end
+
+		player:sendTextMessage(MESSAGE_STATUS_SMALL, "Imbuement failed.")
 		sendWindow(player, item)
 		return
 	end

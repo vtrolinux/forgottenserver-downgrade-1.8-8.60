@@ -48,9 +48,9 @@ local TYPE_NAMES = {
 }
 
 local BASE_PRICES = {
-    [1] = 7500,
-    [2] = 60000,
-    [3] = 250000,
+    [1] = 5000,
+    [2] = 25000,
+    [3] = 100000,
 }
 
 local ALL_DEFS = Game.getImbuementDefinitions() or {}
