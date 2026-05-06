@@ -223,7 +223,10 @@ uint64_t Item::getItemUID() const noexcept
 	if (!attr) [[unlikely]] {
 		return 0;
 	}
-	return static_cast<uint64_t>(boost::get<int64_t>(attr->value));
+	if (const auto* val = boost::get<int64_t>(&attr->value)) {
+		return static_cast<uint64_t>(*val);
+	}
+	return 0;
 }
 
 void Item::setItemUID(uint64_t uid) noexcept
