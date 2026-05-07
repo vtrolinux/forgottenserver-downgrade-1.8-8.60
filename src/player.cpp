@@ -996,11 +996,20 @@ DepotLocker* Player::getDepotLocker(uint32_t depotId)
 	it = depotLockerMap.emplace(depotId, std::make_shared<DepotLocker>(ITEM_LOCKER)).first;
 	it->second->setDepotId(static_cast<uint16_t>(depotId));
 
+	bool hasMarket = false;
 	bool hasInbox = false;
 	for (const auto& item : it->second->getItemList()) {
-		if (item->getID() == ITEM_INBOX) {
+		if (item->getID() == ITEM_MARKET) {
+			hasMarket = true;
+		} else if (item->getID() == ITEM_INBOX) {
 			hasInbox = true;
-			break;
+		}
+	}
+
+	if (!hasMarket) {
+		auto market = Item::CreateItem(ITEM_MARKET);
+		if (market) {
+			it->second->internalAddThing(market.get());
 		}
 	}
 

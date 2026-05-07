@@ -2025,6 +2025,7 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(ITEM_DEPOT);
 	registerEnum(ITEM_LOCKER);
 	registerEnum(ITEM_INBOX);
+	registerEnum(ITEM_MARKET);
 	registerEnum(ITEM_STORE_INBOX);
 	registerEnum(ITEM_DEPOT_BOX_1);
 

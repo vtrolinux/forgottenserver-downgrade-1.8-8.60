@@ -617,7 +617,7 @@ bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result)
 
 			for (ItemMap::reverse_iterator it = itemMap.rbegin(), end = itemMap.rend(); it != end; ++it) {
 				auto item = std::move(it->second.first);
-				if (!item || item->getID() == ITEM_INBOX) {
+				if (!item || item->getID() == ITEM_INBOX || item->getID() == ITEM_MARKET) {
 					continue;
 				}
 
@@ -1172,7 +1172,7 @@ bool IOLoginData::savePlayer(Player* player)
 
 		for (const auto& it : player->depotLockerMap) {
 			for (const auto& item : it.second->getItemList()) {
-				if (item->getID() != ITEM_DEPOT && item->getID() != ITEM_INBOX) {
+				if (item->getID() != ITEM_DEPOT && item->getID() != ITEM_INBOX && item->getID() != ITEM_MARKET) {
 					itemList.emplace_back(it.first, item.get());
 				}
 			}

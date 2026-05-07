@@ -291,6 +291,18 @@ int luaPlayerGetDepotBox(lua_State* L)
 	return 1;
 }
 
+int luaPlayerGetLastDepotId(lua_State* L)
+{
+	// player:getLastDepotId()
+	const Player* player = getUserdata<const Player>(L, 1);
+	if (player) {
+		lua_pushinteger(L, player->getLastDepotId());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 int luaPlayerGetRewardChest(lua_State* L)
 {
 	// player:getRewardChest()
@@ -3515,6 +3527,7 @@ void LuaScriptInterface::registerPlayer()
 
 	registerMethod("Player", "getDepotChest", luaPlayerGetDepotChest);
 	registerMethod("Player", "getDepotBox", luaPlayerGetDepotBox);
+	registerMethod("Player", "getLastDepotId", luaPlayerGetLastDepotId);
 	registerMethod("Player", "getRewardChest", luaPlayerGetRewardChest);
 	registerMethod("Player", "getInbox", luaPlayerGetInbox);
 	registerMethod("Player", "getStoreInbox", luaPlayerGetStoreInbox);
