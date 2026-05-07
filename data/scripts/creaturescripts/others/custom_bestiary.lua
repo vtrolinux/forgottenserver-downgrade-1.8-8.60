@@ -160,7 +160,7 @@ end
 
 bestiaryKill:register()
 
-local bestiarySpawn = MonsterEvent("CustomBestiarySpawn")
+local bestiarySpawn = MonsterEvent and MonsterEvent("CustomBestiarySpawn") or Event()
 function bestiarySpawn.onSpawn(monster)
 	if CustomBestiary and monster then
 		local entry = getBestiaryEntryForCreature(monster)
