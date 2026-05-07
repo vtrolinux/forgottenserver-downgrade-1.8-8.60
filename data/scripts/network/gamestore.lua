@@ -18,6 +18,8 @@ local STORE_ACTION_DELAY = 2
 local MAX_TARGET_NAME_LENGTH = 50
 local MAX_CHARACTER_NAME_LENGTH = 20
 local MAX_CHARACTER_NAME_WORDS = 5
+local CHANGE_NAME_KICK_DELAY = 3000
+local CHANGE_NAME_SUCCESS_MESSAGE = "Your character name has been changed. You will be disconnected in 3 seconds. Please log in again to use your new name."
 
 local storeCategories = {}
 local storeItemsById = {}
@@ -39,6 +41,49 @@ local function logError(message)
 	else
 		print(message)
 	end
+end
+
+local deathSearchIndexes = {
+	{tableName = "player_deaths", indexName = "idx_pd_killed_by", columnName = "killed_by"},
+	{tableName = "player_deaths", indexName = "idx_pd_mostdamage_by", columnName = "mostdamage_by"},
+	{tableName = "player_deaths_backup", indexName = "idx_pdb_killed_by", columnName = "killed_by"},
+	{tableName = "player_deaths_backup", indexName = "idx_pdb_mostdamage_by", columnName = "mostdamage_by"}
+}
+
+local function deathColumnHasIndex(tableName, columnName)
+	local resultId = db.storeQuery(
+		"SELECT `INDEX_NAME` FROM `information_schema`.`STATISTICS` WHERE `TABLE_SCHEMA` = DATABASE() AND `TABLE_NAME` = " ..
+			db.escapeString(tableName) ..
+			" AND `COLUMN_NAME` = " ..
+			db.escapeString(columnName) ..
+			" AND `SEQ_IN_INDEX` = 1 LIMIT 1"
+	)
+	if resultId ~= false then
+		result.free(resultId)
+		return true
+	end
+
+	return false
+end
+
+local function ensureDeathSearchIndexes()
+	for _, index in ipairs(deathSearchIndexes) do
+		if (not db.tableExists or db.tableExists(index.tableName)) and not deathColumnHasIndex(index.tableName, index.columnName) then
+			db.query(string.format("ALTER TABLE `%s` ADD INDEX `%s` (`%s`(64))", index.tableName, index.indexName, index.columnName))
+		end
+	end
+end
+
+local function scheduleChangeNameKick(player)
+	local playerId = player:getId()
+	player:sendTextMessage(MESSAGE_INFO_DESCR, CHANGE_NAME_SUCCESS_MESSAGE)
+
+	addEvent(function(id)
+		local onlinePlayer = Player(id)
+		if onlinePlayer then
+			onlinePlayer:remove()
+		end
+	end, CHANGE_NAME_KICK_DELAY, playerId)
 end
 
 local forbiddenNameWords = {
@@ -275,10 +320,7 @@ end
 
 loadStoreXML()
 
-pcall(function() db.query("ALTER TABLE `player_deaths` ADD INDEX IF NOT EXISTS `idx_pd_killed_by` (`killed_by`(64))") end)
-pcall(function() db.query("ALTER TABLE `player_deaths` ADD INDEX IF NOT EXISTS `idx_pd_mostdamage_by` (`mostdamage_by`(64))") end)
-pcall(function() db.query("ALTER TABLE `player_deaths_backup` ADD INDEX IF NOT EXISTS `idx_pdb_killed_by` (`killed_by`(64))") end)
-pcall(function() db.query("ALTER TABLE `player_deaths_backup` ADD INDEX IF NOT EXISTS `idx_pdb_mostdamage_by` (`mostdamage_by`(64))") end)
+ensureDeathSearchIndexes()
 
 local function sendStoreCatalog(player)
 	local out = NetworkMessage(player)
@@ -530,7 +572,12 @@ function buyHandler.onReceive(player, msg)
 	local historyCount = offer.oftype == "item" and offer.count or (offer.oftype == "prey_wildcard" and offer.value or 1)
 	addStoreHistory(player:getAccountId(), player:getGuid(), offer.name, -offer.price, historyCount, nil)
 
-	sendStoreSuccess(player, offerId, "Purchase complete: " .. offer.name)
+	if offer.oftype == "changename" then
+		sendStoreSuccess(player, offerId, CHANGE_NAME_SUCCESS_MESSAGE)
+		scheduleChangeNameKick(player)
+	else
+		sendStoreSuccess(player, offerId, "Purchase complete: " .. offer.name)
+	end
 end
 
 buyHandler:register()
