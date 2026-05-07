@@ -197,11 +197,6 @@ RuneSpell* Spells::getRuneSpell(uint32_t id)
 {
 	auto it = runes.find(static_cast<uint16_t>(id));
 	if (it == runes.end()) {
-		for (auto& rune : runes) {
-			if (rune.second.getId() == id) {
-				return &rune.second;
-			}
-		}
 		return nullptr;
 	}
 	return &it->second;

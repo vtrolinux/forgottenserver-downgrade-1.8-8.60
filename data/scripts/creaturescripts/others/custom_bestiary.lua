@@ -65,6 +65,15 @@ local function getBestiaryKillCounts(playerGuids, raceId)
 	return counts
 end
 
+local function addPlayerCharmPoints(playerGuid, points)
+	points = math.max(0, tonumber(points) or 0)
+	if points <= 0 then
+		return
+	end
+
+	db.query("UPDATE `players` SET `charmpoints` = `charmpoints` + " .. points .. " WHERE `id` = " .. playerGuid)
+end
+
 local function sendBestiaryUnlockMessage(player, entry, progress)
 	if not player or not entry then
 		return
@@ -150,6 +159,9 @@ function bestiaryKill.onDeath(creature, corpse, killer, mostDamageKiller, lastHi
 
 		if CustomBestiary.invalidatePlayer then
 			CustomBestiary.invalidatePlayer(playerGuid)
+		end
+		if oldKills < entry.toKill and newKills >= entry.toKill then
+			addPlayerCharmPoints(playerGuid, entry.charmPoints)
 		end
 		if newProgress > oldProgress then
 			sendBestiaryUnlockMessage(player, entry, newProgress)

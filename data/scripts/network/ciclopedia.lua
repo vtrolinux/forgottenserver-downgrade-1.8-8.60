@@ -90,6 +90,23 @@ local function getPlayerGuid(player)
 	return player:getGuid()
 end
 
+local function getPlayerCharmPoints(playerGuid)
+	local resultId = db.storeQuery("SELECT `charmpoints` FROM `players` WHERE `id` = " .. playerGuid)
+	if resultId == false then
+		return 0
+	end
+
+	local points = math.max(0, result.getDataInt(resultId, "charmpoints"))
+	result.free(resultId)
+	return points
+end
+
+local function setPlayerCharmPoints(playerGuid, points)
+	points = math.max(0, tonumber(points) or 0)
+	db.query("UPDATE `players` SET `charmpoints` = " .. points .. " WHERE `id` = " .. playerGuid)
+	return points
+end
+
 local function invalidatePlayer(playerGuid)
 	killCache[playerGuid] = nil
 	charmCache[playerGuid] = nil
@@ -212,6 +229,19 @@ local function getCharmBalance(playerGuid, kills, charms)
 	return math.max(0, (earnedPointsCache[playerGuid] or 0) - getSpentCharmPoints(charms))
 end
 
+local function getStoredCharmBalance(playerGuid, kills, charms)
+	local points = getPlayerCharmPoints(playerGuid)
+	if points > 0 then
+		return points
+	end
+
+	local legacyBalance = getCharmBalance(playerGuid, kills, charms)
+	if legacyBalance > 0 then
+		return setPlayerCharmPoints(playerGuid, legacyBalance)
+	end
+	return 0
+end
+
 local function getGoldBalance(player)
 	local inventoryMoney = math.max(0, tonumber(player:getMoney()) or 0)
 	local bankBalance = math.max(0, tonumber(player:getBankBalance()) or 0)
@@ -263,7 +293,7 @@ end
 
 local function writeCharms(out, player, kills, charms)
 	local playerGuid = getPlayerGuid(player)
-	out:addU32(clamp(getCharmBalance(playerGuid, kills, charms), 0, 0xFFFFFFFF))
+	out:addU32(clamp(getStoredCharmBalance(playerGuid, kills, charms), 0, 0xFFFFFFFF))
 	out:addU64(getGoldBalance(player))
 	out:addByte(math.min(#CustomBestiary.charmRunes, 0xFF))
 
@@ -547,13 +577,15 @@ local function handleCharmAction(player, charmId, action, raceId)
 			return
 		end
 
-		if getCharmBalance(playerGuid, kills, charms) < charm.price then
+		local charmPoints = getStoredCharmBalance(playerGuid, kills, charms)
+		if charmPoints < charm.price then
 			sendMessage(player, "You do not have enough charm points.")
 			return
 		end
 
 		db.query("INSERT INTO `player_bestiary_charms` (`player_id`, `charm_id`, `unlocked`, `raceid`) VALUES (" ..
 			playerGuid .. ", " .. charmId .. ", 1, 0) ON DUPLICATE KEY UPDATE `unlocked` = 1")
+		setPlayerCharmPoints(playerGuid, charmPoints - charm.price)
 		invalidatePlayer(playerGuid)
 		sendMessage(player, "Charm unlocked.")
 		sendBestiaryData(player)
