@@ -1028,6 +1028,11 @@ if Modules == nil then
     -- Callback onBuy() function. If you wish, you can change certain Npc to use your onBuy().
     function ShopModule:callbackOnBuy(cid, itemid, subType, amount, ignoreCap,
                                       inBackpacks)
+        local player = Player(cid)
+        if not player or not checkNpcShopBuyExhaust(player) then
+            return false
+        end
+
         local shopItem = self:getShopItem(itemid, subType)
         if shopItem == nil then
             error("[ShopModule.onBuy] shopItem == nil")
@@ -1049,7 +1054,6 @@ if Modules == nil then
                                 20)
         end
 
-        local player = Player(cid)
         local parseInfo = {
             [TAG_PLAYERNAME] = player:getName(),
             [TAG_ITEMCOUNT] = amount,
@@ -1065,9 +1069,15 @@ if Modules == nil then
         end
 
         local subType = shopItem.subType or 1
-        local a, b = doNpcSellItem(cid, itemid, amount, subType, ignoreCap,
+        local a, b, reason = doNpcSellItem(cid, itemid, amount, subType, false,
                                    inBackpacks, ITEM_BACKPACK)
         if a < amount then
+            if reason == "capacity" then
+                player:sendCancelMessage("You do not have enough capacity.")
+                self.npcHandler.talkStart[cid] = os.time()
+                return false
+            end
+
             local msgId = MESSAGE_NEEDMORESPACE
             if a == 0 then msgId = MESSAGE_NEEDSPACE end
 
@@ -1205,6 +1215,10 @@ if Modules == nil then
                 module.npcHandler:say(msg, cid)
             end
         elseif shop_eventtype[cid] == SHOPMODULE_BUY_ITEM then
+            if not checkNpcShopBuyExhaust(player) then
+                return false
+            end
+
             local cost = shop_cost[cid] * shop_amount[cid]
             if player:getTotalMoney() < cost then
                 local msg = module.npcHandler:getMessage(MESSAGE_MISSINGMONEY)
@@ -1213,10 +1227,15 @@ if Modules == nil then
                 return false
             end
 
-            local a, b = doNpcSellItem(cid, shop_itemid[cid], shop_amount[cid],
+            local a, b, reason = doNpcSellItem(cid, shop_itemid[cid], shop_amount[cid],
                                        shop_subtype[cid], false, false,
                                        ITEM_BACKPACK)
             if a < shop_amount[cid] then
+                if reason == "capacity" then
+                    module.npcHandler:say("You do not have enough capacity.", cid)
+                    return false
+                end
+
                 local msgId = MESSAGE_NEEDMORESPACE
                 if a == 0 then msgId = MESSAGE_NEEDSPACE end
 
@@ -1244,11 +1263,15 @@ if Modules == nil then
                 end
                 if shop_itemid[cid] == ITEM_PARCEL then
                     doNpcSellItem(cid, ITEM_LABEL, shop_amount[cid],
-                                  shop_subtype[cid], true, false, ITEM_BACKPACK)
+                                  shop_subtype[cid], false, false, ITEM_BACKPACK)
                 end
                 return true
             end
         elseif shop_eventtype[cid] == SHOPMODULE_BUY_ITEM_CONTAINER then
+            if not checkNpcShopBuyExhaust(player) then
+                return false
+            end
+
             local ret = doPlayerBuyItemContainer(cid, shop_container[cid],
                                                  shop_itemid[cid],
                                                  shop_amount[cid],

@@ -2,6 +2,9 @@
 dofile('data/npc/lib/npcsystem/npcsystem.lua')
 dofile("data/npc/lib/revnpcsys/npc.lua")
 
+NPC_SHOP_BUY_EXHAUST_MS = NPC_SHOP_BUY_EXHAUST_MS or 500
+NPC_SHOP_EXHAUST_MESSAGE = NPC_SHOP_EXHAUST_MESSAGE or "Please wait before buying again."
+
 function msgcontains(message, keyword)
 	local message, keyword = message:lower(), keyword:lower()
 	if message == keyword then return true end
@@ -9,50 +12,176 @@ function msgcontains(message, keyword)
 	return message:find(keyword) and not message:find('(%w+)' .. keyword)
 end
 
+local npcShopExhaust = {}
+local npcShopExhaustCleanupAt = 0
+
+local function getNpcShopTimeMs()
+	if os.mtime then
+		return os.mtime()
+	end
+	if os.clock then
+		return math.floor(os.clock() * 1000)
+	end
+	return os.time() * 1000
+end
+
+local function getNpcShopPlayerKey(player)
+	if player.getGuid then
+		local ok, guid = pcall(function()
+			return player:getGuid()
+		end)
+		if ok and guid and guid > 0 then
+			return guid
+		end
+	end
+	return player:getId()
+end
+
+local function cleanupNpcShopExhaust(now)
+	if now < npcShopExhaustCleanupAt then
+		return
+	end
+	npcShopExhaustCleanupAt = now + 60000
+	for key, expiresAt in pairs(npcShopExhaust) do
+		if expiresAt <= now then
+			npcShopExhaust[key] = nil
+		end
+	end
+end
+
+function checkNpcShopBuyExhaust(player, delayMs)
+	delayMs = tonumber(delayMs or NPC_SHOP_BUY_EXHAUST_MS) or 0
+	if delayMs <= 0 then
+		return true
+	end
+
+	local now = getNpcShopTimeMs()
+	cleanupNpcShopExhaust(now)
+
+	local key = getNpcShopPlayerKey(player)
+	if (npcShopExhaust[key] or 0) > now then
+		player:sendCancelMessage(NPC_SHOP_EXHAUST_MESSAGE)
+		return false
+	end
+
+	npcShopExhaust[key] = now + delayMs
+	return true
+end
+
+local function getNpcShopItemWeight(itemType, amount, subType, inBackpacks, backpack)
+	local weight = 0
+	if inBackpacks then
+		local backpackType = ItemType(backpack)
+		if not backpackType or backpackType:getId() == 0 then
+			return nil
+		end
+
+		local backpackCapacity = math.max(1, backpackType:getCapacity())
+		local stacks = itemType:isStackable() and math.ceil(amount / math.max(1, itemType:getStackSize())) or amount
+		weight = weight + backpackType:getWeight(math.ceil(stacks / backpackCapacity))
+	end
+
+	if itemType:isStackable() then
+		return weight + itemType:getWeight(amount)
+	end
+	return weight + (itemType:getWeight(subType > 0 and subType or 1) * amount)
+end
+
+local function rollbackCreatedShopItems(items)
+	for i = #items, 1, -1 do
+		if items[i] then
+			items[i]:remove()
+		end
+	end
+end
+
 function doNpcSellItem(cid, itemid, amount, subType, ignoreCap, inBackpacks,
                        backpack)
 	local amount = amount or 1
 	local subType = subType or 0
-	local item = 0
-	local itemType = ItemType(itemid)
-	if itemType:isStackable() then
-		   if inBackpacks then
-			   local stuff = Game.createItem(backpack, 1)
-			   item = stuff:addItem(itemid, math.min(itemType:getStackSize(), amount))
-			   return Player(cid):addItemEx(stuff, ignoreCap) ~= RETURNVALUE_NOERROR and 0 or amount, 0
-		   else
-			   local stuff = Game.createItem(itemid, math.min(itemType:getStackSize(), amount))
-			   return Player(cid):addItemEx(stuff, ignoreCap) ~= RETURNVALUE_NOERROR and 0 or amount, 0
-		   end
+	local backpack = backpack or ITEM_BACKPACK
+	local player = Player(cid)
+	if not player or amount <= 0 then
+		return 0, 0, "invalid"
 	end
 
-	local a = 0
+	local itemType = ItemType(itemid)
+	if not itemType or itemType:getId() == 0 or itemType:getName() == "" then
+		return 0, 0, "invalid"
+	end
+
+	local weight = getNpcShopItemWeight(itemType, amount, subType, inBackpacks, backpack)
+	if not weight then
+		return 0, 0, "invalid"
+	end
+	if player:getFreeCapacity() < weight then
+		return 0, 0, "capacity"
+	end
+
+	local createdItems = {}
+	local backpackCount = 0
+	local stackSize = math.max(1, itemType:getStackSize())
+	local itemSubType = subType > 0 and subType or 1
+
 	if inBackpacks then
-		local container, b = Game.createItem(backpack, 1), 1
-		for i = 1, amount do
-			local item = container:addItem(itemid, subType)
-			if table.contains({(ItemType(backpack):getCapacity() * b), amount}, i) then
-				if Player(cid):addItemEx(container, ignoreCap) ~= RETURNVALUE_NOERROR then
-					b = b - 1
+		local backpackType = ItemType(backpack)
+		local backpackCapacity = math.max(1, backpackType:getCapacity())
+		local remaining = amount
+
+		while remaining > 0 do
+			local container = Game.createItem(backpack, 1)
+			if not container then
+				rollbackCreatedShopItems(createdItems)
+				return 0, 0, "invalid"
+			end
+			backpackCount = backpackCount + 1
+			createdItems[#createdItems + 1] = container
+
+			for _ = 1, backpackCapacity do
+				if remaining <= 0 then
 					break
 				end
 
-				a = i
-				if amount > i then
-					container = Game.createItem(backpack, 1)
-					b = b + 1
+				local count = itemType:isStackable() and math.min(remaining, stackSize) or itemSubType
+				local added = container:addItem(itemid, count)
+				if not added then
+					rollbackCreatedShopItems(createdItems)
+					return 0, 0, "room"
 				end
+				remaining = remaining - (itemType:isStackable() and count or 1)
 			end
 		end
-		return a, b
+	elseif itemType:isStackable() then
+		local remaining = amount
+		while remaining > 0 do
+			local count = math.min(remaining, stackSize)
+			local item = Game.createItem(itemid, count)
+			if not item then
+				rollbackCreatedShopItems(createdItems)
+				return 0, 0, "invalid"
+			end
+			createdItems[#createdItems + 1] = item
+			remaining = remaining - count
+		end
+	else
+		for _ = 1, amount do
+			local item = Game.createItem(itemid, itemSubType)
+			if not item then
+				rollbackCreatedShopItems(createdItems)
+				return 0, 0, "invalid"
+			end
+			createdItems[#createdItems + 1] = item
+		end
 	end
 
-	for i = 1, amount do -- normal method for non-stackable items
-		local item = Game.createItem(itemid, subType)
-		if Player(cid):addItemEx(item, ignoreCap) ~= RETURNVALUE_NOERROR then break end
-		a = i
+	for _, item in ipairs(createdItems) do
+		local ret = player:addItemEx(item, false)
+		if ret ~= RETURNVALUE_NOERROR then
+			rollbackCreatedShopItems(createdItems)
+			return 0, 0, ret == RETURNVALUE_NOTENOUGHCAPACITY and "capacity" or "room"
+		end
 	end
-	return a, 0
+	return amount, backpackCount, nil
 end
 
 local func = function(cid, text, type, e, pcid)
@@ -86,15 +215,32 @@ function doPlayerBuyItemContainer(cid, containerid, itemid, count, cost, charges
 	local player = Player(cid)
 	if not player then return false end
 
-	if not player:removeTotalMoney(cost) then return false end
+	if player:getTotalMoney() < cost then return false end
+
+	local containers = {}
+	local weight = ItemType(containerid):getWeight(1) * count
+	for i = 1, count do
+		weight = weight + (ItemType(itemid):getWeight(charges or 1) * ItemType(containerid):getCapacity())
+	end
+	if player:getFreeCapacity() < weight then return false end
 
 	for i = 1, count do
 		local container = Game.createItem(containerid, 1)
 		for x = 1, ItemType(containerid):getCapacity() do
 			container:addItem(itemid, charges)
 		end
+		containers[#containers + 1] = container
+	end
 
-		if player:addItemEx(container, true) ~= RETURNVALUE_NOERROR then return false end
+	for _, container in ipairs(containers) do
+		if player:addItemEx(container, false) ~= RETURNVALUE_NOERROR then
+			rollbackCreatedShopItems(containers)
+			return false
+		end
+	end
+	if not player:removeTotalMoney(cost) then
+		rollbackCreatedShopItems(containers)
+		return false
 	end
 	return true
 end
@@ -602,27 +748,15 @@ do
 		compat.originalNpcOpenShopWindow = Npc.openShopWindow
 	end
 
-	-- Reusable exhaustion check — returns true when the player is still on cooldown
-	local shopExhaust = compat.shopExhaustion
 	local fmt = string.format
-	local clock = os.clock
-
-	local function isShopExhausted(playerObj, playerId)
-		local now = clock()
-		if (shopExhaust[playerId] or 0) > now then
-			playerObj:sendCancelMessage("Please wait a moment before trading again.")
-			return true
-		end
-		shopExhaust[playerId] = now + 1
-		return false
-	end
 
 	function Npc:sellItem(player, itemId, amount, subType, actionId, ignoreCap, inBackpacks)
 		local playerId = getPlayerId(player)
-		local soldAmount, backpackCount = doNpcSellItem(playerId, itemId, amount, subType, ignoreCap, inBackpacks, ITEM_BACKPACK)
+		local soldAmount, backpackCount, reason = doNpcSellItem(playerId, itemId, amount, subType, false, inBackpacks, ITEM_BACKPACK)
 		compat.lastSellResult[playerId] = {
 			amount = soldAmount or 0,
 			backpacks = backpackCount or 0,
+			reason = reason,
 		}
 		return soldAmount == amount
 	end
@@ -655,7 +789,7 @@ do
 		return compat.originalNpcOpenShopWindow(npc, playerObject, shopItems,
 			function(playerObj, itemId, subType, amount, ignoreCap, inBackpacks)
 				local playerId = playerObj:getId()
-				if isShopExhausted(playerObj, playerId) then
+				if not checkNpcShopBuyExhaust(playerObj) then
 					return false
 				end
 
@@ -669,10 +803,7 @@ do
 					if playerObj:getItemCount(currency) < totalCost then
 						return false
 					end
-					if not playerObj:removeItem(currency, totalCost) then
-						return false
-					end
-				elseif not playerObj:removeTotalMoney(totalCost) then
+				elseif playerObj:getTotalMoney() < totalCost then
 					return false
 				end
 
@@ -685,11 +816,19 @@ do
 
 				local sellResult = compat.lastSellResult[playerId]
 				if sellResult and sellResult.amount < amount then
-					if currency ~= 0 then
-						playerObj:addItem(currency, totalCost)
+					if sellResult.reason == "capacity" then
+						playerObj:sendCancelMessage("You do not have enough capacity.")
 					else
-						playerObj:addMoney(totalCost)
+						playerObj:sendCancelMessage("You do not have enough room.")
 					end
+					return false
+				end
+
+				if currency ~= 0 then
+					if not playerObj:removeItem(currency, totalCost) then
+						return false
+					end
+				elseif not playerObj:removeTotalMoney(totalCost) then
 					return false
 				end
 
@@ -697,11 +836,6 @@ do
 				return true
 			end,
 			function(playerObj, itemId, subType, amount, ignoreEquipped, _)
-				local playerId = playerObj:getId()
-				if isShopExhausted(playerObj, playerId) then
-					return false
-				end
-
 				local shopItem = findShopItem(shopItems, itemId, subType)
 				if not shopItem or shopItem.sell <= 0 then
 					return false

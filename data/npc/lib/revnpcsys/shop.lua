@@ -201,6 +201,10 @@ if not NpcShop then
     ---@param inBackpacks boolean Whether to buy the item in backpacks.
     ---@return boolean True if the buying process was successful, false otherwise.
     NpcShop.onBuy = function(player, itemid, subType, amount, ignoreCap, inBackpacks)
+        if not checkNpcShopBuyExhaust(player) then
+            return false
+        end
+
         local npc = Npc(getNpcCid())
         local npcHandler = NpcsHandler(npc)
         local shop = NpcShop(npc, npcHandler:getActiveShop(player))
@@ -235,8 +239,15 @@ if not NpcShop then
             itemSubtype = 1
         end
 
-        local a, b = doNpcSellItem(player, itemid, amount, itemSubtype, ignoreCap, inBackpacks, ITEM_SHOPPING_BAG)
+        local a, b, reason = doNpcSellItem(player, itemid, amount, itemSubtype, false, inBackpacks, ITEM_SHOPPING_BAG)
         if a < amount then
+            if reason == "capacity" then
+                local msg = "You do not have enough capacity."
+                player:sendCancelMessage(msg)
+                focus:addFocus(player)
+                return false
+            end
+
             local msgId = MESSAGE_LIST.needMoreSpace
             if a == 0 then
                 msgId = MESSAGE_LIST.needSpace

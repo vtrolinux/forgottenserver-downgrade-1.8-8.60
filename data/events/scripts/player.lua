@@ -142,6 +142,13 @@ function Player:onSpellCheck(spell)
 end
 
 function Player:onStepTile(fromPosition, toPosition)
+    addEvent(function(playerId)
+        local player = Player(playerId)
+        if player and CustomMarket and CustomMarket.checkAccess then
+            CustomMarket.checkAccess(player)
+        end
+    end, 0, self:getId())
+
     if hasEvent.onStepTile then
         return Event.onStepTile(self, fromPosition, toPosition)
     end

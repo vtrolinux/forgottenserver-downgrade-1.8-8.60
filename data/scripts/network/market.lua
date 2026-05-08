@@ -93,6 +93,7 @@ local marketItemsById = {}
 local marketItemXmlAttributes = {}
 local lastAction = {}
 local marketDepotSessions = {}
+local marketOpenSessions = {}
 local lastExpireCheck = 0
 
 local blockedItems = {}
@@ -226,6 +227,88 @@ local function sendMarketMessage(player, message)
 	out:addByte(RESP_MESSAGE)
 	out:addString(message)
 	out:sendToPlayer(player)
+end
+
+local function sendMarketLeave(player)
+	local out = NetworkMessage(player)
+	out:addByte(OPCODE_MARKET_SEND)
+	out:addByte(RESP_LEAVE)
+	out:sendToPlayer(player)
+end
+
+local function tileHasMarketAccess(tile)
+	if not tile then
+		return false
+	end
+
+	if tile:getItemByType(ITEM_TYPE_DEPOT) then
+		return true
+	end
+	if tile.getItemById and tile:getItemById(MARKET_ITEM_ID) then
+		return true
+	end
+	return false
+end
+
+local function hasMarketAccessAtPosition(player, position)
+	if not player or not position then
+		return false
+	end
+
+	local playerTile = Tile(position)
+	if not playerTile or not playerTile:hasFlag(TILESTATE_PROTECTIONZONE) then
+		return false
+	end
+
+	if tileHasMarketAccess(playerTile) then
+		return true
+	end
+
+	for x = -1, 1 do
+		for y = -1, 1 do
+			if x ~= 0 or y ~= 0 then
+				local tile = Tile(Position(position.x + x, position.y + y, position.z))
+				if tileHasMarketAccess(tile) then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+local function hasCurrentMarketAccess(player)
+	return hasMarketAccessAtPosition(player, player:getPosition())
+end
+
+local function setMarketOpen(player)
+	marketOpenSessions[player:getId()] = true
+end
+
+local function clearMarketOpen(player)
+	marketOpenSessions[player:getId()] = nil
+end
+
+local function closeMarket(player, message)
+	if not marketOpenSessions[player:getId()] then
+		return false
+	end
+	clearMarketOpen(player)
+	if message then
+		sendMarketMessage(player, message)
+	end
+	sendMarketLeave(player)
+	return true
+end
+
+local function ensureMarketAccess(player)
+	if hasCurrentMarketAccess(player) then
+		return true
+	end
+	if not closeMarket(player, "Market closed.") then
+		sendMarketLeave(player)
+	end
+	return false
 end
 
 local function getItemCategory(itemType)
@@ -1295,7 +1378,14 @@ end
 
 local openHandler = PacketHandler(OPCODE_MARKET_OPEN)
 function openHandler.onReceive(player, msg)
+	if not hasCurrentMarketAccess(player) then
+		sendMarketMessage(player, "You need to be near a depot or market.")
+		sendMarketLeave(player)
+		return
+	end
+
 	setMarketDepotId(player, getPlayerLastDepotId(player))
+	setMarketOpen(player)
 	expireOffers()
 	sendMarketEnter(player)
 end
@@ -1303,15 +1393,16 @@ openHandler:register()
 
 local leaveHandler = PacketHandler(OPCODE_MARKET_LEAVE)
 function leaveHandler.onReceive(player, msg)
-	local out = NetworkMessage(player)
-	out:addByte(OPCODE_MARKET_SEND)
-	out:addByte(RESP_LEAVE)
-	out:sendToPlayer(player)
+	clearMarketOpen(player)
+	sendMarketLeave(player)
 end
 leaveHandler:register()
 
 local browseHandler = PacketHandler(OPCODE_MARKET_BROWSE)
 function browseHandler.onReceive(player, msg)
+	if not ensureMarketAccess(player) then
+		return
+	end
 	if msg:len() - msg:tell() < 2 then
 		return
 	end
@@ -1323,6 +1414,9 @@ browseHandler:register()
 
 local createHandler = PacketHandler(OPCODE_MARKET_CREATE)
 function createHandler.onReceive(player, msg)
+	if not ensureMarketAccess(player) then
+		return
+	end
 	if msg:len() - msg:tell() < 10 then
 		return
 	end
@@ -1405,6 +1499,9 @@ createHandler:register()
 
 local cancelHandler = PacketHandler(OPCODE_MARKET_CANCEL)
 function cancelHandler.onReceive(player, msg)
+	if not ensureMarketAccess(player) then
+		return
+	end
 	if msg:len() - msg:tell() < 4 then
 		return
 	end
@@ -1442,6 +1539,9 @@ cancelHandler:register()
 
 local acceptHandler = PacketHandler(OPCODE_MARKET_ACCEPT)
 function acceptHandler.onReceive(player, msg)
+	if not ensureMarketAccess(player) then
+		return
+	end
 	if msg:len() - msg:tell() < 6 then
 		return
 	end
@@ -1533,6 +1633,7 @@ local marketSessionCleanup = CreatureEvent("CustomMarketSessionCleanup")
 function marketSessionCleanup.onLogout(player)
 	lastAction[player:getId()] = nil
 	marketDepotSessions[player:getId()] = nil
+	marketOpenSessions[player:getId()] = nil
 	return true
 end
 marketSessionCleanup:register()
@@ -1550,9 +1651,27 @@ refreshMarketStatistics()
 
 CustomMarket = {
 	open = function(player, depotId)
+		if not hasCurrentMarketAccess(player) then
+			sendMarketMessage(player, "You need to be near a depot or market.")
+			sendMarketLeave(player)
+			return false
+		end
+
 		setMarketDepotId(player, depotId or getPlayerLastDepotId(player))
+		setMarketOpen(player)
 		expireOffers()
 		sendMarketEnter(player)
+		return true
+	end,
+	close = closeMarket,
+	checkAccess = function(player)
+		if marketOpenSessions[player:getId()] and not hasCurrentMarketAccess(player) then
+			return closeMarket(player, "Market closed.")
+		end
+		return false
+	end,
+	isOpen = function(player)
+		return marketOpenSessions[player:getId()] == true
 	end,
 	browse = sendMarketBrowse,
 	updateStatistics = refreshMarketStatistics
