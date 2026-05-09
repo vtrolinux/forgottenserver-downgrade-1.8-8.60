@@ -997,10 +997,13 @@ DepotLocker* Player::getDepotLocker(uint32_t depotId)
 	it->second->setDepotId(static_cast<uint16_t>(depotId));
 
 	bool hasMarket = false;
+	bool hasSupplyStash = false;
 	bool hasInbox = false;
 	for (const auto& item : it->second->getItemList()) {
 		if (item->getID() == ITEM_MARKET) {
 			hasMarket = true;
+		} else if (item->getID() == ITEM_SUPPLY_STASH) {
+			hasSupplyStash = true;
 		} else if (item->getID() == ITEM_INBOX) {
 			hasInbox = true;
 		}
@@ -1010,6 +1013,13 @@ DepotLocker* Player::getDepotLocker(uint32_t depotId)
 		auto market = Item::CreateItem(ITEM_MARKET);
 		if (market) {
 			it->second->internalAddThing(market.get());
+		}
+	}
+
+	if (!hasSupplyStash) {
+		auto supplyStash = Item::CreateItem(ITEM_SUPPLY_STASH);
+		if (supplyStash) {
+			it->second->internalAddThing(supplyStash.get());
 		}
 	}
 

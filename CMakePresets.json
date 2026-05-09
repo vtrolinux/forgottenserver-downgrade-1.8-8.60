@@ -42,6 +42,20 @@
 			}
 		},
 		{
+			"name": "release-portable-linux",
+			"inherits": [
+				"default"
+			],
+			"description": "Configure a portable Linux Release build without -march=native",
+			"binaryDir": "${sourceDir}/build-release-portable-linux",
+			"cacheVariables": {
+				"BUILD_TESTING": "OFF",
+				"CMAKE_BUILD_TYPE": "Release",
+				"ENABLE_NATIVE_OPTIMIZATIONS": "OFF",
+				"USE_MIMALLOC": "ON"
+			}
+		},
+		{
 			"name": "asan-vcpkg",
 			"inherits": [
 				"vcpkg"
@@ -75,6 +89,11 @@
 			"configuration": "RelWithDebInfo"
 		},
 		{
+			"name": "release-portable-linux",
+			"configurePreset": "release-portable-linux",
+			"configuration": "Release"
+		},
+		{
 			"name": "asan-vcpkg",
 			"configurePreset": "asan-vcpkg",
 			"configuration": "Debug"
@@ -98,6 +117,11 @@
 			"name": "valgrind-linux",
 			"configurePreset": "valgrind-linux",
 			"configuration": "RelWithDebInfo"
+		},
+		{
+			"name": "release-portable-linux",
+			"configurePreset": "release-portable-linux",
+			"configuration": "Release"
 		},
 		{
 			"name": "asan-vcpkg",

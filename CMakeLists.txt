@@ -25,6 +25,7 @@ if (BUILD_TESTING)
 endif()
 
 option(ENABLE_ASAN "Enable AddressSanitizer for memory diagnostics" OFF)
+option(ENABLE_NATIVE_OPTIMIZATIONS "Enable -march=native/-mtune=native for local Release builds" ON)
 
 option(USE_LUAJIT "Use LuaJIT" OFF)
 if (USE_LUAJIT)
@@ -148,8 +149,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 ### LINUX RELEASE OPTIMIZATIONS ###
 if (NOT WIN32)
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -fomit-frame-pointer -DNDEBUG")
-    set(CMAKE_C_FLAGS_RELEASE "-O3 -march=native -mtune=native -fomit-frame-pointer -DNDEBUG")
+    set(TFS_RELEASE_FLAGS "-O3 -fomit-frame-pointer -DNDEBUG")
+    if (ENABLE_NATIVE_OPTIMIZATIONS)
+        string(APPEND TFS_RELEASE_FLAGS " -march=native -mtune=native")
+    endif()
+
+    set(CMAKE_CXX_FLAGS_RELEASE "${TFS_RELEASE_FLAGS}")
+    set(CMAKE_C_FLAGS_RELEASE "${TFS_RELEASE_FLAGS}")
 
     # Profile-Guided Optimization (2 steps)
     # Step 1: cmake -DCMAKE_BUILD_TYPE=Release -DPGO_GENERATE=ON ..

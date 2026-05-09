@@ -29,9 +29,10 @@ extern Vocations g_vocations;
 
 Items Item::items;
 
-// Global registry to track valid Item pointers.
-// Explicitly reset in clearGlobalRegistry() before static item teardown.
-// Freed explicitly in clearGlobalRegistry(); null-checked after that.
+// Global observer registry used only to reject stale raw Item* callbacks after
+// the owning shared_ptr has destroyed the item. Constructors insert, the
+// destructor erases, and clearGlobalRegistry() disables checks during static
+// teardown when Item::items may already be going away.
 static std::unique_ptr<std::unordered_set<Item*>> g_validItems = std::make_unique<std::unordered_set<Item*>>();
 
 namespace {

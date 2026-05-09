@@ -1673,6 +1673,10 @@ CustomMarket = {
 	isOpen = function(player)
 		return marketOpenSessions[player:getId()] == true
 	end,
+	isMarketCatalogItem = function(itemId)
+		itemId = tonumber(itemId) or 0
+		return marketItemsById[itemId] ~= nil
+	end,
 	browse = sendMarketBrowse,
 	updateStatistics = refreshMarketStatistics
 }

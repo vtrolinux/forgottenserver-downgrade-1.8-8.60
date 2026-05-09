@@ -2030,6 +2030,7 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(ITEM_INBOX);
 	registerEnum(ITEM_MARKET);
 	registerEnum(ITEM_STORE_INBOX);
+	registerEnum(ITEM_SUPPLY_STASH);
 	registerEnum(ITEM_DEPOT_BOX_1);
 
 	// Registration is not required. It uses a table.
