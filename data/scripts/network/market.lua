@@ -96,6 +96,68 @@ local marketDepotSessions = {}
 local marketOpenSessions = {}
 local lastExpireCheck = 0
 
+-- ============================================================
+-- ANTI-DUPE LOCK SYSTEM
+-- Lua is single-threaded in TFS, so this table-based lock is
+-- sufficient to prevent the same offer being processed twice.
+-- Keys: "offer:<id>", "player:<guid>", "owner:<guid>"
+-- ============================================================
+local marketLocks = {}
+
+local function acquireLock(key)
+	if marketLocks[key] then
+		return false
+	end
+	marketLocks[key] = true
+	return true
+end
+
+local function releaseLock(key)
+	marketLocks[key] = nil
+end
+
+-- Acquire multiple locks at once. Returns true only if ALL succeed.
+-- If any fails, already-acquired ones are released automatically.
+local function acquireMultipleLocks(keys)
+	local acquired = {}
+	for _, key in ipairs(keys) do
+		if not acquireLock(key) then
+			for _, k in ipairs(acquired) do
+				releaseLock(k)
+			end
+			return false
+		end
+		acquired[#acquired + 1] = key
+	end
+	return true
+end
+
+local function releaseMultipleLocks(keys)
+	for _, key in ipairs(keys) do
+		releaseLock(key)
+	end
+end
+
+-- Rollback a DB-claimed offer (used when delivery fails after DB claim).
+-- For full-amount offers (deleted): tries to re-INSERT with original data.
+-- For partial offers (updated): restores the subtracted amount.
+local function rollbackOfferClaim(offer, acceptedAmount)
+	if acceptedAmount >= offer.amount then
+		-- Full offer was DELETE'd — restore it
+		return db.query(
+			"INSERT INTO `market_offers` (`id`, `player_id`, `sale`, `itemtype`, `amount`, `created`, `anonymous`, `price`) VALUES (" ..
+			offer.id .. ", " .. offer.playerId .. ", " .. offer.sale .. ", " .. offer.itemId .. ", " ..
+			offer.amount .. ", " .. offer.created .. ", " .. (offer.anonymous and 1 or 0) .. ", " .. offer.price .. ")"
+		)
+	else
+		-- Partial offer: restore subtracted amount
+		return db.query(
+			"UPDATE `market_offers` SET `amount` = `amount` + " .. acceptedAmount ..
+			" WHERE `id` = " .. offer.id
+		)
+	end
+end
+
 local blockedItems = {}
 for _, itemId in ipairs({
 	_G.ITEM_GOLD_COIN,
@@ -1333,19 +1395,31 @@ local function expireOffers()
 	local expiredBefore = now - getOfferDuration()
 	local offers = fetchOffers("SELECT mo.`id`, mo.`player_id`, mo.`sale`, mo.`itemtype`, mo.`amount`, mo.`created`, mo.`anonymous`, mo.`price`, p.`name` AS `player_name` FROM `market_offers` mo INNER JOIN `players` p ON p.`id` = mo.`player_id` WHERE mo.`created` <= " .. expiredBefore .. " ORDER BY mo.`created` ASC LIMIT 100")
 	for _, offer in ipairs(offers) do
-		local returned = true
-		if offer.sale == MARKET_ACTION_BUY then
-			returned = creditPlayerBank(offer.playerId, offer.playerName, offer.price * offer.amount)
+		local offerKey = "offer:" .. offer.id
+		-- Skip offers currently being processed by another handler
+		if not acquireLock(offerKey) then
+			logInfo("[CustomMarket] Skipping expire for locked offer " .. offer.id)
 		else
-			returned = deliverItemToPlayer(offer.playerId, offer.playerName, offer.itemId, offer.amount)
-		end
+			-- Atomically claim the offer before returning goods
+			local claimed = db.query("DELETE FROM `market_offers` WHERE `id` = " .. offer.id)
+			if claimed then
+				local returned = true
+				if offer.sale == MARKET_ACTION_BUY then
+					returned = creditPlayerBank(offer.playerId, offer.playerName, offer.price * offer.amount)
+				else
+					returned = deliverItemToPlayer(offer.playerId, offer.playerName, offer.itemId, offer.amount)
+				end
 
-		if returned then
-			db.query("DELETE FROM `market_offers` WHERE `id` = " .. offer.id)
-			offerCountCache[offer.playerId] = nil
-			addHistory(offer.playerId, offer.sale, offer.itemId, offer.amount, offer.price, MARKET_STATE_EXPIRED, offer.created)
-		else
-			logError("[CustomMarket] Failed to return expired offer " .. offer.id)
+				if returned then
+					offerCountCache[offer.playerId] = nil
+					addHistory(offer.playerId, offer.sale, offer.itemId, offer.amount, offer.price, MARKET_STATE_EXPIRED, offer.created)
+				else
+					-- Delivery failed: restore the offer so it can be retried
+					rollbackOfferClaim(offer, offer.amount)
+					logError("[CustomMarket] Failed to return expired offer " .. offer.id .. " — restored to DB")
+				end
+			end
+			releaseLock(offerKey)
 		end
 	end
 end
@@ -1425,6 +1499,13 @@ function createHandler.onReceive(player, msg)
 		return
 	end
 
+	-- Lock player to prevent simultaneous create + create/cancel/accept
+	local playerKey = "player:" .. player:getGuid()
+	if not acquireLock(playerKey) then
+		sendMarketMessage(player, "Market action already in progress.")
+		return
+	end
+
 	expireOffers()
 
 	local actionType = msg:getByte()
@@ -1435,6 +1516,7 @@ function createHandler.onReceive(player, msg)
 
 	local valid, errorMessage = validateOfferPayload(player, actionType, itemId, amount, price)
 	if not valid then
+		releaseLock(playerKey)
 		sendMarketMessage(player, errorMessage)
 		return
 	end
@@ -1446,25 +1528,30 @@ function createHandler.onReceive(player, msg)
 
 	if actionType == MARKET_ACTION_BUY then
 		if getPlayerTotalMoney(player) < totalPrice + fee then
+			releaseLock(playerKey)
 			sendMarketMessage(player, "You do not have enough money for this buy offer.")
 			return
 		end
 		payment = removePlayerMarketMoney(player, totalPrice + fee)
 		if not payment then
+			releaseLock(playerKey)
 			sendMarketMessage(player, "You do not have enough money for this buy offer.")
 			return
 		end
 	else
 		depotMap = buildDepotItemMap(player)
 		if (depotMap[itemId] or 0) < amount then
+			releaseLock(playerKey)
 			sendMarketMessage(player, "You do not have enough items for this sell offer.")
 			return
 		end
 		if getPlayerTotalMoney(player) < fee then
+			releaseLock(playerKey)
 			sendMarketMessage(player, "You do not have enough money to pay the market fee.")
 			return
 		end
 		if not removeDepotItems(player, itemId, amount) then
+			releaseLock(playerKey)
 			sendMarketMessage(player, "Could not reserve the items for this sell offer.")
 			return
 		end
@@ -1472,6 +1559,7 @@ function createHandler.onReceive(player, msg)
 		payment = removePlayerMarketMoney(player, fee)
 		if not payment then
 			addDepotItems(player, itemId, amount)
+			releaseLock(playerKey)
 			sendMarketMessage(player, "Could not pay the market fee.")
 			return
 		end
@@ -1487,11 +1575,13 @@ function createHandler.onReceive(player, msg)
 			addDepotItems(player, itemId, amount)
 			refundPlayerMarketMoney(player, payment)
 		end
+		releaseLock(playerKey)
 		sendMarketMessage(player, "Could not create the market offer.")
 		return
 	end
 
 	offerCountCache[player:getGuid()] = nil
+	releaseLock(playerKey)
 	sendMarketMessage(player, "Market offer created.")
 	refreshMarket(player, itemId, depotMap)
 end
@@ -1519,19 +1609,42 @@ function cancelHandler.onReceive(player, msg)
 		return
 	end
 
+	-- Lock both offer and player to prevent cancel + accept race
+	local offerKey = "offer:" .. offerId
+	local playerKey = "player:" .. player:getGuid()
+	if not acquireMultipleLocks({ offerKey, playerKey }) then
+		sendMarketMessage(player, "Market action already in progress.")
+		return
+	end
+
+	-- Revalidate after lock: confirm offer still exists and belongs to player
+	offer = fetchOfferById(offerId)
+	if not offer or offer.playerId ~= player:getGuid() then
+		releaseMultipleLocks({ offerKey, playerKey })
+		sendMarketMessage(player, "Market offer not found.")
+		return
+	end
+
+	-- Atomically claim (delete) the offer BEFORE returning goods
 	if not db.query("DELETE FROM `market_offers` WHERE `id` = " .. offer.id .. " AND `player_id` = " .. player:getGuid()) then
+		releaseMultipleLocks({ offerKey, playerKey })
 		sendMarketMessage(player, "Could not cancel the market offer.")
 		return
 	end
 	offerCountCache[player:getGuid()] = nil
 
+	-- Return goods after safe DB claim
 	if offer.sale == MARKET_ACTION_BUY then
 		player:setBankBalance(player:getBankBalance() + offer.price * offer.amount)
 	else
-		player:addItem(offer.itemId, offer.amount, true)
+		-- Use deliverItemToPlayer (inbox/depot) instead of raw addItem
+		if not deliverItemToPlayer(player:getGuid(), player:getName(), offer.itemId, offer.amount) then
+			logError("[CustomMarket] Failed to return cancelled sell offer " .. offer.id .. " items to player " .. player:getName())
+		end
 	end
 
 	addHistory(player:getGuid(), offer.sale, offer.itemId, offer.amount, offer.price, MARKET_STATE_CANCELLED, offer.created)
+	releaseMultipleLocks({ offerKey, playerKey })
 	sendMarketMessage(player, "Market offer cancelled.")
 	refreshMarket(player, MARKET_REQUEST_MY_OFFERS)
 end
@@ -1554,70 +1667,149 @@ function acceptHandler.onReceive(player, msg)
 
 	local offerId = msg:getU32()
 	local amount = msg:getU16()
+
+	-- Pre-check before acquiring locks (avoids locking on obvious invalid state)
 	local offer = fetchOfferById(offerId)
 	if not offer then
 		sendMarketMessage(player, "Market offer not found.")
 		return
 	end
-
-	amount = clamp(amount, 1, offer.amount)
 	if offer.playerId == player:getGuid() then
 		sendMarketMessage(player, "You cannot accept your own market offer.")
 		return
 	end
 
+	-- Acquire locks: offer + acceptor player + offer owner
+	local offerKey  = "offer:"  .. offerId
+	local buyerKey  = "player:" .. player:getGuid()
+	local ownerKey  = "owner:"  .. offer.playerId
+	if not acquireMultipleLocks({ offerKey, buyerKey, ownerKey }) then
+		sendMarketMessage(player, "Market action already in progress.")
+		return
+	end
+
+	-- Revalidate offer AFTER acquiring locks
+	offer = fetchOfferById(offerId)
+	if not offer then
+		releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
+		sendMarketMessage(player, "Market offer not found.")
+		return
+	end
+	if offer.playerId == player:getGuid() then
+		releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
+		sendMarketMessage(player, "You cannot accept your own market offer.")
+		return
+	end
+
+	amount = clamp(amount, 1, offer.amount)
 	local totalPrice = amount * offer.price
 	local depotMap = nil
+
+	-- ================================================================
+	-- STEP 1: Atomically claim the offer in DB BEFORE any item/money
+	-- transfer. This is the core anti-dupe guarantee.
+	-- ================================================================
+	local dbClaimed
+	if amount == offer.amount then
+		-- Full accept: DELETE with amount guard so a concurrent op can't sneak in
+		dbClaimed = db.query(
+			"DELETE FROM `market_offers` WHERE `id` = " .. offer.id ..
+			" AND `amount` = " .. offer.amount
+		)
+	else
+		-- Partial accept: UPDATE with guard that amount is still sufficient
+		dbClaimed = db.query(
+			"UPDATE `market_offers` SET `amount` = `amount` - " .. amount ..
+			" WHERE `id` = " .. offer.id .. " AND `amount` >= " .. amount
+		)
+	end
+
+	if not dbClaimed then
+		releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
+		sendMarketMessage(player, "Market offer is no longer available.")
+		return
+	end
+
+	-- ================================================================
+	-- STEP 2: Transfer money / items. On any failure, rollback the DB
+	-- claim so the offer is restored and the player is not cheated.
+	-- ================================================================
 	if offer.sale == MARKET_ACTION_SELL then
+		-- Acceptor (buyer) pays money, receives item
 		if getPlayerTotalMoney(player) < totalPrice then
+			rollbackOfferClaim(offer, amount)
+			releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
 			sendMarketMessage(player, "You do not have enough money.")
 			return
 		end
+
 		local payment = removePlayerMarketMoney(player, totalPrice)
 		if not payment then
+			rollbackOfferClaim(offer, amount)
+			releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
 			sendMarketMessage(player, "You do not have enough money.")
 			return
 		end
+
 		if not deliverItemToPlayer(player:getGuid(), player:getName(), offer.itemId, amount) then
 			refundPlayerMarketMoney(player, payment)
+			rollbackOfferClaim(offer, amount)
+			releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
 			sendMarketMessage(player, "Could not deliver the item.")
 			return
 		end
+
 		if not creditPlayerBank(offer.playerId, offer.playerName, totalPrice) then
+			-- Critical: item already delivered to buyer — attempt to take it back
 			if not removeInboxItems(player, offer.itemId, amount) then
-				logError("[CustomMarket] Failed to rollback inbox delivery for offer " .. offer.id .. " and player " .. player:getName())
+				logError("[CustomMarket] CRITICAL: Could not rollback inbox delivery for offer " ..
+					offer.id .. " player " .. player:getName())
 			end
 			refundPlayerMarketMoney(player, payment)
+			rollbackOfferClaim(offer, amount)
+			releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
 			sendMarketMessage(player, "Could not credit the seller.")
 			return
 		end
+
 	else
+		-- Acceptor (seller) provides item, receives money; buyer gets item
 		depotMap = buildDepotItemMap(player)
 		if (depotMap[offer.itemId] or 0) < amount then
+			rollbackOfferClaim(offer, amount)
+			releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
 			sendMarketMessage(player, "You do not have enough items.")
 			return
 		end
+
 		if not removeDepotItems(player, offer.itemId, amount) then
+			rollbackOfferClaim(offer, amount)
+			releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
 			sendMarketMessage(player, "Could not remove the items.")
 			return
 		end
+
 		depotMap[offer.itemId] = math.max(0, (depotMap[offer.itemId] or 0) - amount)
+
 		if not deliverItemToPlayer(offer.playerId, offer.playerName, offer.itemId, amount) then
 			addDepotItems(player, offer.itemId, amount)
+			rollbackOfferClaim(offer, amount)
+			releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
 			sendMarketMessage(player, "Could not deliver the item to the buyer.")
 			return
 		end
+
 		player:setBankBalance(player:getBankBalance() + totalPrice)
 	end
 
-	if amount == offer.amount then
-		db.query("DELETE FROM `market_offers` WHERE `id` = " .. offer.id)
-		offerCountCache[offer.playerId] = nil
-	else
-		db.query("UPDATE `market_offers` SET `amount` = `amount` - " .. amount .. " WHERE `id` = " .. offer.id)
-	end
-
+	-- ================================================================
+	-- STEP 3: All transfers succeeded — record history and notify.
+	-- ================================================================
+	offerCountCache[offer.playerId] = nil
 	addHistory(offer.playerId, offer.sale, offer.itemId, amount, offer.price, MARKET_STATE_ACCEPTED, offer.created)
+
+	releaseMultipleLocks({ offerKey, buyerKey, ownerKey })
+
 	sendMarketMessage(player, "Market offer accepted.")
 	refreshMarket(player, offer.itemId, depotMap)
 
