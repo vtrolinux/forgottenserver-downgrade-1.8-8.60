@@ -31,6 +31,10 @@ for _, itemId in ipairs({
 	end
 end
 
+local function supportsCustomNetwork(player)
+	return player and player.isUsingOtClient and player:isUsingOtClient()
+end
+
 local function ensureTables()
 	db.query([[
 		CREATE TABLE IF NOT EXISTS `player_supplystash` (
@@ -242,6 +246,10 @@ local function getRows(player)
 end
 
 local function sendStash(player)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local rows = getRows(player)
 	local freeSlots = math.max(0, SUPPLY_STASH_MAX_UNIQUE_ITEMS - #rows)
 
@@ -253,7 +261,7 @@ local function sendStash(player)
 		msg:addU32(rows[i].amount)
 	end
 	msg:addU16(math.min(freeSlots, 0xFFFF))
-	msg:sendToPlayer(player)
+	return msg:sendToPlayer(player)
 end
 
 local function getStoredAmount(player, itemId)
@@ -474,8 +482,12 @@ handler:register()
 
 CustomSupplyStash = {
 	open = function(player)
+		if not supportsCustomNetwork(player) then
+			return false
+		end
+
 		ensureTables()
-		sendStash(player)
+		return sendStash(player)
 	end,
 	stowAll = stowAll,
 	withdraw = withdraw

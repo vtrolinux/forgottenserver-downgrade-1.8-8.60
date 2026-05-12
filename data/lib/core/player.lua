@@ -118,7 +118,20 @@ function Player.sendCancelMessage(self, message)
 	return self:sendTextMessage(MESSAGE_STATUS_SMALL, message)
 end
 
-function Player.isUsingOtClient(self) return self:getClient().os >= CLIENTOS_OTCLIENT_LINUX end
+function Player.isUsingOtClient(self)
+	if self.isUsingOtc and self:isUsingOtc() then
+		return true
+	end
+
+	if self.isUsingOtcV8 and self:isUsingOtcV8() then
+		return true
+	end
+
+	local client = self:getClient()
+	local os = client and client.os or CLIENTOS_NONE
+	return os == CLIENTOS_OTCLIENT_LINUX or os == CLIENTOS_OTCLIENT_WINDOWS or os == CLIENTOS_OTCLIENT_MAC or
+		       (os >= CLIENTOS_OTCLIENTV8_LINUX and os <= CLIENTOS_OTCLIENTV8_WEB)
+end
 
 function Player.sendExtendedOpcode(self, opcode, buffer)
 	if not self:isUsingOtClient() then return false end

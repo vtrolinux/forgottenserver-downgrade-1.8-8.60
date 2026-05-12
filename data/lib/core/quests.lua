@@ -141,6 +141,10 @@ function Player:getQuests()
 end
 
 function Player:sendQuestLog()
+	if not self:isUsingOtClient() then
+		return false
+	end
+
 	local msg<close> = NetworkMessage()
 	msg:addByte(0xF0)
 	local quests = self:getQuests()
@@ -157,6 +161,10 @@ function Player:sendQuestLog()
 end
 
 function Player:sendQuestLine(quest)
+	if not self:isUsingOtClient() then
+		return false
+	end
+
 	local msg<close> = NetworkMessage()
 	msg:addByte(0xF1)
 	msg:addU16(quest.id)

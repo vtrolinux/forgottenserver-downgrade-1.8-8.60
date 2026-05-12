@@ -31,6 +31,10 @@ local charmByRaceCache = {}
 local finishedCache = {}
 local rebuildEarnedPoints
 
+local function supportsCustomNetwork(player)
+	return player and player.isUsingOtClient and player:isUsingOtClient()
+end
+
 local function logError(message)
 	if logger and logger.error then
 		logger.error(message)
@@ -273,11 +277,15 @@ local function removePlayerGold(player, amount)
 end
 
 local function sendMessage(player, message)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local out = NetworkMessage(player)
 	out:addByte(OPCODE_CYCLOPEDIA_SEND)
 	out:addByte(RESP_MESSAGE)
 	out:addString(message)
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function writeCreatureInfo(out, entry)
@@ -332,6 +340,10 @@ local function writeCharms(out, player, kills, charms)
 end
 
 local function sendBestiaryData(player)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local playerGuid = getPlayerGuid(player)
 	local kills = loadKillMap(playerGuid)
 	local charms = loadCharmMap(playerGuid)
@@ -359,10 +371,14 @@ local function sendBestiaryData(player)
 
 	out:addByte(0)
 	writeCharms(out, player, kills, charms)
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function sendBestiaryOverviewEntries(player, title, entries)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local playerGuid = getPlayerGuid(player)
 	local kills = loadKillMap(playerGuid)
 
@@ -385,14 +401,18 @@ local function sendBestiaryOverviewEntries(player, title, entries)
 		end
 	end
 
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function sendBestiaryOverview(player, className)
-	sendBestiaryOverviewEntries(player, className, CustomBestiary.classes[className] or {})
+	return sendBestiaryOverviewEntries(player, className, CustomBestiary.classes[className] or {})
 end
 
 local function sendBestiarySearch(player, query)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	query = trimText(query):lower()
 	local entries = {}
 	if query ~= "" then
@@ -407,14 +427,18 @@ local function sendBestiarySearch(player, query)
 	table.sort(entries, function(a, b)
 		return tostring(a.name or "") < tostring(b.name or "")
 	end)
-	sendBestiaryOverviewEntries(player, "Search", entries)
+	return sendBestiaryOverviewEntries(player, "Search", entries)
 end
 
 local function sendBestiaryMonster(player, raceId)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local entry = CustomBestiary.getMonster(raceId)
 	if not entry then
 		sendMessage(player, "Creature not found.")
-		return
+		return false
 	end
 
 	local playerGuid = getPlayerGuid(player)
@@ -476,7 +500,7 @@ local function sendBestiaryMonster(player, raceId)
 		out:addByte(0)
 	end
 
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function sendBestiaryProgress(player, raceId, killCount)
@@ -489,8 +513,12 @@ local function sendBestiaryProgress(player, raceId, killCount)
 end
 
 local function sendTracker(player)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	if not CustomBestiary then
-		return
+		return false
 	end
 
 	local playerGuid = getPlayerGuid(player)
@@ -519,7 +547,7 @@ local function sendTracker(player)
 			out:addByte(0)
 		end
 	end
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 CustomBestiary.sendTracker = sendTracker

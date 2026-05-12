@@ -57,6 +57,10 @@ local RESOURCE_PREY = 10
 
 local preyCache = {}
 
+local function supportsCustomNetwork(player)
+	return player and player.isUsingOtClient and player:isUsingOtClient()
+end
+
 PreySystem = PreySystem or {}
 PreySystem.BONUS_DAMAGE_BOOST = PREY_BONUS_DMG_BOOST
 PreySystem.BONUS_DAMAGE_REDUCTION = PREY_BONUS_DMG_RED
@@ -280,14 +284,22 @@ local function getSlotFlags(player, slot)
 end
 
 local function sendResourceBalance(player, resourceType, value)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local out = NetworkMessage(player)
 	out:addByte(PREY_OPCODE_RESOURCE_BALANCE)
 	out:addByte(resourceType)
 	out:addU64(value)
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 function Player.sendResource(self, resourceType, value)
+	if not supportsCustomNetwork(self) then
+		return false
+	end
+
 	local typeByte = resourceType
 	if resourceType == "bank" then
 		typeByte = RESOURCE_BANK
@@ -297,23 +309,32 @@ function Player.sendResource(self, resourceType, value)
 		typeByte = RESOURCE_PREY
 	end
 
-	sendResourceBalance(self, typeByte, value or 0)
+	return sendResourceBalance(self, typeByte, value or 0)
 end
 
 local function sendPreyBalances(player)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local prey = getPlayerPrey(player)
 	prey.wildcards = getPlayerBonusRerolls(player)
 	player:sendResource("prey", prey.wildcards)
 	player:sendResource("bank", player:getBankBalance())
 	player:sendResource("inventory", player:getMoney())
+	return true
 end
 
 local function sendError(player, message)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local out = NetworkMessage(player)
 	out:addByte(PREY_OPCODE_SEND)
 	out:addByte(PREY_SEND_ERROR)
 	out:addString(message)
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function getMonsterOutfit(name)
@@ -445,6 +466,10 @@ local function writeSlot(out, player, slot, slotData)
 end
 
 local function sendFullPrey(player, sendBalances)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local prey = getPlayerPrey(player)
 	local out = NetworkMessage(player)
 	out:addByte(PREY_OPCODE_SEND)
@@ -454,13 +479,18 @@ local function sendFullPrey(player, sendBalances)
 	for slot = 0, PREY_SLOTS - 1 do
 		writeSlot(out, player, slot, prey.slots[slot])
 	end
-	out:sendToPlayer(player)
+	local sent = out:sendToPlayer(player)
 	if sendBalances ~= false then
 		sendPreyBalances(player)
 	end
+	return sent
 end
 
 local function sendSlotUpdate(player, slot)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local prey = getPlayerPrey(player)
 	local out = NetworkMessage(player)
 	out:addByte(PREY_OPCODE_SEND)
@@ -469,8 +499,9 @@ local function sendSlotUpdate(player, slot)
 	out:addU32(getListRerollCost(player))
 	out:addByte(slot)
 	writeSlot(out, player, slot, prey.slots[slot])
-	out:sendToPlayer(player)
+	local sent = out:sendToPlayer(player)
 	saveSlotToDB(player:getGuid(), slot, prey.slots[slot], prey.wildcards)
+	return sent
 end
 
 getOtherSlotMonsters = function(prey, excludedSlot)

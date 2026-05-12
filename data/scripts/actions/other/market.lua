@@ -3,6 +3,11 @@ local MARKET_ITEM_ID = ITEM_MARKET or 12903
 local action = Action()
 
 function action.onUse(player, item, fromPosition, target, toPosition, isHotkey)
+	if not player:isUsingOtClient() then
+		player:sendCancelMessage("The market is only available on OTClient.")
+		return true
+	end
+
 	if not configManager.getBoolean(configKeys.MARKET_SYSTEM_ENABLED) then
 		player:sendCancelMessage("The market is disabled.")
 		return true

@@ -1215,7 +1215,24 @@ public:
 
 	bool isOTCv8() const { return client ? client->isOTCv8 : false; }
 	bool isMehah() const { return client ? client->isMehah : false; }
-	bool isOTC() const { return client ? (client->isOTCv8 || client->isMehah) : false; }
+	bool isOTC() const
+	{
+		switch (operatingSystem) {
+			case CLIENTOS_OTCLIENT_LINUX:
+			case CLIENTOS_OTCLIENT_WINDOWS:
+			case CLIENTOS_OTCLIENT_MAC:
+			case CLIENTOS_OTCLIENTV8_LINUX:
+			case CLIENTOS_OTCLIENTV8_WINDOWS:
+			case CLIENTOS_OTCLIENTV8_MAC:
+			case CLIENTOS_OTCLIENTV8_ANDROID:
+			case CLIENTOS_OTCLIENTV8_IOS:
+			case CLIENTOS_OTCLIENTV8_WEB:
+				return true;
+			default:
+				break;
+		}
+		return client ? (client->isOTCv8 || client->isMehah) : false;
+	}
 
 	static uint32_t playerAutoID;
 

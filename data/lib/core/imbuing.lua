@@ -21,6 +21,10 @@ local cachedDefinitions = nil
 local definitionsById = {}
 local definitionsByTypeBase = {}
 
+local function supportsCustomNetwork(player)
+	return player and player.isUsingOtClient and player:isUsingOtClient()
+end
+
 local IMBUEMENT_BASE_NAMES = {
 	[1] = "Basic",
 	[2] = "Intricate",
@@ -238,6 +242,10 @@ local function writeNeededItems(msg, player, definitions)
 end
 
 local function sendBalances(player)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local msg = NetworkMessage(player)
 	msg:addByte(RESOURCE_BALANCE_OPCODE)
 	msg:addByte(0)
@@ -245,7 +253,7 @@ local function sendBalances(player)
 	msg:addByte(RESOURCE_BALANCE_OPCODE)
 	msg:addByte(1)
 	msg:addU64(player:getMoney())
-	msg:sendToPlayer(player)
+	return msg:sendToPlayer(player)
 end
 
 local function findEquipment(container)
@@ -356,6 +364,10 @@ local function getSessionEquipment(player)
 end
 
 local function sendWindow(player, item)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local slots = item:getImbuementSlots()
 	if slots <= 0 then
 		return false
@@ -400,6 +412,13 @@ local function sendWindow(player, item)
 end
 
 function ImbuingWindow.open(player, container, silent)
+	if not supportsCustomNetwork(player) then
+		if not silent then
+			player:sendCancelMessage("The imbuing window is only available on OTClient.")
+		end
+		return false
+	end
+
 	if not isEnabled() then
 		if not silent then
 			player:sendCancelMessage(RETURNVALUE_NOTPOSSIBLE)
@@ -426,6 +445,13 @@ function ImbuingWindow.open(player, container, silent)
 end
 
 function ImbuingWindow.openItem(player, item, silent)
+	if not supportsCustomNetwork(player) then
+		if not silent then
+			player:sendCancelMessage("The imbuing window is only available on OTClient.")
+		end
+		return false
+	end
+
 	if not isEnabled() then
 		if not silent then
 			player:sendCancelMessage(RETURNVALUE_NOTPOSSIBLE)
@@ -462,10 +488,16 @@ function ImbuingWindow.close(player)
 end
 
 function ImbuingWindow.sendClose(player)
+	if not supportsCustomNetwork(player) then
+		ImbuingWindow.close(player)
+		return false
+	end
+
 	local msg = NetworkMessage(player)
 	msg:addByte(CLOSE_OPCODE)
-	msg:sendToPlayer(player)
+	local sent = msg:sendToPlayer(player)
 	ImbuingWindow.close(player)
+	return sent
 end
 
 function ImbuingWindow.apply(player, slot, imbuementId, protection)

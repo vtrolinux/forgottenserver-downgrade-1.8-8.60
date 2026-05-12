@@ -96,6 +96,10 @@ local marketDepotSessions = {}
 local marketOpenSessions = {}
 local lastExpireCheck = 0
 
+local function supportsCustomNetwork(player)
+	return player and player.isUsingOtClient and player:isUsingOtClient()
+end
+
 -- ============================================================
 -- ANTI-DUPE LOCK SYSTEM
 -- Lua is single-threaded in TFS, so this table-based lock is
@@ -284,18 +288,26 @@ local function isOnCooldown(player)
 end
 
 local function sendMarketMessage(player, message)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local out = NetworkMessage(player)
 	out:addByte(OPCODE_MARKET_SEND)
 	out:addByte(RESP_MESSAGE)
 	out:addString(message)
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function sendMarketLeave(player)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local out = NetworkMessage(player)
 	out:addByte(OPCODE_MARKET_SEND)
 	out:addByte(RESP_LEAVE)
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function tileHasMarketAccess(tile)
@@ -1266,6 +1278,10 @@ end
 local sendMarketDetail
 
 local function sendMarketBrowse(player, browseId)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	browseId = tonumber(browseId) or 0
 
 	local buyOffers = {}
@@ -1309,16 +1325,21 @@ local function sendMarketBrowse(player, browseId)
 	for _, offer in ipairs(sellOffers) do
 		writeOffer(out, offer)
 	end
-	out:sendToPlayer(player)
+	local sent = out:sendToPlayer(player)
 
 	if marketItemsById[browseId] then
 		sendMarketDetail(player, browseId)
 	end
+	return sent
 end
 
 local offerCountCache = {}
 
 local function sendMarketEnter(player, depotMap)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local balance = getPlayerTotalMoney(player)
 	local playerGuid = player:getGuid()
 	local offers = offerCountCache[playerGuid]
@@ -1353,11 +1374,16 @@ local function sendMarketEnter(player, depotMap)
 		out:sendToPlayer(player)
 		chunkIndex = chunkIndex + 1
 	end
+	return true
 end
 
 sendMarketDetail = function(player, itemId)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	if not marketItemsById[itemId] then
-		return
+		return false
 	end
 
 	local descriptions = buildMarketDescriptions(itemId)
@@ -1375,7 +1401,7 @@ sendMarketDetail = function(player, itemId)
 	end
 	writeStatistics(out, purchaseStats)
 	writeStatistics(out, saleStats)
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function refreshMarket(player, browseId, depotMap)
@@ -1843,6 +1869,10 @@ refreshMarketStatistics()
 
 CustomMarket = {
 	open = function(player, depotId)
+		if not supportsCustomNetwork(player) then
+			return false
+		end
+
 		if not hasCurrentMarketAccess(player) then
 			sendMarketMessage(player, "You need to be near a depot or market.")
 			sendMarketLeave(player)

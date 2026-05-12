@@ -2,6 +2,11 @@ local SUPPLY_STASH_ITEM_ID = ITEM_SUPPLY_STASH or 28750
 
 local action = Action()
 function action.onUse(player, item, fromPosition, target, toPosition, isHotkey)
+    if not player:isUsingOtClient() then
+        player:sendCancelMessage("The supply stash is only available on OTClient.")
+        return true
+    end
+
     if not CustomSupplyStash then
         player:sendCancelMessage("The supply stash is not available.")
         return true

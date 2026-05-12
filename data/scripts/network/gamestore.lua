@@ -27,6 +27,10 @@ local storeItemsById = {}
 local lastBuy = {}
 local lastTransfer = {}
 
+local function supportsCustomNetwork(player)
+	return player and player.isUsingOtClient and player:isUsingOtClient()
+end
+
 local function logInfo(message)
 	if logger and logger.info then
 		logger.info(message)
@@ -170,21 +174,29 @@ local function isOnCooldown(cache, playerId)
 end
 
 local function sendStoreError(player, message)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local out = NetworkMessage(player)
 	out:addByte(OPCODE_STORE_SEND)
 	out:addByte(RESP_ERROR)
 	out:addString(message)
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function sendStoreSuccess(player, offerId, message)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local out = NetworkMessage(player)
 	out:addByte(OPCODE_STORE_SEND)
 	out:addByte(RESP_SUCCESS)
 	out:addU32(offerId)
 	out:addString(message)
 	out:addU32(player:getTibiaCoins())
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local _shopHistoryCache = nil
@@ -226,6 +238,10 @@ local function addStoreHistory(accountId, playerGuid, title, price, count, targe
 end
 
 local function sendStoreHistory(player)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local out = NetworkMessage(player)
 	out:addByte(OPCODE_STORE_SEND)
 	out:addByte(RESP_HISTORY)
@@ -258,7 +274,7 @@ local function sendStoreHistory(player)
 		out:addU16(math.max(entry.count or 0, 0))
 	end
 
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function loadStoreXML()
@@ -323,6 +339,10 @@ loadStoreXML()
 ensureDeathSearchIndexes()
 
 local function sendStoreCatalog(player)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local out = NetworkMessage(player)
 	out:addByte(OPCODE_STORE_SEND)
 	out:addByte(RESP_CATALOG)
@@ -349,7 +369,7 @@ local function sendStoreCatalog(player)
 		end
 	end
 
-	out:sendToPlayer(player)
+	return out:sendToPlayer(player)
 end
 
 local function deliverOffer(player, offer, extra)

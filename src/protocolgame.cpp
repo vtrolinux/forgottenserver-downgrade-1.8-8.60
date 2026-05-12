@@ -25,6 +25,24 @@ namespace {
 std::deque<std::pair<int64_t, uint32_t>> waitList; // (timeout, player guid)
 std::size_t priorityCount = 0;
 
+bool isOtclientOperatingSystem(OperatingSystem_t operatingSystem)
+{
+	switch (operatingSystem) {
+		case CLIENTOS_OTCLIENT_LINUX:
+		case CLIENTOS_OTCLIENT_WINDOWS:
+		case CLIENTOS_OTCLIENT_MAC:
+		case CLIENTOS_OTCLIENTV8_LINUX:
+		case CLIENTOS_OTCLIENTV8_WINDOWS:
+		case CLIENTOS_OTCLIENTV8_MAC:
+		case CLIENTOS_OTCLIENTV8_ANDROID:
+		case CLIENTOS_OTCLIENTV8_IOS:
+		case CLIENTOS_OTCLIENTV8_WEB:
+			return true;
+		default:
+			return false;
+	}
+}
+
 auto findClient(uint32_t guid)
 {
 	std::size_t slot = 1;
@@ -502,7 +520,7 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 		isMehah = true;
 	}
 
-	isOTC = isOTCv8 || isMehah;
+	isOTC = isOTCv8 || isMehah || isOtclientOperatingSystem(operatingSystem);
 
 	if (isOTC) {
 		NetworkMessage opcodeMessage;

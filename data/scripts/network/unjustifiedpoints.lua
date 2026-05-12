@@ -8,6 +8,10 @@ local PERIOD_DAY = 24 * 60 * 60
 local PERIOD_WEEK = 7 * 24 * 60 * 60
 local PERIOD_MONTH = 30 * 24 * 60 * 60
 
+local function supportsCustomNetwork(player)
+	return player and player.isUsingOtClient and player:isUsingOtClient()
+end
+
 local function clamp(value, minValue, maxValue)
 	value = tonumber(value) or minValue
 	if value < minValue then
@@ -57,6 +61,10 @@ local function getActivePvpSituations(player)
 end
 
 local function sendUnjustifiedPoints(player)
+	if not supportsCustomNetwork(player) then
+		return false
+	end
+
 	local dayPercent, dayRemaining = getPeriodData(player, PERIOD_DAY)
 	local weekPercent, weekRemaining = getPeriodData(player, PERIOD_WEEK)
 	local monthPercent, monthRemaining = getPeriodData(player, PERIOD_MONTH)
@@ -73,7 +81,7 @@ local function sendUnjustifiedPoints(player)
 	msg:addU32(skullTime)
 	msg:addByte(getActivePvpSituations(player))
 	msg:addByte(player:getSkull())
-	msg:sendToPlayer(player)
+	return msg:sendToPlayer(player)
 end
 
 local handler = PacketHandler(OPCODE_UNJUSTIFIED_REQUEST)

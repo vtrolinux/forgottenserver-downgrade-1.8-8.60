@@ -10,6 +10,51 @@
 namespace {
 using namespace Lua;
 
+bool isOtcOnlyLuaOpcode(uint8_t opcode)
+{
+	switch (opcode) {
+		case 0x29: // custom supply stash
+		case 0x2F: // custom unjustified points
+		case 0x32: // extended opcode
+		case 0x48: // custom cyclopedia/bestiary
+		case 0xA7: // custom fight mode sync
+		case 0xD1: // custom hunt analyzer
+		case 0xDB: // custom market
+		case 0xEB: // imbuing window
+		case 0xEC: // close imbuing
+		case 0xED: // custom prey
+		case 0xEE: // resource balance
+		case 0xF0: // custom quest log
+		case 0xF1: // custom quest line
+		case 0xFD: // custom store
+			return true;
+		default:
+			return false;
+	}
+}
+
+bool canSendLuaNetworkMessageToPlayer(const NetworkMessage& message, const Player& player)
+{
+	if (message.getLength() == 0) {
+		return true;
+	}
+
+	const uint8_t opcode = message.getBuffer()[NetworkMessage::INITIAL_BUFFER_POSITION];
+	return !isOtcOnlyLuaOpcode(opcode) || player.isOTC();
+}
+
+int sendLuaNetworkMessageToPlayer(lua_State* L, NetworkMessage& message, Player& player)
+{
+	if (!canSendLuaNetworkMessageToPlayer(message, player)) {
+		pushBoolean(L, false);
+		return 1;
+	}
+
+	player.sendNetworkMessage(message);
+	pushBoolean(L, true);
+	return 1;
+}
+
 // NetworkMessage
 int luaNetworkMessageCreate(lua_State* L)
 {
@@ -338,16 +383,12 @@ int luaNetworkMessageSendToPlayer(lua_State* L)
 	}
 
 	if (Player* player = getPlayer(L, 2)) {
-		player->sendNetworkMessage(*message);
-		pushBoolean(L, true);
-		return 1;
+		return sendLuaNetworkMessageToPlayer(L, *message, *player);
 	}
 
 	if (getAssociatedValue(L, 1, 1)) {
 		if (const auto p = getPlayer(L, -1)) {
-			p->sendNetworkMessage(*message);
-			pushBoolean(L, true);
-			return 1;
+			return sendLuaNetworkMessageToPlayer(L, *message, *p);
 		}
 	}
 
