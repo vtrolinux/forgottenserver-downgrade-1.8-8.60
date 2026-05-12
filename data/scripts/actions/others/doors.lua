@@ -75,6 +75,17 @@ local function pushCreaturesFromDoor(player, toPosition)
 	return true
 end
 
+local function isHouseDoor(item)
+	local doorId = item:getAttribute(ITEM_ATTRIBUTE_DOORID)
+	if doorId and doorId > 0 then
+		return true
+	end
+
+	local itemPosition = item:getPosition()
+	local tile = itemPosition and Tile(itemPosition) or nil
+	return tile and tile:getHouse() and item.actionid <= 0
+end
+
 -- ============================
 -- Key Door Action (locked/unlocked/open)
 -- ============================
@@ -106,6 +117,15 @@ local keyDoor = Action()
 function keyDoor.onUse(player, item, fromPosition, target, toPosition, isHotkey)
 	-- Locked door message
 	if table.contains(keyLockedDoorIds, item.itemid) then
+		if isHouseDoor(item) then
+			for _, value in ipairs(KeyDoorTable) do
+				if value.lockedDoor == item.itemid then
+					item:transform(value.openDoor)
+					return true
+				end
+			end
+		end
+
 		player:sendTextMessage(MESSAGE_INFO_DESCR, "It is locked.")
 		return true
 	end
