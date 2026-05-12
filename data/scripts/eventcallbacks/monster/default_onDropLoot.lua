@@ -8,6 +8,11 @@ end
 -- Returns true if the item should be added, false otherwise.
 local function rollWithDropBonus(lootChance, player)
 	local chance = lootChance
+	local rateLoot = configManager.getNumber(configKeys.RATE_LOOT)
+	if rateLoot > 0 then
+		chance = chance * rateLoot
+	end
+
 	if player then
 		local bonus = player:getDropBonus()
 		if bonus > 0 then

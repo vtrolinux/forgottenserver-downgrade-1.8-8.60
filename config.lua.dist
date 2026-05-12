@@ -346,13 +346,7 @@ magicLevelStages = {
 }
 
 -- Rates
--- NOTE: rateExp is not used if you have enabled stages above
--- NOTE: rateSkill is not used if skillStages is defined above
--- NOTE: rateMagic is not used if magicLevelStages is defined above
-rateExp = 5
-rateSkill = 3
 rateLoot = 2
-rateMagic = 3
 rateSpawn = 1
 spawnMultiplier = 1
 
