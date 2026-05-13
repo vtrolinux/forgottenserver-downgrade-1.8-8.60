@@ -248,9 +248,9 @@ private:
 	friend class LuaScriptInterface;
 };
 
-namespace monsterlevel {
-	void setSkullRange(Skulls_t skull, int32_t minLevel, int32_t maxLevel);
-	void setBonus(const std::string& type, float value);
+namespace monster_level {
+	bool setSkullRange(Skulls_t skull, int32_t minLevel, int32_t maxLevel);
+	bool setBonus(const std::string& type, float value);
 	Skulls_t getSkullByLevel(int32_t level);
 	float getBonusDamage();
 	float getBonusSpeed();

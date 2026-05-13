@@ -1386,7 +1386,14 @@ int luaMonsterTypeMinLevel(lua_State* L)
 		if (lua_gettop(L) == 1) {
 			lua_pushinteger(L, monsterType->info.minLevel);
 		} else {
-			monsterType->info.minLevel = getInteger<int32_t>(L, 2);
+			const int32_t minLevel = getInteger<int32_t>(L, 2);
+			if (monsterType->info.maxLevel > 0 && minLevel > monsterType->info.maxLevel) {
+				reportErrorFunc(L, "minLevel cannot be greater than maxLevel");
+				pushBoolean(L, false);
+				return 1;
+			}
+
+			monsterType->info.minLevel = minLevel;
 			pushBoolean(L, true);
 		}
 	} else {
@@ -1403,7 +1410,14 @@ int luaMonsterTypeMaxLevel(lua_State* L)
 		if (lua_gettop(L) == 1) {
 			lua_pushinteger(L, monsterType->info.maxLevel);
 		} else {
-			monsterType->info.maxLevel = getInteger<int32_t>(L, 2);
+			const int32_t maxLevel = getInteger<int32_t>(L, 2);
+			if (monsterType->info.minLevel > 0 && maxLevel < monsterType->info.minLevel) {
+				reportErrorFunc(L, "maxLevel cannot be less than minLevel");
+				pushBoolean(L, false);
+				return 1;
+			}
+
+			monsterType->info.maxLevel = maxLevel;
 			pushBoolean(L, true);
 		}
 	} else {

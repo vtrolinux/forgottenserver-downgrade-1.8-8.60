@@ -5199,7 +5199,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 		if (ConfigManager::getBoolean(ConfigManager::MONSTER_LEVEL_ENABLED)) {
 			Monster* monster = attacker ? attacker->getMonster() : nullptr;
 			if (monster && monster->getLevel() > 0) {
-				float bonusDmg = monsterlevel::getBonusDamage() * monster->getLevel();
+				float bonusDmg = monster_level::getBonusDamage() * monster->getLevel();
 				if (bonusDmg != 0.0f) {
 					damage.primary.value += static_cast<int32_t>(std::round(damage.primary.value * bonusDmg));
 					damage.secondary.value += static_cast<int32_t>(std::round(damage.secondary.value * bonusDmg));
@@ -5488,7 +5488,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, CombatDamage& 
 	if (ConfigManager::getBoolean(ConfigManager::MONSTER_LEVEL_ENABLED)) {
 		Monster* monster = attacker ? attacker->getMonster() : nullptr;
 		if (monster && monster->getLevel() > 0) {
-			float bonusDmg = monsterlevel::getBonusDamage() * monster->getLevel();
+			float bonusDmg = monster_level::getBonusDamage() * monster->getLevel();
 			if (bonusDmg != 0.0f) {
 				if (damage.primary.value < 0) {
 					damage.primary.value += static_cast<int32_t>(std::round(damage.primary.value * bonusDmg));

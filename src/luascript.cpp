@@ -80,7 +80,18 @@ int luaSetMonsterLevelSkullRange(lua_State* L)
 	Skulls_t skull = Lua::getInteger<Skulls_t>(L, 1);
 	int32_t minLevel = Lua::getInteger<int32_t>(L, 2);
 	int32_t maxLevel = Lua::getInteger<int32_t>(L, 3);
-	monsterlevel::setSkullRange(skull, minLevel, maxLevel);
+	if (minLevel > maxLevel) {
+		reportErrorFunc(L, "setMonsterLevelSkullRange: minLevel cannot be greater than maxLevel");
+		Lua::pushBoolean(L, false);
+		return 1;
+	}
+
+	if (!monster_level::setSkullRange(skull, minLevel, maxLevel)) {
+		reportErrorFunc(L, "setMonsterLevelSkullRange: invalid skull type");
+		Lua::pushBoolean(L, false);
+		return 1;
+	}
+
 	Lua::pushBoolean(L, true);
 	return 1;
 }
@@ -90,7 +101,12 @@ int luaSetMonsterLevelBonus(lua_State* L)
 	// setMonsterLevelBonus(bonusType, value)
 	std::string type = Lua::getString(L, 1);
 	float value = Lua::getNumber<float>(L, 2);
-	monsterlevel::setBonus(type, value);
+	if (!monster_level::setBonus(type, value)) {
+		reportErrorFunc(L, "setMonsterLevelBonus: invalid bonus type or value");
+		Lua::pushBoolean(L, false);
+		return 1;
+	}
+
 	Lua::pushBoolean(L, true);
 	return 1;
 }
