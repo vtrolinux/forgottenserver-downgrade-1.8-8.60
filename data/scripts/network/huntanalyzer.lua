@@ -1,6 +1,7 @@
 -- data/scripts/network/huntanalyzer.lua
 
 local OPCODE_KILL_TRACKER = 0xD1
+local STORAGE_MEHAH_CLIENT = 99999 -- Must match extendedopcode.lua
 local MAX_ITEMS_PER_CONTAINER = 255
 local HUNT_ANALYZER_DROP_TRIGGER = 100
 
@@ -13,11 +14,10 @@ local function clampU16(value)
 	return math.min(math.max(tonumber(value) or 0, 0), 65535)
 end
 
-local function supportsHuntAnalyzer(player)
-	if player.isUsingOtcV8 and player:isUsingOtcV8() then
-		return true
-	end
-	return player.isUsingOtClient and player:isUsingOtClient()
+local function isItemStackable(itemId)
+	local itemType = ItemType(itemId)
+	if not itemType then return false end
+	return itemType:isStackable() or itemType:isFluidContainer()
 end
 
 local function writeOutfit(out, monsterType)
@@ -75,6 +75,36 @@ local function writeContainerItems(out, container, depth)
 	end
 end
 
+local function sendLootStatsRecursive(player, container)
+	local items = container and container:getItems(false) or {}
+	for _, item in ipairs(items) do
+		local childContainer = item:getContainer()
+		if childContainer then
+			sendLootStatsRecursive(player, childContainer)
+		else
+			local out = NetworkMessage(player)
+			out:addByte(0xCF) -- OPCODE_LOOT_TRACKER
+			local clientId = getClientItemId(item)
+			out:addU16(clientId)
+			if isItemStackable(item:getId()) then
+				out:addByte(clampByte(item:getCount()))
+			end
+			out:addString(item:getName() or "")
+			out:sendToPlayer(player)
+		end
+	end
+end
+
+local function supportsHuntAnalyzer(player)
+	if player:getStorageValue(STORAGE_MEHAH_CLIENT) == 1 then
+		return true
+	end
+	if player.isUsingOtcV8 and player:isUsingOtcV8() then
+		return true
+	end
+	return player.isUsingOtClient and player:isUsingOtClient()
+end
+
 local function sendHuntAnalyzerKill(player, monster, corpse)
 	if not player or not supportsHuntAnalyzer(player) then
 		return
@@ -91,6 +121,10 @@ local function sendHuntAnalyzerKill(player, monster, corpse)
 	writeOutfit(out, monsterType)
 	writeContainerItems(out, corpse)
 	out:sendToPlayer(player)
+
+	if player:getStorageValue(STORAGE_MEHAH_CLIENT) == 1 then
+		sendLootStatsRecursive(player, corpse)
+	end
 end
 
 local _receivers = {}

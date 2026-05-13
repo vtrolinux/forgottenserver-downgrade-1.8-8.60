@@ -159,6 +159,7 @@ function potionsAction.onUse(player, item, fromPosition, target, toPosition, isH
 			Game.createItem(reward, 1, fromPosition)
 		end
 		item:getPosition():sendMagicEffect(potion.effect)
+		if sendSupplyTracker then sendSupplyTracker(player, item) end
 		item:remove(1)
 		return true
 
@@ -182,9 +183,11 @@ function potionsAction.onUse(player, item, fromPosition, target, toPosition, isH
 	end
 
 	if not configManager.getBoolean(configKeys.REMOVE_POTION_CHARGES) then
+		if sendSupplyTracker then sendSupplyTracker(player, item) end
 		return true
 	end
 
+	if sendSupplyTracker then sendSupplyTracker(player, item) end
 	item:remove(1)
 	return true
 end

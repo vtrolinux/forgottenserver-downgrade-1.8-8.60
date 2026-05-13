@@ -4959,8 +4959,17 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 						}
 					}
 				}
+		}
+		}
+
+		// Fire onHealthChange creature events for healing
+		const auto& healEvents = target->getCreatureEvents(CREATURE_EVENT_HEALTHCHANGE);
+		if (!healEvents.empty()) {
+			for (CreatureEvent* creatureEvent : healEvents) {
+				creatureEvent->executeHealthChange(target, attacker, damage);
 			}
 		}
+
 		return true;
 	}
 
