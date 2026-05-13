@@ -2562,6 +2562,7 @@ void LuaScriptInterface::registerFunctions()
 	registerEnumIn("configKeys", ConfigManager::IMBUEMENT_SYSTEM_ENABLED);
 	registerEnumIn("configKeys", ConfigManager::MONK_VOCATION_ENABLED);
 	registerEnumIn("configKeys", ConfigManager::FAMILIAR_SYSTEM_ENABLED);
+	registerEnumIn("configKeys", ConfigManager::CHAIN_SYSTEM_ENABLED);
 	registerEnumIn("configKeys", ConfigManager::BESTIARY_SYSTEM_ENABLED);
 	registerEnumIn("configKeys", ConfigManager::MARKET_SYSTEM_ENABLED);
 	registerEnumIn("configKeys", ConfigManager::PREY_SYSTEM_ENABLED);

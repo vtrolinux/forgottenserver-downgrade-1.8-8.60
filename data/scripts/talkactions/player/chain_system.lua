@@ -2,7 +2,30 @@ local chainStorage = 40001
 
 local chainSystem = TalkAction("!chain")
 
+local function isChainSystemEnabled()
+	if ChainSystem and ChainSystem.enabled ~= nil then
+		return ChainSystem.enabled
+	end
+
+	if configManager and configKeys then
+		if configKeys.CHAIN_SYSTEM_ENABLED then
+			return configManager.getBoolean(configKeys.CHAIN_SYSTEM_ENABLED)
+		end
+
+		if configKeys.TOGGLE_CHAIN_SYSTEM then
+			return configManager.getBoolean(configKeys.TOGGLE_CHAIN_SYSTEM)
+		end
+	end
+
+	return true
+end
+
 function chainSystem.onSay(player, words, param)
+	if not isChainSystemEnabled() then
+		player:sendTextMessage(MESSAGE_INFO_DESCR, "Chain system is not enabled on this server.")
+		return true
+	end
+
 	param = param:trim():lower()
 	if param == "on" then
 		player:setStorageValue(chainStorage, 1)

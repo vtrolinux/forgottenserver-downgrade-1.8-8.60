@@ -1789,7 +1789,7 @@ std::vector<std::pair<Position, std::vector<uint32_t>>> Combat::pickChainTargets
 	}
 
 	int backtrackingAttempts = 10;
-	while (!targets.empty() && targets.size() <= maxTargets && backtrackingAttempts > 0) {
+	while (!targets.empty() && targets.size() < static_cast<size_t>(maxTargets) && backtrackingAttempts > 0) {
 		Creature* currentTarget = targets.back();
 
 		SpectatorVec spectators;
@@ -1909,20 +1909,20 @@ bool Combat::doCombatChain(Creature* caster, Creature* target, bool aggressive) 
 		return false;
 	}
 
-	auto affected = targets.size();
 	auto self = shared_from_this();
+	const uint8_t capturedChainEffect = params.chainEffect;
 	int i = 0;
 	for (const auto& [from, toVector] : targets) {
 		auto delay = i * std::max<int32_t>(SCHEDULER_MINTICKS, ConfigManager::getInteger(ConfigManager::COMBAT_CHAIN_DELAY));
 		++i;
 		for (const auto& to : toVector) {
-			g_scheduler.addEvent(delay, [self, casterId = caster ? caster->getID() : 0, to, from, affected]() {
+			g_scheduler.addEvent(delay, [self, casterId = caster ? caster->getID() : 0, to, from, capturedChainEffect]() {
 				Creature* resolvedCaster = g_game.getCreatureByID(casterId);
 				Creature* nextTarget = g_game.getCreatureByID(to);
 				if (!nextTarget) {
 					return;
 				}
-				Combat::doChainEffect(from, nextTarget->getPosition(), self->params.chainEffect);
+				Combat::doChainEffect(from, nextTarget->getPosition(), capturedChainEffect);
 				if (resolvedCaster) {
 					CombatDamage damage = self->getCombatDamage(resolvedCaster, nextTarget);
 					bool canCombat = !self->params.aggressive ||
@@ -2007,7 +2007,7 @@ void Combat::setupChain(const Weapon* weapon)
 		auto it = elementEffects.find(weapon->getElementType());
 		if (it != elementEffects.end()) {
 			setPlayerCombatValues(COMBAT_FORMULA_LEVELMAGIC, 0, 0,
-			                      ConfigManager::getFloat(ConfigManager::COMBAT_CHAIN_SKILL_FORMULA_WANDS_AND_RODS), 0);
+			                      -ConfigManager::getFloat(ConfigManager::COMBAT_CHAIN_SKILL_FORMULA_WANDS_AND_RODS), 0);
 			params.impactEffect = it->second.first;
 			params.chainEffect = static_cast<uint8_t>(it->second.second);
 		}
