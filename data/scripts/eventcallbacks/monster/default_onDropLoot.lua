@@ -77,9 +77,11 @@ event.onDropLoot = function(self, corpse)
 			end
 		end
 
+		local preyLootBonus = 0
 		if player and PreySystem then
 			local bonusType, bonusValue = PreySystem.getBonus(player, self:getName())
 			if bonusType == PreySystem.BONUS_LOOT then
+				preyLootBonus = bonusValue or 0
 				for i = 1, #monsterLoot do
 					local lootItem = monsterLoot[i]
 					local chance = lootItem.chance or 100000
@@ -91,8 +93,9 @@ event.onDropLoot = function(self, corpse)
 		end
 
 		if player then
-			local text = ("Loot of %s: %s"):format(mType:getNameDescription(),
-			                                       corpse:getContentDescription())
+			local preyLootText = preyLootBonus > 0 and (" (Prey Improved Loot +%d%%)"):format(preyLootBonus) or ""
+			local text = ("Loot of %s: %s%s"):format(mType:getNameDescription(),
+			                                         corpse:getContentDescription(), preyLootText)
 			local party = player:getParty()
 			if party then
 				party:broadcastPartyLoot(text)

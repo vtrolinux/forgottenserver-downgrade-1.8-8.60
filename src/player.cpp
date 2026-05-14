@@ -42,6 +42,11 @@ bool playerIsMonkVocation(const Vocation* vocation)
 {
 	return vocation && (vocation->getId() == 9 || vocation->getFromVocation() == 9);
 }
+
+uint16_t clampPreyDamagePercent(uint16_t value)
+{
+	return std::min<uint16_t>(value, 100);
+}
 } // namespace
 
 MuteCountMap Player::muteCountMap;
@@ -55,6 +60,73 @@ Player::Player(ProtocolGame_ptr p) : Creature(), client(std::make_shared<Protoco
 {
 	storeInbox->setParent(this);
 	experienceRate.fill(100);
+}
+
+void Player::clearPreyCombatBonuses()
+{
+	preyCombatBonuses.clear();
+}
+
+void Player::setPreyDamageBoost(std::string monsterName, uint16_t value)
+{
+	std::string normalizedName = asLowerCaseString(std::move(monsterName));
+	if (normalizedName.empty()) {
+		return;
+	}
+
+	auto it = preyCombatBonuses.find(normalizedName);
+	if (value == 0) {
+		if (it != preyCombatBonuses.end()) {
+			it->second.damageBoost = 0;
+			if (it->second.damageReduction == 0) {
+				preyCombatBonuses.erase(it);
+			}
+		}
+		return;
+	}
+
+	preyCombatBonuses[normalizedName].damageBoost = clampPreyDamagePercent(value);
+}
+
+void Player::setPreyDamageReduction(std::string monsterName, uint16_t value)
+{
+	std::string normalizedName = asLowerCaseString(std::move(monsterName));
+	if (normalizedName.empty()) {
+		return;
+	}
+
+	auto it = preyCombatBonuses.find(normalizedName);
+	if (value == 0) {
+		if (it != preyCombatBonuses.end()) {
+			it->second.damageReduction = 0;
+			if (it->second.damageBoost == 0) {
+				preyCombatBonuses.erase(it);
+			}
+		}
+		return;
+	}
+
+	preyCombatBonuses[normalizedName].damageReduction = clampPreyDamagePercent(value);
+}
+
+uint16_t Player::getPreyDamageBoost(std::string_view monsterName) const
+{
+	for (const auto& [name, bonus] : preyCombatBonuses) {
+		if (caseInsensitiveEqual(name, monsterName)) {
+			return bonus.damageBoost;
+		}
+	}
+	return 0;
+}
+
+uint16_t Player::getPreyDamageReduction(std::string_view monsterName) const
+{
+	for (const auto& [name, bonus] : preyCombatBonuses) {
+		if (caseInsensitiveEqual(name, monsterName)) {
+			return bonus.damageReduction;
+		}
+	}
+	return 0;
 }
 
 Player::~Player()

@@ -67,6 +67,44 @@ PreySystem.BONUS_DAMAGE_REDUCTION = PREY_BONUS_DMG_RED
 PreySystem.BONUS_XP = PREY_BONUS_XP
 PreySystem.BONUS_LOOT = PREY_BONUS_LOOT
 
+local PREY_BONUS_MESSAGES = {
+	[PREY_BONUS_DMG_BOOST] = {
+		name = "Damage Boost",
+		text = "You are dealing %d%% extra damage to %s."
+	},
+	[PREY_BONUS_DMG_RED] = {
+		name = "Damage Reduction",
+		text = "You are reducing damage received from %s by %d%%."
+	},
+	[PREY_BONUS_XP] = {
+		name = "Bonus XP",
+		text = "You will gain %d%% extra experience when killing %s."
+	},
+	[PREY_BONUS_LOOT] = {
+		name = "Improved Loot",
+		text = "You have a %d%% improved loot bonus when killing %s."
+	}
+}
+
+local function sendActiveBonusMessage(player, slotData)
+	if not player or not slotData or (slotData.monster_name or "") == "" then
+		return
+	end
+
+	local message = PREY_BONUS_MESSAGES[slotData.bonus_type]
+	if not message or (slotData.bonus_value or 0) <= 0 then
+		return
+	end
+
+	local details
+	if slotData.bonus_type == PREY_BONUS_DMG_RED then
+		details = string.format(message.text, slotData.monster_name, slotData.bonus_value)
+	else
+		details = string.format(message.text, slotData.bonus_value, slotData.monster_name)
+	end
+	player:sendTextMessage(MESSAGE_STATUS_DEFAULT, string.format("[Prey] %s active: %s", message.name, details))
+end
+
 local function defaultSlot()
 	return {
 		state = PREY_STATE_LIST_SELECTION,
@@ -221,6 +259,35 @@ local function getPlayerPrey(player)
 	end
 	preyCache[playerId].wildcards = getPlayerBonusRerolls(player)
 	return preyCache[playerId]
+end
+
+local function syncPreyCombatBonuses(player, prey)
+	if not player or not player.clearPreyCombatBonuses then
+		return
+	end
+
+	prey = prey or preyCache[player:getId()]
+	if not prey or not prey.slots then
+		return
+	end
+
+	player:clearPreyCombatBonuses()
+	for slot = 0, PREY_SLOTS - 1 do
+		local slotData = prey.slots[slot]
+		local isActiveCombatPrey = slotData
+			and slotData.state == PREY_STATE_ACTIVE
+			and slotData.time_left > 0
+			and (slotData.monster_name or "") ~= ""
+			and (slotData.bonus_value or 0) > 0
+			and #(slotData.list_monsters or {}) == 0
+		if isActiveCombatPrey then
+			if slotData.bonus_type == PREY_BONUS_DMG_BOOST then
+				player:setPreyDamageBoost(slotData.monster_name, slotData.bonus_value)
+			elseif slotData.bonus_type == PREY_BONUS_DMG_RED then
+				player:setPreyDamageReduction(slotData.monster_name, slotData.bonus_value)
+			end
+		end
+	end
 end
 
 local function rollBonusType(excludedType)
@@ -479,6 +546,7 @@ local function sendFullPrey(player, sendBalances)
 	for slot = 0, PREY_SLOTS - 1 do
 		writeSlot(out, player, slot, prey.slots[slot])
 	end
+	syncPreyCombatBonuses(player, prey)
 	local sent = out:sendToPlayer(player)
 	if sendBalances ~= false then
 		sendPreyBalances(player)
@@ -499,6 +567,7 @@ local function sendSlotUpdate(player, slot)
 	out:addU32(getListRerollCost(player))
 	out:addByte(slot)
 	writeSlot(out, player, slot, prey.slots[slot])
+	syncPreyCombatBonuses(player, prey)
 	local sent = out:sendToPlayer(player)
 	saveSlotToDB(player:getGuid(), slot, prey.slots[slot], prey.wildcards)
 	return sent
@@ -603,6 +672,7 @@ function selectHandler.onReceive(player, msg)
 		delayedSlot.time_left = PREY_DURATION_SECS
 		delayedSlot.state = PREY_STATE_ACTIVE
 		sendSlotUpdate(delayedPlayer, slot)
+		sendActiveBonusMessage(delayedPlayer, delayedSlot)
 	end, 300)
 end
 selectHandler:register()
@@ -684,6 +754,7 @@ function bonusRerollHandler.onReceive(player, msg)
 	slotData.time_left = PREY_DURATION_SECS
 	slotData.state = PREY_STATE_ACTIVE
 	sendSlotUpdate(player, slot)
+	sendActiveBonusMessage(player, slotData)
 	sendPreyBalances(player)
 end
 bonusRerollHandler:register()
@@ -794,6 +865,7 @@ local function preyTick()
 									rerollBonus(slotData)
 									slotData.time_left = PREY_DURATION_SECS
 									slotData.state = PREY_STATE_ACTIVE
+									sendActiveBonusMessage(player, slotData)
 								else
 									setStorageFlag(player, PREY_STORAGE_AUTO_BONUS_BASE, slot, false)
 									slotData.state = PREY_STATE_INACTIVE
@@ -829,8 +901,8 @@ addEvent(preyTick, PREY_TICK_INTERVAL)
 local loginEvent = CreatureEvent("PreySystemLogin")
 function loginEvent.onLogin(player)
 	preyCache[player:getId()] = loadPreyFromDB(player:getGuid())
+	syncPreyCombatBonuses(player, preyCache[player:getId()])
 	player:registerEvent("PreySystemLogout")
-	player:registerEvent("PreyHealthChange")
 	return true
 end
 loginEvent:register()
@@ -838,6 +910,9 @@ loginEvent:register()
 local logoutEvent = CreatureEvent("PreySystemLogout")
 function logoutEvent.onLogout(player)
 	saveAllSlots(player)
+	if player.clearPreyCombatBonuses then
+		player:clearPreyCombatBonuses()
+	end
 	preyCache[player:getId()] = nil
 	return true
 end
@@ -883,65 +958,3 @@ function PreySystem.initSlot(player, slot)
 	end
 	return false
 end
-
-local function applyDamageBoost(damage, percent)
-	if damage >= 0 then
-		return damage
-	end
-	return damage - math.floor(math.abs(damage) * percent / 100)
-end
-
-local function applyDamageReduction(damage, percent)
-	if damage >= 0 then
-		return damage
-	end
-	return math.min(damage + math.floor(math.abs(damage) * percent / 100), 0)
-end
-
-local healthChange = CreatureEvent("PreyHealthChange")
-function healthChange.onHealthChange(creature, attacker, primaryDamage, primaryType, secondaryDamage, secondaryType, origin)
-	if attacker and attacker:isPlayer() and creature and creature:isMonster() and not creature:getMaster() then
-		local bonusType, bonusValue = PreySystem.getBonus(attacker, creature:getName())
-		if bonusType == PREY_BONUS_DMG_BOOST then
-			primaryDamage = applyDamageBoost(primaryDamage, bonusValue)
-			secondaryDamage = applyDamageBoost(secondaryDamage, bonusValue)
-		end
-	elseif creature and creature:isPlayer() and attacker and attacker:isMonster() and not attacker:getMaster() then
-		local bonusType, bonusValue = PreySystem.getBonus(creature, attacker:getName())
-		if bonusType == PREY_BONUS_DMG_RED then
-			primaryDamage = applyDamageReduction(primaryDamage, bonusValue)
-			secondaryDamage = applyDamageReduction(secondaryDamage, bonusValue)
-		end
-	end
-
-	return primaryDamage, primaryType, secondaryDamage, secondaryType
-end
-healthChange:register()
-
-local monsterSpawn = Event()
-local function hasActivePreyForMonster(monsterName)
-	if not monsterName or monsterName == "" then
-		return false
-	end
-
-	local targetName = monsterName:lower()
-	for _, prey in pairs(preyCache) do
-		if prey and prey.slots then
-			for slot = 0, PREY_SLOTS - 1 do
-				local slotData = prey.slots[slot]
-				if slotData and slotData.state == PREY_STATE_ACTIVE and slotData.time_left > 0 and (slotData.monster_name or ""):lower() == targetName then
-					return true
-				end
-			end
-		end
-	end
-	return false
-end
-
-function monsterSpawn.onSpawn(monster)
-	if hasActivePreyForMonster(monster:getName()) then
-		monster:registerEvent("PreyHealthChange")
-	end
-	return true
-end
-monsterSpawn:register()

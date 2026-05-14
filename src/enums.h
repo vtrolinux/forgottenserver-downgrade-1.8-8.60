@@ -716,6 +716,7 @@ struct CombatDamage
 	bool leeched = false;
 	bool fatal = false;
 	bool dodge = false;
+	bool preyApplied = false;
 	float spellResetMultiplier = -1.0f;
 };
 

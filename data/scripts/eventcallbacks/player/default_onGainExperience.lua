@@ -93,13 +93,23 @@ function message.onGainExperience(self, source, exp, rawExp, sendText)
 		local monsterName = source and source:getName() or "Unknown"
 		local playerId = self:getId()
 		local playerGuid = self:getGuid()
+		local preyXpBonus = 0
+		if PreySystem and source and source:isMonster() then
+			local bonusType, bonusValue = PreySystem.getBonus(self, monsterName)
+			if bonusType == PreySystem.BONUS_XP then
+				preyXpBonus = bonusValue or 0
+			end
+		end
 
 		if not expTracker[playerGuid] then expTracker[playerGuid] = {} end
-		if not expTracker[playerGuid][monsterName] then expTracker[playerGuid][monsterName] = { totalExp = 0, count = 0, timer = 0 } end
+		if not expTracker[playerGuid][monsterName] then expTracker[playerGuid][monsterName] = { totalExp = 0, count = 0, timer = 0, preyXpBonus = 0 } end
 
 		expTracker[playerGuid][monsterName].totalExp = expTracker[playerGuid][monsterName].totalExp + exp
 		expTracker[playerGuid][monsterName].count = expTracker[playerGuid][monsterName].count + 1
 		expTracker[playerGuid][monsterName].timer = os.time()
+		if preyXpBonus > 0 then
+			expTracker[playerGuid][monsterName].preyXpBonus = preyXpBonus
+		end
 
 		addEvent(function()
 			local player = Player(playerId)
@@ -113,13 +123,19 @@ function message.onGainExperience(self, source, exp, rawExp, sendText)
 
 			if expValue > 0 then
 				local expString = getExperienceText(expValue)
-
-				local message = "You gained " .. expString .. " for killing "
-				if count > 1 then
-					message = message .. count .. " " .. monsterName .. "s."
-				else
-					message = message .. monsterName .. "."
+				local preySuffix = ""
+				if tracker.preyXpBonus and tracker.preyXpBonus > 0 then
+					preySuffix = string.format(" (Prey Bonus XP +%d%%)", tracker.preyXpBonus)
 				end
+
+				local killText
+				if count > 1 then
+					killText = count .. " " .. monsterName .. "s"
+				else
+					killText = monsterName
+				end
+
+				local message = "You gained " .. expString .. " for killing " .. killText .. preySuffix .. "."
 
 				player:sendTextMessage(MESSAGE_STATUS_DEFAULT, message)
 
@@ -136,13 +152,14 @@ function message.onGainExperience(self, source, exp, rawExp, sendText)
 
 				for _, spectator in ipairs(filtered) do
 					if spectator ~= player then
-						spectator:sendTextMessage(MESSAGE_STATUS_DEFAULT, player:getName() .. " gained " .. expString .. " for killing " .. (count > 1 and count .. " " or "") .. monsterName .. (count > 1 and "s" or "") .. ".")
+						spectator:sendTextMessage(MESSAGE_STATUS_DEFAULT, player:getName() .. " gained " .. expString .. " for killing " .. killText .. preySuffix .. ".")
 					end
 				end
 			end
 
 			tracker.totalExp = 0
 			tracker.count = 0
+			tracker.preyXpBonus = 0
 		end, 50)
 	end
 	return exp

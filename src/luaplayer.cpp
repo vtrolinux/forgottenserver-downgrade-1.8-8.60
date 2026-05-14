@@ -46,6 +46,16 @@ bool luaPlayerIsFamiliarSpell(std::string_view name)
 	return name.find("Familiar") != std::string_view::npos || name.find("familiar") != std::string_view::npos;
 }
 
+std::shared_ptr<Player> getLuaPlayerShared(lua_State* L, int32_t arg)
+{
+	Player* player = getUserdata<Player>(L, arg);
+	if (!player) {
+		return nullptr;
+	}
+
+	return std::dynamic_pointer_cast<Player>(player->weak_from_this().lock());
+}
+
 // Player
 int luaPlayerCreate(lua_State* L)
 {
@@ -3032,6 +3042,69 @@ int luaPlayerSetResetDamageBonus(lua_State* L)
 	return 1;
 }
 
+int luaPlayerClearPreyCombatBonuses(lua_State* L)
+{
+	// player:clearPreyCombatBonuses()
+	auto player = getLuaPlayerShared(L, 1);
+	if (player) {
+		player->clearPreyCombatBonuses();
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaPlayerSetPreyDamageBoost(lua_State* L)
+{
+	// player:setPreyDamageBoost(monsterName, percent)
+	auto player = getLuaPlayerShared(L, 1);
+	if (player) {
+		player->setPreyDamageBoost(getString(L, 2), getInteger<uint16_t>(L, 3));
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaPlayerSetPreyDamageReduction(lua_State* L)
+{
+	// player:setPreyDamageReduction(monsterName, percent)
+	auto player = getLuaPlayerShared(L, 1);
+	if (player) {
+		player->setPreyDamageReduction(getString(L, 2), getInteger<uint16_t>(L, 3));
+		pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaPlayerGetPreyDamageBoost(lua_State* L)
+{
+	// player:getPreyDamageBoost(monsterName)
+	auto player = getLuaPlayerShared(L, 1);
+	if (player) {
+		lua_pushinteger(L, player->getPreyDamageBoost(getStringView(L, 2)));
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int luaPlayerGetPreyDamageReduction(lua_State* L)
+{
+	// player:getPreyDamageReduction(monsterName)
+	auto player = getLuaPlayerShared(L, 1);
+	if (player) {
+		lua_pushinteger(L, player->getPreyDamageReduction(getStringView(L, 2)));
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 int luaPlayerGetResetDefenseBonus(lua_State* L)
 {
 	Player* player = getUserdata<Player>(L, 1);
@@ -3978,6 +4051,11 @@ void LuaScriptInterface::registerPlayer()
 	registerMethod("Player", "getResetAttackSpeedBonus", luaPlayerGetResetAttackSpeedBonus);
 	registerMethod("Player", "getResetDamageBonus", luaPlayerGetResetDamageBonus);
 	registerMethod("Player", "setResetDamageBonus", luaPlayerSetResetDamageBonus);
+	registerMethod("Player", "clearPreyCombatBonuses", luaPlayerClearPreyCombatBonuses);
+	registerMethod("Player", "setPreyDamageBoost", luaPlayerSetPreyDamageBoost);
+	registerMethod("Player", "setPreyDamageReduction", luaPlayerSetPreyDamageReduction);
+	registerMethod("Player", "getPreyDamageBoost", luaPlayerGetPreyDamageBoost);
+	registerMethod("Player", "getPreyDamageReduction", luaPlayerGetPreyDamageReduction);
 	registerMethod("Player", "getResetDefenseBonus", luaPlayerGetResetDefenseBonus);
 	registerMethod("Player", "setResetDefenseBonus", luaPlayerSetResetDefenseBonus);
 	registerMethod("Player", "getResetHealingBonus", luaPlayerGetResetHealingBonus);

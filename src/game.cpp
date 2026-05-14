@@ -5021,6 +5021,80 @@ void Game::combatGetTypeInfo(CombatType_t combatType, Creature* target, TextColo
 	}
 }
 
+static int32_t increaseDamageByPercent(int32_t value, uint16_t percent)
+{
+	if (value <= 0 || percent == 0) {
+		return value;
+	}
+
+	const int64_t result = static_cast<int64_t>(value) + (static_cast<int64_t>(value) * percent / 100);
+	return static_cast<int32_t>(std::min<int64_t>(result, std::numeric_limits<int32_t>::max()));
+}
+
+static int32_t reduceDamageByPercent(int32_t value, uint16_t percent)
+{
+	if (value <= 0 || percent == 0) {
+		return value;
+	}
+
+	if (percent >= 100) {
+		return 0;
+	}
+
+	return value - static_cast<int32_t>(static_cast<int64_t>(value) * percent / 100);
+}
+
+static uint16_t getPreyDamageBoostPercent(const std::shared_ptr<Player>& player, const std::shared_ptr<Creature>& target)
+{
+	if (!player || !target) {
+		return 0;
+	}
+
+	auto targetMonster = std::dynamic_pointer_cast<Monster>(target);
+	if (!targetMonster || targetMonster->getMaster()) {
+		return 0;
+	}
+
+	return player->getPreyDamageBoost(targetMonster->getName());
+}
+
+static uint16_t getPreyDamageReductionPercent(const std::shared_ptr<Player>& player, const std::shared_ptr<Creature>& attacker)
+{
+	if (!player || !attacker) {
+		return 0;
+	}
+
+	auto attackerMonster = std::dynamic_pointer_cast<Monster>(attacker);
+	if (!attackerMonster || attackerMonster->getMaster()) {
+		return 0;
+	}
+
+	return player->getPreyDamageReduction(attackerMonster->getName());
+}
+
+static void applyPreyCombatBonuses(CombatDamage& damage, const std::shared_ptr<Creature>& attacker, const std::shared_ptr<Creature>& target)
+{
+	if (damage.preyApplied) {
+		return;
+	}
+	damage.preyApplied = true;
+
+	auto attackerPlayer = std::dynamic_pointer_cast<Player>(attacker);
+	if (attackerPlayer) {
+		const uint16_t boost = getPreyDamageBoostPercent(attackerPlayer, target);
+		damage.primary.value = increaseDamageByPercent(damage.primary.value, boost);
+		damage.secondary.value = increaseDamageByPercent(damage.secondary.value, boost);
+		return;
+	}
+
+	auto targetPlayer = std::dynamic_pointer_cast<Player>(target);
+	if (targetPlayer) {
+		const uint16_t reduction = getPreyDamageReductionPercent(targetPlayer, attacker);
+		damage.primary.value = reduceDamageByPercent(damage.primary.value, reduction);
+		damage.secondary.value = reduceDamageByPercent(damage.secondary.value, reduction);
+	}
+}
+
 void Game::applyResetSystemBonuses(CombatDamage& damage, Player* attackerPlayer, Player* targetPlayer)
 {
 	if (!ConfigManager::getBoolean(ConfigManager::RESET_SYSTEM_ENABLED)) {
@@ -5074,7 +5148,18 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 		return false;
 	}
 
-	auto attackerRef = attacker ? attacker->shared_from_this() : std::shared_ptr<Creature>();
+	auto targetRef = target->weak_from_this().lock();
+	if (!targetRef) {
+		return false;
+	}
+
+	std::shared_ptr<Creature> attackerRef;
+	if (attacker) {
+		attackerRef = attacker->weak_from_this().lock();
+		if (!attackerRef) {
+			return false;
+		}
+	}
 
 	const Position& targetPos = target->getPosition();
 	if (damage.primary.type == COMBAT_HEALING) {
@@ -5262,6 +5347,8 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 			damage.secondary.value -= static_cast<int32_t>(std::ceil(damage.secondary.value * AVATAR_DAMAGE_REDUCTION_PERCENT / 100.0));
 		}
 
+		applyPreyCombatBonuses(damage, attackerRef, targetRef);
+
 		int32_t healthChange = damage.primary.value + damage.secondary.value;
 		if (healthChange == 0) {
 			return true;
@@ -5299,6 +5386,9 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 				addAnimatedText(spectators, fmt::format("{:+d}", -manaDamage), targetPos,
 				                static_cast<TextColor_t>(getInteger(ConfigManager::MANA_LOSS_COLOUR)));
 
+				const uint16_t preyBoost = getPreyDamageBoostPercent(std::dynamic_pointer_cast<Player>(attackerRef), targetRef);
+				const uint16_t preyReduction = getPreyDamageReductionPercent(std::dynamic_pointer_cast<Player>(targetRef), attackerRef);
+
 				for (const auto& spectator : spectators) {
 					Player* tmpPlayer = static_cast<Player*>(spectator.get());
 					if (tmpPlayer->getPosition().z != targetPos.z) {
@@ -5310,6 +5400,9 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 						message.text = fmt::format("{:s} loses {:d} mana due to your attack.",
 						                           target->getNameDescription(), manaDamage);
 						message.text[0] = static_cast<char>(std::toupper(message.text[0]));
+						if (preyBoost > 0) {
+							message.text += fmt::format(" (Prey Damage Boost +{:d}%)", preyBoost);
+						}
 					} else if (tmpPlayer == targetPlayer) {
 						message.type = MESSAGE_STATUS_DEFAULT;
 						if (!attacker) {
@@ -5319,6 +5412,9 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 						} else {
 							message.text = fmt::format("You lose {:d} mana due to an attack by {:s}.", manaDamage,
 							                           attacker->getNameDescription());
+							if (preyReduction > 0) {
+								message.text += fmt::format(" (Prey Damage Reduction -{:d}%)", preyReduction);
+							}
 						}
 					} else {
 						message.type = MESSAGE_STATUS_DEFAULT;
@@ -5416,6 +5512,8 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 			auto damageString = getHitpointStatusString(realDamage);
 
 			std::string spectatorMessage;
+			const uint16_t preyBoost = getPreyDamageBoostPercent(std::dynamic_pointer_cast<Player>(attackerRef), targetRef);
+			const uint16_t preyReduction = getPreyDamageReductionPercent(std::dynamic_pointer_cast<Player>(targetRef), attackerRef);
 
 			for (const auto& spectator : spectators) {
 				Player* tmpPlayer = static_cast<Player*>(spectator.get());
@@ -5428,6 +5526,9 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 					message.text =
 					    fmt::format("{:s} loses {:s} due to your attack.", target->getNameDescription(), damageString);
 					message.text[0] = static_cast<char>(std::toupper(message.text[0]));
+					if (preyBoost > 0) {
+						message.text += fmt::format(" (Prey Damage Boost +{:d}%)", preyBoost);
+					}
 				} else if (tmpPlayer == targetPlayer) {
 					message.type = MESSAGE_STATUS_DEFAULT;
 					if (!attacker) {
@@ -5437,6 +5538,9 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 					} else {
 						message.text = fmt::format("You lose {:s} due to an attack by {:s}.", damageString,
 						                           attacker->getNameDescription());
+						if (preyReduction > 0) {
+							message.text += fmt::format(" (Prey Damage Reduction -{:d}%)", preyReduction);
+						}
 					}
 				} else {
 					message.type = MESSAGE_STATUS_DEFAULT;

@@ -239,6 +239,11 @@ public:
 	void setResetDamageBonus(float value) {
 		resetDamageBonus = std::max(0.0f, value);
 	}
+	void clearPreyCombatBonuses();
+	void setPreyDamageBoost(std::string monsterName, uint16_t value);
+	void setPreyDamageReduction(std::string monsterName, uint16_t value);
+	uint16_t getPreyDamageBoost(std::string_view monsterName) const;
+	uint16_t getPreyDamageReduction(std::string_view monsterName) const;
 	float getResetDefenseBonus() const {
 		return resetDefenseBonus;
 	}
@@ -1302,6 +1307,11 @@ public:
 	int32_t totalDropBonus = 0;
 
 private:
+	struct PreyCombatBonus {
+		uint16_t damageBoost = 0;
+		uint16_t damageReduction = 0;
+	};
+
 	std::forward_list<Condition*> getMuteConditions() const;
 
 	void checkTradeState(const Item* item);
@@ -1357,6 +1367,7 @@ private:
 
 	std::unordered_set<uint32_t> attackedSet;
 	std::unordered_set<uint32_t> VIPList;
+	std::unordered_map<std::string, PreyCombatBonus> preyCombatBonuses;
 
 	std::unordered_map<uint8_t, OpenContainer> openContainers;
 	std::unordered_map<uint32_t, DepotLocker_ptr> depotLockerMap;
