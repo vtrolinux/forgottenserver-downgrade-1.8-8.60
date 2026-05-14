@@ -10,10 +10,7 @@ maxAddonAttributes = 3
 dllCheckKick = true -- true = kick enabled, false = kick disabled (default)
 dllCheckKickTime = 5 -- time in seconds (optional usage)
 
--- Reset System
--- Enable/disable the full reset system (damage, defense, healing, XP, attack speed, HP/mana bonuses)
--- All bonus configuration is done in data/scripts/resetsystem/configbonus.lua
-resetssystem = false
+-- Server-only custom configuration is in data/server_config.lua.
 
 Autoloot_enabled = true
 AutoLoot_BlockIDs = ""
@@ -247,17 +244,6 @@ showPlayerLogInConsole = true
 healthGainColour = 95
 manaGainColour = 158
 manaLossColour = 5
-
--- Visual display customization
-modifyDamageInK = false
-modifyExpInK = false
-defaultExpColor = "white"
-defaultHealthDisplay = "real"
-damageColorMap = {
-	mi = TEXTCOLOR_WHITE,
-	bi = TEXTCOLOR_RED,
-	tri = TEXTCOLOR_ORANGE,
-}
 
 offlineTrainingThreshold = 600
 checkDuplicateStorageKeys = false

@@ -15,6 +15,7 @@
 #include "tools.h"
 
 #include <fmt/format.h>
+#include <fstream>
 
 #if LUA_VERSION_NUM >= 502
 #undef lua_strlen
@@ -329,6 +330,14 @@ bool ConfigManager::load()
 	if (luaL_dofile(L, getString(String::CONFIG_FILE).data())) {
 		g_logger().error("{}", lua_tostring(L, -1));
 		return false;
+	}
+
+	constexpr const char* serverConfigFile = "data/server_config.lua";
+	if (std::ifstream customConfig(serverConfigFile); customConfig.good()) {
+		if (luaL_dofile(L, serverConfigFile)) {
+			g_logger().error("{}", lua_tostring(L, -1));
+			return false;
+		}
 	}
 
 	// parse config
