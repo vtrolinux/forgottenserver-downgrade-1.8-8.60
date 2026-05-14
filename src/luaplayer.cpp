@@ -2951,8 +2951,8 @@ int luaPlayerAddReset(lua_State* L)
 
 	Player* player = getUserdata<Player>(L, 1);
 	if (player) {
-		uint32_t count = getInteger<uint32_t>(L, 2);
-		player->addReset(count);
+		uint32_t count = getInteger<uint32_t>(L, 2, 1);
+		player->addResetCount(count);
 		pushBoolean(L, true);
 	} else {
 		lua_pushnil(L);

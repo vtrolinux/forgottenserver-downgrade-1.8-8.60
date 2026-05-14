@@ -5557,7 +5557,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, CombatDamage& 
 		}
 
 		// Reset system: mana bonuses (healing bonus intentionally excluded from mana)
-		if (ConfigManager::getBoolean(ConfigManager::RESET_SYSTEM_ENABLED)) {
+		if (targetPlayer && ConfigManager::getBoolean(ConfigManager::RESET_SYSTEM_ENABLED)) {
 			if (attacker) {
 				float spellPct = targetPlayer->getResetManaSpellBonus();
 				if (spellPct > 0.0f) {

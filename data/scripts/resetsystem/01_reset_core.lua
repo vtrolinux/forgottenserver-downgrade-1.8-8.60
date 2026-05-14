@@ -23,7 +23,7 @@ function doPlayerReset(player)
 		end
 	end
 
-	local isVip = player:isVip()
+	local isVip = player:isPremium()
 	local requiredLevel = ResetLevelTable.getRequiredLevel(currentResets, isVip)
 	if player:getLevel() < requiredLevel then
 		player:sendTextMessage(MESSAGE_EVENT_ADVANCE,

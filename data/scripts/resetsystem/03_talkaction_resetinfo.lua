@@ -6,7 +6,8 @@ function talkResetInfo.onSay(player, words, param)
 	end
 
 	local resets = player:getResetCount()
-	local vocId = player:getVocationId()
+	local vocation = player:getVocation()
+	local vocId = vocation and vocation:getId() or 0
 
 	local dmgBonus = player:getResetDamageBonus()
 	local defBonus = player:getResetDefenseBonus()
@@ -27,5 +28,4 @@ function talkResetInfo.onSay(player, words, param)
 	return false
 end
 
-talkResetInfo:groupType("normal")
 talkResetInfo:register()

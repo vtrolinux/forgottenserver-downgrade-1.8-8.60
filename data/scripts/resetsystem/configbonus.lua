@@ -1,19 +1,32 @@
 local VOCATION_ALL = 0
 
 ResetBonusConfig = {
-	resetLevel    = 10000,
-	maxResets     = 0,
+	resetLevel    = 8,
+	maxResets     = 225,
 	resetCooldown = 0,
+
+	xpStages = {
+		{ minReset =   1, maxReset =   5, multiplier = 0.95 },
+		{ minReset =   6, maxReset =  10, multiplier = 0.90 },
+		{ minReset =  11, maxReset =  20, multiplier = 0.82 },
+		{ minReset =  21, maxReset =  30, multiplier = 0.75 },
+		{ minReset =  31, maxReset =  50, multiplier = 0.65 },
+		{ minReset =  51, maxReset =  75, multiplier = 0.55 },
+		{ minReset =  76, maxReset = 100, multiplier = 0.45 },
+		{ minReset = 101, maxReset = 150, multiplier = 0.35 },
+		{ minReset = 151, maxReset =   0, multiplier = 0.25 },
+		-- maxReset = 0 significa sem limite superior
+	},
 
 	damage = {
 		enabled = true,
 		[VOCATION_ALL] = {
 			steps = {
-				{ reset = 1, bonus = 10.0 },
-				{ reset = 2, bonus =  5.0 },
-				{ reset = 3, bonus =  5.0 },
+				{ reset =  1, bonus = 1.0 },
+				{ reset =  5, bonus = 1.0 },
+				{ reset = 10, bonus = 1.0 },
 			},
-			default = 0.1,
+			default = 0.05,
 		},
 	},
 
@@ -21,13 +34,11 @@ ResetBonusConfig = {
 		enabled = true,
 		[VOCATION_ALL] = {
 			steps = {
-				{ reset = 1, bonus =  5.0 },
-				{ reset = 2, bonus =  5.0 },
-				{ reset = 3, bonus =  2.5 },
-				{ reset = 4, bonus =  2.5 },
-				{ reset = 5, bonus =  2.5 },
+				{ reset =  1, bonus = 0.75 },
+				{ reset =  5, bonus = 0.75 },
+				{ reset = 10, bonus = 0.75 },
 			},
-			default = 0.1,
+			default = 0.04,
 		},
 	},
 
@@ -35,11 +46,11 @@ ResetBonusConfig = {
 		enabled = true,
 		[VOCATION_ALL] = {
 			steps = {
-				{ reset = 1, bonus = 15.0 },
-				{ reset = 2, bonus =  5.0 },
-				{ reset = 3, bonus =  5.0 },
+				{ reset =  1, bonus = 3.0 },
+				{ reset =  5, bonus = 2.0 },
+				{ reset = 10, bonus = 2.0 },
 			},
-			default = 0.1,
+			default = 0.05,
 		},
 	},
 
@@ -47,11 +58,11 @@ ResetBonusConfig = {
 		enabled = true,
 		[VOCATION_ALL] = {
 			steps = {
-				{ reset = 1, bonus =  5.0 },
-				{ reset = 2, bonus =  5.0 },
-				{ reset = 3, bonus =  2.5 },
+				{ reset =  1, bonus = 0.75 },
+				{ reset =  5, bonus = 0.75 },
+				{ reset = 10, bonus = 0.75 },
 			},
-			default = 0.05,
+			default = 0.04,
 		},
 	},
 
@@ -59,11 +70,11 @@ ResetBonusConfig = {
 		enabled = true,
 		[VOCATION_ALL] = {
 			steps = {
-				{ reset = 1, bonus = 20 },
-				{ reset = 2, bonus = 10 },
-				{ reset = 3, bonus = 10 },
+				{ reset =  1, bonus = 5 },
+				{ reset =  5, bonus = 5 },
+				{ reset = 10, bonus = 5 },
 			},
-			default = 2,
+			default = 0.5,
 		},
 	},
 
@@ -72,7 +83,10 @@ ResetBonusConfig = {
 		bonusMode = "percent",
 		[VOCATION_ALL] = {
 			ranges = {
-				{ minReset = 1, maxReset = 0, bonus = 10.0 },
+				{ minReset =   1, maxReset =  50, bonus = 0.30 },
+				{ minReset =  51, maxReset = 100, bonus = 0.20 },
+				{ minReset = 101, maxReset = 150, bonus = 0.15 },
+				{ minReset = 151, maxReset =   0, bonus = 0.10 },
 			},
 		},
 	},
@@ -82,7 +96,10 @@ ResetBonusConfig = {
 		bonusMode = "percent",
 		[VOCATION_ALL] = {
 			ranges = {
-				{ minReset = 1, maxReset = 0, bonus = 10.0 },
+				{ minReset =   1, maxReset =  50, bonus = 0.25 },
+				{ minReset =  51, maxReset = 100, bonus = 0.18 },
+				{ minReset = 101, maxReset = 150, bonus = 0.12 },
+				{ minReset = 151, maxReset =   0, bonus = 0.08 },
 			},
 		},
 	},
@@ -91,32 +108,32 @@ ResetBonusConfig = {
 		enabled = true,
 		[VOCATION_ALL] = {
 			ranges = {
-				{ minReset = 1, maxReset = 0, bonus = 1.0 },
+				{ minReset = 1, maxReset = 0, bonus = 0.08 },
 			},
 		},
-		[2] = { ranges = { { minReset = 1, maxReset = 0, bonus = 2.0 } } },
-		[6] = { ranges = { { minReset = 1, maxReset = 0, bonus = 2.0 } } },
-		[1] = { ranges = { { minReset = 1, maxReset = 0, bonus = 2.0 } } },
-		[5] = { ranges = { { minReset = 1, maxReset = 0, bonus = 2.0 } } },
-		[4] = { ranges = { { minReset = 1, maxReset = 0, bonus = 1.5 } } },
-		[8] = { ranges = { { minReset = 1, maxReset = 0, bonus = 1.5 } } },
-		[3] = { ranges = { { minReset = 1, maxReset = 0, bonus = 1.3 } } },
-		[7] = { ranges = { { minReset = 1, maxReset = 0, bonus = 1.3 } } },
+		[1] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.18 } } },
+		[2] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.18 } } },
+		[5] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.18 } } },
+		[6] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.18 } } },
+		[3] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.12 } } },
+		[7] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.12 } } },
+		[4] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.10 } } },
+		[8] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.10 } } },
 	},
 
 	manaSpell = {
 		enabled = true,
 		[VOCATION_ALL] = {
 			ranges = {
-				{ minReset = 1, maxReset = 0, bonus = 0.5 },
+				{ minReset = 1, maxReset = 0, bonus = 0.05 },
 			},
 		},
-		[1] = { ranges = { { minReset = 1, maxReset = 0, bonus = 3.0 } } },
-		[5] = { ranges = { { minReset = 1, maxReset = 0, bonus = 3.0 } } },
-		[2] = { ranges = { { minReset = 1, maxReset = 0, bonus = 3.0 } } },
-		[6] = { ranges = { { minReset = 1, maxReset = 0, bonus = 3.0 } } },
-		[3] = { ranges = { { minReset = 1, maxReset = 0, bonus = 1.5 } } },
-		[7] = { ranges = { { minReset = 1, maxReset = 0, bonus = 1.5 } } },
+		[1] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.20 } } },
+		[2] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.20 } } },
+		[5] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.20 } } },
+		[6] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.20 } } },
+		[3] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.10 } } },
+		[7] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.10 } } },
 		[4] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.0 } } },
 		[8] = { ranges = { { minReset = 1, maxReset = 0, bonus = 0.0 } } },
 	},
@@ -142,41 +159,46 @@ function ResetBonusConfig.getTotalBonus(bonusType, resetCount, vocationId)
 	end
 
 	local total = 0
-	local lastStep = (vocConfig.steps and #vocConfig.steps > 0) and vocConfig.steps[#vocConfig.steps].reset or 0
+	local defaultBonus = vocConfig.default or 0
 
-	for i = 1, resetCount do
-		local found = false
-		if vocConfig.steps then
-			for _, step in ipairs(vocConfig.steps) do
-				if step.reset == i then
-					total = total + (step.bonus or 0)
-					found = true
-					break
-				end
+	if vocConfig.steps and #vocConfig.steps > 0 then
+		local lastStepReset = 0
+		local appliedSteps = 0
+		local seenSteps = {}
+
+		for _, step in ipairs(vocConfig.steps) do
+			local stepReset = step.reset or 0
+			lastStepReset = math.max(lastStepReset, stepReset)
+
+			if stepReset > 0 and stepReset <= resetCount and not seenSteps[stepReset] then
+				total = total + (step.bonus or 0)
+				appliedSteps = appliedSteps + 1
+				seenSteps[stepReset] = true
 			end
 		end
-		if not found then
-			if vocConfig.ranges then
-				for _, range in ipairs(vocConfig.ranges) do
-					if i >= range.minReset and (range.maxReset == 0 or i <= range.maxReset) then
-						total = total + (range.bonus or 0)
-						found = true
-						break
-					end
-				end
-			end
-			if not found then
-				total = total + (vocConfig.default or 0)
-			end
-		end
+
+		local resetsWithinSteps = math.min(resetCount, lastStepReset)
+		local gapsBeforeLastStep = math.max(0, resetsWithinSteps - appliedSteps)
+		local beyond = math.max(0, resetCount - lastStepReset)
+		return total + ((gapsBeforeLastStep + beyond) * defaultBonus)
 	end
 
-	return total
+	if vocConfig.ranges and #vocConfig.ranges > 0 then
+		for _, range in ipairs(vocConfig.ranges) do
+			local effectiveMax = (range.maxReset == 0) and resetCount or range.maxReset
+			local count = math.max(0, math.min(resetCount, effectiveMax) - range.minReset + 1)
+			total = total + (count * (range.bonus or 0))
+		end
+		return total
+	end
+
+	return resetCount * defaultBonus
 end
 
 function ResetBonusConfig.applyBonuses(player)
 	local resets = player:getResetCount()
-	local vocId = player:getVocationId()
+	local vocation = player:getVocation()
+	local vocId = vocation and vocation:getId() or VOCATION_ALL
 
 	local spd = 0
 	if ResetBonusConfig.attackSpeed.enabled ~= false then

@@ -226,7 +226,7 @@ public:
 		reset = count;
 	}
 	void addResetCount(uint32_t amount = 1);
-	void addReset(uint32_t count = 1);
+	void addReset(uint32_t count = 1); // deprecated: use addResetCount
 	int32_t getResetAttackSpeedBonus() const {
 		return resetAttackSpeedBonus;
 	}

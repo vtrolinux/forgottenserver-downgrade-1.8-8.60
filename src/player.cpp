@@ -6849,13 +6849,6 @@ void Player::addReset(uint32_t count /*= 1*/)
 	addResetCount(count);
 }
 
-void Player::setResetCount(uint32_t count)
-{
-	reset = count;
-	Database::getInstance().executeQuery(fmt::format("UPDATE `players` SET `reset` = {:d} WHERE `id` = {:d}", reset, getGUID()));
-}
-
-
 void Player::applyOfflineTraining(uint32_t trainingTime)
 {
 	float efficiency = ConfigManager::getFloat(ConfigManager::OFFLINE_TRAINING_EFFICIENCY);

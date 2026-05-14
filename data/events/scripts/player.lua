@@ -91,7 +91,9 @@ function Player:onGainExperience(source, exp, rawExp, sendText)
 	end
 
 	if ResetBonusConfig then
-		local resetXpBonus = ResetBonusConfig.getTotalBonus("experience", self:getResetCount(), self:getVocationId())
+		local vocation = self:getVocation()
+		local vocId = vocation and vocation:getId() or 0
+		local resetXpBonus = ResetBonusConfig.getTotalBonus("experience", self:getResetCount(), vocId)
 		if resetXpBonus > 0 then
 			result = result * (1 + resetXpBonus / 100)
 		end

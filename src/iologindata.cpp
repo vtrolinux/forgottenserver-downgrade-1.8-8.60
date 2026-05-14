@@ -1009,7 +1009,7 @@ bool IOLoginData::savePlayer(Player* player)
 	std::ostringstream query;
 	query << "UPDATE `players` SET ";
 	query << "`level` = " << player->level << ',';
-	query << "`reset` = " << player->reset << ',';
+	query << "`reset` = " << player->getResetCount() << ',';
 	query << "`group_id` = " << player->group->id << ',';
 	query << "`vocation` = " << player->getVocationId() << ',';
 	query << "`health` = " << player->health << ',';

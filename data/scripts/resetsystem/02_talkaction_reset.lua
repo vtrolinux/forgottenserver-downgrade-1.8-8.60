@@ -9,7 +9,6 @@ function talkReset.onSay(player, words, param)
 end
 
 talkReset:separator(" ")
-talkReset:groupType("normal")
 talkReset:register()
 
 local talkGMReset = TalkAction("/resetplayer")
@@ -43,5 +42,6 @@ function talkGMReset.onSay(player, words, param)
 end
 
 talkGMReset:separator(" ")
-talkGMReset:groupType("gamemaster")
+talkGMReset:accountType(ACCOUNT_TYPE_GAMEMASTER)
+talkGMReset:access(true)
 talkGMReset:register()
