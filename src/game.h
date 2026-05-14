@@ -524,7 +524,9 @@ public:
 	void loadMotdNum();
 	int16_t getWorldTime() { return worldTime; }
 	void updateWorldTime();
+	void setWorldTime(int16_t time);
 	void checkLight();
+	LightState_t getLightState() const;
 	void saveMotdNum() const;
 	std::string_view getMotdHash() const { return motdHash; }
 	uint32_t getMotdNum() const { return motdNum; }
@@ -719,10 +721,10 @@ private:
 	// 1h realtime   = 1day worldtime
 	// 2.5s realtime = 1min worldtime
 	// worldTime is calculated in minutes
-	static constexpr int16_t GAME_SUNRISE = 360;
-	static constexpr int16_t GAME_DAYTIME = 480;
-	static constexpr int16_t GAME_SUNSET = 1080;
-	static constexpr int16_t GAME_NIGHTTIME = 1200;
+	static constexpr int16_t GAME_SUNRISE = 330;
+	static constexpr int16_t GAME_DAYTIME = 360;
+	static constexpr int16_t GAME_SUNSET = 1050;
+	static constexpr int16_t GAME_NIGHTTIME = 1080;
 	static constexpr float LIGHT_CHANGE_SUNRISE =
 	    static_cast<int>(float(float(LIGHT_DAY - LIGHT_NIGHT) / float(GAME_DAYTIME - GAME_SUNRISE)) * 100) / 100.0f;
 	static constexpr float LIGHT_CHANGE_SUNSET =
@@ -731,6 +733,8 @@ private:
 	uint8_t lightLevel = LIGHT_DAY;
 	uint8_t lightColor = 215;
 	int16_t worldTime = 0;
+	int16_t worldTimeOffset = 0;
+	LightState_t lastLightState = LIGHT_STATE_NIGHT;
 
 	std::atomic<GameState_t> gameState{GAME_STATE_NORMAL};
 	WorldType_t worldType = WORLD_TYPE_PVP;

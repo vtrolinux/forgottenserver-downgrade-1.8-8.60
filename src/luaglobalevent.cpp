@@ -48,6 +48,8 @@ int luaGlobalEventType(lua_State* L)
 			global->setEventType(GLOBALEVENT_RECORD);
 		} else if (tmpStr == "save") {
 			global->setEventType(GLOBALEVENT_SAVE);
+		} else if (tmpStr == "periodchange") {
+			global->setEventType(GLOBALEVENT_PERIODCHANGE);
 		} else if (tmpStr == "think") {
 			global->setEventType(GLOBALEVENT_TIMER);
 		} else {
@@ -200,4 +202,10 @@ void LuaScriptInterface::registerGlobalEvents()
 	registerMethod("GlobalEvent", "onShutdown", luaGlobalEventOnCallback);
 	registerMethod("GlobalEvent", "onRecord", luaGlobalEventOnCallback);
 	registerMethod("GlobalEvent", "onSave", luaGlobalEventOnCallback);
+	registerMethod("GlobalEvent", "onPeriodChange", luaGlobalEventOnCallback);
+
+	registerGlobalVariable("LIGHT_STATE_SUNRISE", LIGHT_STATE_SUNRISE);
+	registerGlobalVariable("LIGHT_STATE_DAY", LIGHT_STATE_DAY);
+	registerGlobalVariable("LIGHT_STATE_SUNSET", LIGHT_STATE_SUNSET);
+	registerGlobalVariable("LIGHT_STATE_NIGHT", LIGHT_STATE_NIGHT);
 }

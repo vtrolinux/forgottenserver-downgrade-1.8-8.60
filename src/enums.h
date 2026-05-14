@@ -124,6 +124,13 @@ enum ChannelEvent_t : uint8_t
 	CHANNELEVENT_EXCLUDE = 3,
 };
 
+enum LightState_t : uint8_t {
+	LIGHT_STATE_SUNRISE = 0,
+	LIGHT_STATE_DAY = 1,
+	LIGHT_STATE_SUNSET = 2,
+	LIGHT_STATE_NIGHT = 3,
+};
+
 enum CreatureType_t : uint8_t
 {
 	CREATURETYPE_PLAYER = 0,

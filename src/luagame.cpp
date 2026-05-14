@@ -1152,12 +1152,29 @@ int luaGameStopSpyInventory(lua_State* L)
 	return 1;
 }
 
+int luaGameGetLightState(lua_State* L)
+{
+	// Game.getLightState()
+	lua_pushinteger(L, g_game.getLightState());
+	return 1;
+}
+
+int luaGameSetWorldTime(lua_State* L)
+{
+	// Game.setWorldTime(time)
+	g_game.setWorldTime(getInteger<int16_t>(L, 1));
+	pushBoolean(L, true);
+	return 1;
+}
+
 } // namespace
 
 void LuaScriptInterface::registerGame()
 {
 	// Game
 	registerTable("Game");
+	registerMethod("Game", "getLightState", luaGameGetLightState);
+	registerMethod("Game", "setWorldTime", luaGameSetWorldTime);
 
 	registerMethod("Game", "getSpectators", luaGameGetSpectators);
 	registerMethod("Game", "getPlayers", luaGameGetPlayers);

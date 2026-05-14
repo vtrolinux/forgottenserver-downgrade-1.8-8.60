@@ -15,6 +15,7 @@ enum GlobalEvent_t
 	GLOBALEVENT_SHUTDOWN,
 	GLOBALEVENT_RECORD,
 	GLOBALEVENT_SAVE,
+	GLOBALEVENT_PERIODCHANGE,
 };
 
 class GlobalEvent;
@@ -34,6 +35,7 @@ public:
 	void startup() const;
 	void shutdown() const;
 	void save() const;
+	void periodChange(LightState_t period) const;
 
 	void timer();
 	void think();
@@ -61,6 +63,7 @@ public:
 	explicit GlobalEvent(LuaScriptInterface* interface);
 
 	bool executeRecord(uint32_t current, uint32_t old);
+	bool executePeriodChange(LightState_t period) const;
 	bool executeEvent() const;
 
 	GlobalEvent_t getEventType() const { return eventType; }

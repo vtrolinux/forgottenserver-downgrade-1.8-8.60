@@ -68,6 +68,15 @@ bool GlobalEvents::registerLuaEvent(GlobalEvent* event)
 void GlobalEvents::startup() const { execute(GLOBALEVENT_STARTUP); }
 void GlobalEvents::shutdown() const { execute(GLOBALEVENT_SHUTDOWN); }
 void GlobalEvents::save() const { execute(GLOBALEVENT_SAVE); }
+void GlobalEvents::periodChange(LightState_t period) const
+{
+	for (const auto& it : serverMap) {
+		const GlobalEvent& globalEvent = it.second;
+		if (globalEvent.getEventType() == GLOBALEVENT_PERIODCHANGE) {
+			globalEvent.executePeriodChange(period);
+		}
+	}
+}
 
 void GlobalEvents::timer()
 {
@@ -170,7 +179,8 @@ GlobalEventMap GlobalEvents::getEventMap(GlobalEvent_t type)
 		case GLOBALEVENT_STARTUP:
 		case GLOBALEVENT_SHUTDOWN:
 		case GLOBALEVENT_RECORD:
-		case GLOBALEVENT_SAVE: {
+		case GLOBALEVENT_SAVE:
+		case GLOBALEVENT_PERIODCHANGE: {
 			GlobalEventMap retMap;
 			for (const auto& it : serverMap) {
 				if (it.second.getEventType() == type) {
@@ -197,6 +207,8 @@ std::string_view GlobalEvent::getScriptEventName() const
 			return "onRecord";
 		case GLOBALEVENT_SAVE:
 			return "onSave";
+		case GLOBALEVENT_PERIODCHANGE:
+			return "onPeriodChange";
 		case GLOBALEVENT_TIMER:
 			return "onTime";
 		default:
@@ -242,4 +254,22 @@ bool GlobalEvent::executeEvent() const
 	}
 
 	return scriptInterface->callFunction(params);
+}
+
+bool GlobalEvent::executePeriodChange(LightState_t period) const
+{
+	// onPeriodChange(period)
+	if (!scriptInterface->reserveScriptEnv()) {
+		LOG_ERROR("[Error - GlobalEvent::executePeriodChange] Call stack overflow");
+		return false;
+	}
+
+	ScriptEnvironment* env = scriptInterface->getScriptEnv();
+	env->setScriptId(scriptId, scriptInterface);
+
+	lua_State* L = scriptInterface->getLuaState();
+	scriptInterface->pushFunction(scriptId);
+
+	lua_pushinteger(L, period);
+	return scriptInterface->callFunction(1);
 }

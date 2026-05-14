@@ -6242,6 +6242,18 @@ void Game::updateWorldLightLevel()
 	}
 }
 
+LightState_t Game::getLightState() const
+{
+	if (worldTime >= GAME_SUNRISE && worldTime < GAME_DAYTIME) {
+		return LIGHT_STATE_SUNRISE;
+	} else if (worldTime >= GAME_DAYTIME && worldTime < GAME_SUNSET) {
+		return LIGHT_STATE_DAY;
+	} else if (worldTime >= GAME_SUNSET && worldTime < GAME_NIGHTTIME) {
+		return LIGHT_STATE_SUNSET;
+	}
+	return LIGHT_STATE_NIGHT;
+}
+
 void Game::updateWorldTime()
 {
 	g_scheduler.addEvent(createSchedulerTask(EVENT_WORLDTIMEINTERVAL, [this]() { updateWorldTime(); }));
@@ -6252,7 +6264,31 @@ void Game::updateWorldTime()
 #else
 	localtime_r(&osTime, &timeInfo);
 #endif
-	worldTime = (timeInfo.tm_sec + (timeInfo.tm_min * 60)) / 2.5f;
+	int16_t baseTime = static_cast<int16_t>((timeInfo.tm_sec + (timeInfo.tm_min * 60)) / 2.5f);
+	worldTime = (baseTime + worldTimeOffset) % 1440;
+	if (worldTime < 0) {
+		worldTime += 1440;
+	}
+
+	LightState_t currentLightState = getLightState();
+	if (currentLightState != lastLightState) {
+		lastLightState = currentLightState;
+		g_globalEvents->periodChange(currentLightState);
+	}
+}
+
+void Game::setWorldTime(int16_t time)
+{
+	time_t osTime = std::time(nullptr);
+	struct tm timeInfo;
+#if defined(_WIN32)
+	localtime_s(&timeInfo, &osTime);
+#else
+	localtime_r(&osTime, &timeInfo);
+#endif
+	int16_t baseTime = static_cast<int16_t>((timeInfo.tm_sec + (timeInfo.tm_min * 60)) / 2.5f);
+	worldTimeOffset = (time - baseTime) % 1440;
+	updateWorldTime();
 }
 
 void Game::shutdown()
