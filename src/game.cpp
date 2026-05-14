@@ -501,15 +501,19 @@ Thing* Game::internalGetThing(Player* player, const Position& pos, int32_t index
 			}
 		}
 
-		if (player && tile->hasFlag(TILESTATE_SUPPORTS_HANGABLE)) {
-			// do extra checks here if the thing is accessible
-			if (thing && thing->getItem()) {
-				if (tile->hasProperty(CONST_PROP_ISVERTICAL)) {
-					if (player->getPosition().x + 1 == tile->getPosition().x) {
+		if (player && player->getPosition().z == tile->getPosition().z) {
+			const Position& playerPos = player->getPosition();
+			const Position& tilePos = tile->getPosition();
+
+			if (playerPos.y < tilePos.y && tile->hasProperty(CONST_PROP_ISHORIZONTAL) && tile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
+				thing = nullptr;
+			} else if (playerPos.x < tilePos.x && tile->hasProperty(CONST_PROP_ISVERTICAL) && tile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
+				thing = nullptr;
+			} else {
+				if (const Tile* playerTile = player->getTile()) {
+					if (tilePos.y < playerPos.y && playerTile->hasProperty(CONST_PROP_ISHORIZONTAL) && playerTile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
 						thing = nullptr;
-					}
-				} else { // horizontal
-					if (player->getPosition().y + 1 == tile->getPosition().y) {
+					} else if (tilePos.x < playerPos.x && playerTile->hasProperty(CONST_PROP_ISVERTICAL) && playerTile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
 						thing = nullptr;
 					}
 				}

@@ -109,6 +109,28 @@ ReturnValue Actions::canUse(const Player* player, const Position& pos)
 		if (!playerPos.isInRange(pos, 1, 1)) {
 			return RETURNVALUE_TOOFARAWAY;
 		}
+
+		if (playerPos.z == pos.z) {
+			if (const Tile* tile = g_game.map.getTile(pos)) {
+				if (playerPos.y < pos.y && tile->hasProperty(CONST_PROP_ISHORIZONTAL) && tile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
+					return RETURNVALUE_THEREISNOWAY;
+				}
+
+				if (playerPos.x < pos.x && tile->hasProperty(CONST_PROP_ISVERTICAL) && tile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
+					return RETURNVALUE_THEREISNOWAY;
+				}
+			}
+
+			if (const Tile* playerTile = player->getTile()) {
+				if (pos.y < playerPos.y && playerTile->hasProperty(CONST_PROP_ISHORIZONTAL) && playerTile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
+					return RETURNVALUE_THEREISNOWAY;
+				}
+
+				if (pos.x < playerPos.x && playerTile->hasProperty(CONST_PROP_ISVERTICAL) && playerTile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
+					return RETURNVALUE_THEREISNOWAY;
+				}
+			}
+		}
 	}
 	return RETURNVALUE_NOERROR;
 }
