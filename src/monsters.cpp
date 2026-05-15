@@ -80,6 +80,7 @@ bool Monsters::reload()
 	loaded = false;
 
 	scriptInterface.reset();
+	bestiaryMonsters.clear();
 
 	loaded = true;
 	return true;
@@ -416,8 +417,8 @@ MonsterType* Monsters::getMonsterType(uint32_t raceId)
 bool Monsters::registerBestiaryMonster(const MonsterType* mType)
 {
 	auto [it, success] = bestiaryMonsters.insert_or_assign(mType->raceId, mType->name);
-	if (!success) {
-		LOG_WARN(fmt::format("[Warning - Monsters::registerBestiaryMonster] Monster raceId {} already exists but was overwritten for the monster {}.", mType->raceId, mType->name));
+	if (!success && it->second != mType->name) {
+		LOG_WARN(fmt::format("[Warning - Monsters::registerBestiaryMonster] Monster raceId {} already exists for {} but was overwritten by {}.", mType->raceId, it->second, mType->name));
 	}
 	return success;
 }

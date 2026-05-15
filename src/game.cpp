@@ -6744,7 +6744,12 @@ void Game::playerEnableSharedPartyExperience(uint32_t playerId, bool sharedExpAc
 	}
 
 	Party* party = player->getParty();
-	if (!party || (player->hasCondition(CONDITION_INFIGHT) && player->getZone() != ZONE_PROTECTION)) {
+	if (!party) {
+		return;
+	}
+
+	if (player->hasCondition(CONDITION_INFIGHT) && player->getZone() != ZONE_PROTECTION) {
+		player->sendCancelMessage("You cannot activate shared experience while in a fight.");
 		return;
 	}
 

@@ -28,8 +28,8 @@ monster.Bestiary = {
 		the path leading to Chor, beneath Fenrock, Lion's Rock.",
 }
 
-monster.health = 1
-monster.maxHealth = 1
+monster.health = 320
+monster.maxHealth = 320
 monster.race = "venom"
 monster.corpse = 6024
 monster.speed = 80
@@ -56,7 +56,7 @@ monster.flags = {
 	canPushCreatures = true,
 	staticAttackChance = 90,
 	targetDistance = 1,
-	runHealth = 0,
+	runHealth = 80,
 	healthHidden = false,
 	isBlockable = false,
 	canWalkOnEnergy = false,

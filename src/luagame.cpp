@@ -808,6 +808,7 @@ int luaGameCreateMonsterType(lua_State* L)
 		monsterType->name = name;
 		monsterType->nameDescription = "a " + name;
 	} else {
+		monsterType->raceId = 0;
 		monsterType->info.lootItems.clear();
 		monsterType->info.attackSpells.clear();
 		monsterType->info.defenseSpells.clear();
