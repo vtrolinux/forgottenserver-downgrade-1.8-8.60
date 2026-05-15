@@ -28,8 +28,8 @@ monster.Bestiary = {
 		the path leading to Chor, beneath Fenrock, Lion's Rock.",
 }
 
-monster.health = 320
-monster.maxHealth = 320
+monster.health = 1
+monster.maxHealth = 1
 monster.race = "venom"
 monster.corpse = 6024
 monster.speed = 80
@@ -56,7 +56,7 @@ monster.flags = {
 	canPushCreatures = true,
 	staticAttackChance = 90,
 	targetDistance = 1,
-	runHealth = 80,
+	runHealth = 0,
 	healthHidden = false,
 	isBlockable = false,
 	canWalkOnEnergy = false,
@@ -116,5 +116,12 @@ monster.immunities = {
 	{ type = "invisible", condition = false },
 	{ type = "bleed", condition = false },
 }
+
+mType.onDeath = function(monster, corpse, killer, mostDamageKiller, lastHitUnjustified, mostDamageUnjustified)
+    if math.random(100) < 10 then
+		Game.createMonster("Scorpion", monster:getPosition())
+		monster:say("Horestis' curse spawns a vengeful scorpion from the body!", TALKTYPE_MONSTER_SAY)
+	end
+end
 
 mType:register(monster)

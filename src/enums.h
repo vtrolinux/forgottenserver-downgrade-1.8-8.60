@@ -737,6 +737,7 @@ enum MonstersEvent_t : uint8_t
 	MONSTERS_EVENT_DISAPPEAR = 3,
 	MONSTERS_EVENT_MOVE = 4,
 	MONSTERS_EVENT_SAY = 5,
+	MONSTERS_EVENT_DEATH = 6,
 };
 
 struct Reflect

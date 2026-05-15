@@ -376,6 +376,8 @@ bool MonsterType::loadCallback(LuaScriptInterface* scriptInterface)
 		info.creatureMoveEvent = id;
 	} else if (info.eventType == MONSTERS_EVENT_SAY) {
 		info.creatureSayEvent = id;
+	} else if (info.eventType == MONSTERS_EVENT_DEATH) {
+		info.deathEvent = id;
 	}
 	return true;
 }

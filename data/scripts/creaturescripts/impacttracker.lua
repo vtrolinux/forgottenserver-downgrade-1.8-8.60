@@ -69,19 +69,9 @@ function impactGain.onHealthChange(creature, attacker, primaryDamage, primaryTyp
 end
 impactGain:register()
 
-local impactMana = CreatureEvent("impactTrackerMana")
-function impactMana.onManaChange(creature, attacker, primaryDamage, primaryType, secondaryDamage, secondaryType, origin)
-    if primaryDamage < 0 then
-        processImpact(creature, attacker, primaryDamage, primaryType)
-    end
-    return primaryDamage, primaryType, secondaryDamage, secondaryType
-end
-impactMana:register()
-
 local impactLogin = CreatureEvent("impactTrackerLogin")
 function impactLogin.onLogin(player)
     player:registerEvent("impactTrackerGain")
-    player:registerEvent("impactTrackerMana")
     return true
 end
 impactLogin:register()
@@ -91,7 +81,6 @@ local ec = Event()
 function ec.onTargetCombat(player, target)
     if target and target:isMonster() then
         target:registerEvent("impactTrackerGain")
-        target:registerEvent("impactTrackerMana")
     end
     return RETURNVALUE_NOERROR
 end
@@ -101,7 +90,6 @@ ec:register()
 local monsterSpawn = Event()
 function monsterSpawn.onSpawn(monster)
     monster:registerEvent("impactTrackerGain")
-    monster:registerEvent("impactTrackerMana")
     return true
 end
 monsterSpawn:register()

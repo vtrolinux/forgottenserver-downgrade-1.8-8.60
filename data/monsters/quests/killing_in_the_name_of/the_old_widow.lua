@@ -123,4 +123,10 @@ monster.immunities = {
 	{ type = "bleed", condition = false },
 }
 
+mType.onDeath = function(monster, corpse, killer, mostDamageKiller, lastHitUnjustified, mostDamageUnjustified)
+	monster:say("It seems this was just an illusion.", TALKTYPE_MONSTER_SAY)
+	local mostDamagePlayer = mostDamageKiller:getPlayer()
+	if mostDamagePlayer then mostDamagePlayer:addAchievement("Someone's Bored") end
+end
+
 mType:register(monster)

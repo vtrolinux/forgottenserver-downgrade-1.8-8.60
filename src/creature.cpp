@@ -643,6 +643,46 @@ bool Creature::dropCorpse(Creature* lastHitCreature, Creature* mostDamageCreatur
 			}
 		}
 
+		// MonsterType onDeath
+		if (auto monster = getMonster()) {
+			const MonsterType* mType = monster->getMonsterType();
+			if (mType->info.deathEvent != -1) {
+				LuaScriptInterface* scriptInterface = mType->info.scriptInterface;
+				if (!scriptInterface->reserveScriptEnv()) {
+					LOG_ERROR("[Error - Creature::dropCorpse] Call stack overflow");
+				} else {
+					ScriptEnvironment* env = scriptInterface->getScriptEnv();
+					env->setScriptId(mType->info.deathEvent, scriptInterface);
+
+					lua_State* L = scriptInterface->getLuaState();
+					scriptInterface->pushFunction(mType->info.deathEvent);
+					Lua::pushUserdata<Creature>(L, this);
+					Lua::setCreatureMetatable(L, -1, this);
+
+					Lua::pushThing(L, corpse.get());
+
+					if (lastHitCreature) {
+						Lua::pushUserdata<Creature>(L, lastHitCreature);
+						Lua::setCreatureMetatable(L, -1, lastHitCreature);
+					} else {
+						lua_pushnil(L);
+					}
+
+					if (mostDamageCreature) {
+						Lua::pushUserdata<Creature>(L, mostDamageCreature);
+						Lua::setCreatureMetatable(L, -1, mostDamageCreature);
+					} else {
+						lua_pushnil(L);
+					}
+
+					Lua::pushBoolean(L, lastHitUnjustified);
+					Lua::pushBoolean(L, mostDamageUnjustified);
+
+					scriptInterface->callFunction(6);
+				}
+			}
+		}
+
 		// scripting event - onDeath
 		for (CreatureEvent* deathEvent : getCreatureEvents(CREATURE_EVENT_DEATH)) {
 			deathEvent->executeOnDeath(this, corpse.get(), lastHitCreature, mostDamageCreature, lastHitUnjustified,

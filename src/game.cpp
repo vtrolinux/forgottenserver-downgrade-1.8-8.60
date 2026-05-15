@@ -5198,7 +5198,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 						}
 					}
 				}
-		}
+			}
 		}
 
 		// Fire onHealthChange creature events for healing
