@@ -2337,7 +2337,15 @@ void Monster::death(Creature*)
 
 std::shared_ptr<Item> Monster::getCorpse(Creature* lastHitCreature, Creature* mostDamageCreature)
 {
-	auto corpse = Creature::getCorpse(lastHitCreature, mostDamageCreature);
+	std::shared_ptr<Item> corpse;
+	if (isRewardBoss()) {
+		corpse = Item::CreateItemAsContainer(getLookCorpse(), 1);
+	}
+
+	if (!corpse) {
+		corpse = Creature::getCorpse(lastHitCreature, mostDamageCreature);
+	}
+
 	if (corpse) {
 		if (mostDamageCreature) {
 			if (mostDamageCreature->getPlayer()) {
