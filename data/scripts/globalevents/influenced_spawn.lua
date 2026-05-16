@@ -1,7 +1,7 @@
 local CONFIG = {
-    maxInfluenced    = 12,
-    spawnInterval    = 270,   -- 4min30s entre spawns
-    expireTime       = 3600,  -- 1 hora sem morte = expira
+    maxInfluenced    = 24,
+    spawnInterval    = 270,   -- 4min30s between spawns
+    expireTime       = 3600,  -- 1 hour without death = expire
     sliverItemId     = 37109,
     starLevels = {
         [1] = { hpMult = 1.50, dmgMult = 1.35, sliverMin = 1,  sliverMax = 3, chanceMult = 75.00},
@@ -142,7 +142,7 @@ function influencedSpawn.onThink(interval)
 
     return true
 end
-influencedSpawn:interval(4000)
+influencedSpawn:interval(CONFIG.spawnInterval * 4000)
 influencedSpawn:register()
 
 local influencedDamage = CreatureEvent("InfluencedDamage")
